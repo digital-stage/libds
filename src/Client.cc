@@ -1,0 +1,112 @@
+#include "Client.h"
+#include "Events.h"
+
+#include <exception>
+#include <iostream>
+#include <utility>
+
+using namespace utility;
+using namespace web;
+using namespace web::http;
+using namespace utility::conversions;
+using namespace pplx;
+using namespace concurrency::streams;
+
+task_completion_event<void> tce;
+
+DigitalStage::Client::Client(const std::string& apiUrl) : apiUrl_(apiUrl)
+{
+  store_ = std::unique_ptr<DigitalStage::Store>(new DigitalStage::Store());
+}
+
+const DigitalStage::Store& DigitalStage::Client::getStore()
+{
+  return *this->store_;
+}
+
+void DigitalStage::Client::connect(const std::string& apiToken,
+                                   nlohmann::json initialDevice)
+{
+  wsclient_.connect(U(this->apiUrl_)).wait();
+  auto receive_task = create_task(tce);
+
+  // Set handler
+  wsclient_.set_message_handler([&](const websocket_incoming_message& ret_msg) {
+    auto ret_str = ret_msg.extract_string().get();
+    if(ret_str != "hey") {
+      try {
+        nlohmann::json j = nlohmann::json::parse(ret_str);
+
+        const std::string& event = j["data"][0];
+        const nlohmann::json payload = j["data"][1];
+
+#ifdef DEBUG_EVENTS
+        std::cout << "[EVENT] " << event << std::endl;
+#endif
+
+        if(event == Events::READY) {
+          std::cout << "READY" << std::endl;
+        }
+      }
+      catch(const std::exception& e) {
+        std::cerr << "[ERROR] std::exception: " << e.what() << std::endl;
+      }
+      catch(...) {
+        std::cerr << "[ERROR] error parsing" << std::endl;
+      }
+    }
+  });
+
+  wsclient_.set_close_handler([](websocket_close_status status,
+                                 const utility::string_t& reason,
+                                 const std::error_code& code) {
+    if(int(status) == 1006) {
+      // TODO: Reconnect
+      std::cout << "TODO: RECONNECT" << std::endl;
+    } else {
+      std::cout << " closing reason..." << reason << "\n";
+      std::cout << "connection closed, reason: " << reason
+                << " close status: " << int(status) << " error code " << code
+                << std::endl;
+    }
+  });
+
+  nlohmann::json identificationJson;
+  identificationJson["token"] = apiToken;
+  identificationJson["device"] = initialDevice;
+  this->sendAsync("token", identificationJson.dump());
+
+  receive_task.wait();
+}
+
+void DigitalStage::Client::disconnect()
+{
+  tce.set(); // task completion event is set closing wss listening task
+  this->wsclient_.close(); // wss client is closed
+}
+
+void DigitalStage::Client::send(const std::string& event,
+                                const std::string& message)
+{
+  websocket_outgoing_message msg;
+  std::string body_str(R"({"type":0,"data":[")" + event + "\"," + message +
+                       "]}");
+  msg.set_utf8_message(body_str);
+#ifdef DEBUG_EVENTS
+  std::cout << "[SENDING] " << body_str << std::endl;
+#endif
+  wsclient_.send(msg).wait();
+}
+
+pplx::task<void> DigitalStage::Client::sendAsync(const std::string& event,
+                                                 const std::string& message)
+{
+  websocket_outgoing_message msg;
+  std::string body_str(R"({"type":0,"data":[")" + event + "\"," + message +
+                       "]}");
+  msg.set_utf8_message(body_str);
+#ifdef DEBUG_EVENTS
+  std::cout << "[SENDING] " << body_str << std::endl;
+#endif
+  return wsclient_.send(msg);
+}
