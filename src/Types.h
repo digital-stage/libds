@@ -154,7 +154,7 @@ namespace DigitalStage {
 
     int8_t order;
 
-    bool sendlocal;
+    bool sendLocal;
 
     double volume;
     bool muted;
@@ -519,7 +519,7 @@ namespace DigitalStage {
              {"online", p.online},
              {"isDirector", p.isDirector},
              {"order", p.order},
-             {"sendlocal", p.sendlocal},
+             {"sendLocal", p.sendLocal},
              {"volume", p.volume},
              {"muted", p.muted},
              {"x", p.x},
@@ -539,7 +539,7 @@ namespace DigitalStage {
     j.at("online").get_to(p.online);
     j.at("isDirector").get_to(p.isDirector);
     j.at("order").get_to(p.order);
-    j.at("sendlocal").get_to(p.sendlocal);
+    j.at("sendLocal").get_to(p.sendLocal);
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
     j.at("x").get_to(p.x);

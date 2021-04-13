@@ -58,7 +58,11 @@ DigitalStage::Client::connect(const std::string& apiToken,
         const nlohmann::json payload = j["data"][1];
 
 #ifdef DEBUG_EVENTS
+#ifdef DEBUG_PAYLOADS
         std::cout << "[EVENT] " << event << " " << payload.dump() << std::endl;
+#else
+        std::cout << "[EVENT] " << event << std::endl;
+#endif
 #endif
 
         if(event == WSEvents::READY) {
@@ -119,20 +123,56 @@ DigitalStage::Client::connect(const std::string& apiToken,
            * GROUPS
            */
         } else if(event == WSEvents::GROUP_ADDED) {
-          store_->createSoundCard(payload);
-          this->dispatch(EventType::SOUND_CARD_ADDED,
-                         EventSoundCardAdded(payload.get<soundcard_t>()),
-                         getStore());
+          store_->createGroup(payload);
+          this->dispatch(EventType::GROUP_ADDED,
+                         EventGroupAdded(payload.get<group_t>()), getStore());
         } else if(event == WSEvents::GROUP_CHANGED) {
-          store_->updateSoundCard(payload);
+          store_->updateGroup(payload);
           const std::string id = payload["_id"];
-          this->dispatch(EventType::SOUND_CARD_ADDED,
-                         EventSoundCardChanged(id, payload), getStore());
+          this->dispatch(EventType::GROUP_CHANGED,
+                         EventGroupChanged(id, payload), getStore());
         } else if(event == WSEvents::GROUP_REMOVED) {
           const std::string id = payload;
-          store_->removeSoundCard(id);
-          this->dispatch(EventType::SOUND_CARD_REMOVED,
-                         EventSoundCardRemoved(id), getStore());
+          store_->removeGroup(id);
+          this->dispatch(EventType::GROUP_REMOVED, EventGroupRemoved(id),
+                         getStore());
+
+          /*
+           * STAGE MEMBERS
+           */
+        } else if(event == WSEvents::STAGE_MEMBER_ADDED) {
+          store_->createStageMember(payload);
+          this->dispatch(EventType::STAGE_MEMBER_ADDED,
+                         EventStageMemberAdded(payload.get<stage_member_t>()),
+                         getStore());
+        } else if(event == WSEvents::STAGE_MEMBER_CHANGED) {
+          store_->updateStageMember(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::STAGE_MEMBER_CHANGED,
+                         EventStageMemberChanged(id, payload), getStore());
+        } else if(event == WSEvents::STAGE_MEMBER_REMOVED) {
+          const std::string id = payload;
+          store_->removeStageMember(id);
+          this->dispatch(EventType::STAGE_MEMBER_REMOVED,
+                         EventStageMemberRemoved(id), getStore());
+
+          /*
+           * USERS
+           */
+        } else if(event == WSEvents::REMOTE_USER_ADDED) {
+          store_->createUser(payload);
+          this->dispatch(EventType::REMOTE_USER_ADDED,
+                         EventUserAdded(payload.get<user_t>()), getStore());
+        } else if(event == WSEvents::REMOTE_USER_CHANGED) {
+          store_->updateUser(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::REMOTE_USER_CHANGED,
+                         EventUserChanged(id, payload), getStore());
+        } else if(event == WSEvents::REMOTE_USER_REMOVED) {
+          const std::string id = payload;
+          store_->removeUser(id);
+          this->dispatch(EventType::REMOTE_USER_REMOVED, EventUserRemoved(id),
+                         getStore());
 
           /*
            * SOUND CARD
@@ -152,6 +192,64 @@ DigitalStage::Client::connect(const std::string& apiToken,
           store_->removeSoundCard(id);
           this->dispatch(EventType::SOUND_CARD_REMOVED,
                          EventSoundCardRemoved(id), getStore());
+
+          /*
+           * STAGE JOINED
+           */
+        } else if(event == WSEvents::STAGE_JOINED) {
+          if(payload.count("remoteUsers") > 0) {
+            for(const auto& item : payload["remoteUsers"]) {
+              store_->createUser(item);
+              this->dispatch(EventType::REMOTE_USER_ADDED,
+                             EventUserAdded(item.get<user_t>()), getStore());
+            }
+          }
+          if(payload.count("stage") > 0) {
+            for(const auto& item : payload["stage"]) {
+              store_->createStage(item);
+              this->dispatch(EventType::STAGE_ADDED,
+                             EventStageAdded(item.get<stage_t>()), getStore());
+            }
+          }
+          if(payload.count("groups") > 0) {
+            for(const auto& item : payload["groups"]) {
+              store_->createGroup(item);
+              this->dispatch(EventType::GROUP_ADDED,
+                             EventGroupAdded(item.get<group_t>()), getStore());
+            }
+          }
+          for(const auto& item : payload["customGroupVolumes"]) {
+          }
+          for(const auto& item : payload["customGroupPositions"]) {
+          }
+          for(const auto& item : payload["stageMembers"]) {
+            store_->createStageMember(item);
+            this->dispatch(EventType::STAGE_MEMBER_ADDED,
+                           EventStageMemberAdded(item.get<stage_member_t>()),
+                           getStore());
+          }
+          for(const auto& item : payload["customStageMemberVolumes"]) {
+          }
+          for(const auto& item : payload["customStageMemberPositions"]) {
+          }
+          for(const auto& item : payload["remoteAudioTracks"]) {
+          }
+          for(const auto& item : payload["remoteVideoTracks"]) {
+          }
+          for(const auto& item : payload["customRemoteAudioTrackPositions"]) {
+          }
+          for(const auto& item : payload["customRemoteAudioTrackVolumes"]) {
+          }
+          auto stageId = payload["stageId"].get<std::string>();
+          auto groupId = payload["groupId"].get<std::string>();
+          this->dispatch(EventType::STAGE_JOINED,
+                         EventStageJoined(stageId, groupId), getStore());
+
+          /*
+           * STAGE LEFT
+           */
+        } else if(event == WSEvents::STAGE_LEFT) {
+          // TODO: Remove all stage related data
         }
       }
       catch(const std::exception& e) {
@@ -188,14 +286,7 @@ DigitalStage::Client::connect(const std::string& apiToken,
 void DigitalStage::Client::send(const std::string& event,
                                 const std::string& message)
 {
-  websocket_outgoing_message msg;
-  std::string body_str(R"({"type":0,"data":[")" + event + "\"," + message +
-                       "]}");
-  msg.set_utf8_message(body_str);
-#ifdef DEBUG_EVENTS
-  std::cout << "[SENDING] " << body_str << std::endl;
-#endif
-  wsclient_.send(msg).wait();
+  sendAsync(event, message).wait();
 }
 
 pplx::task<void> DigitalStage::Client::sendAsync(const std::string& event,
@@ -206,7 +297,11 @@ pplx::task<void> DigitalStage::Client::sendAsync(const std::string& event,
                        "]}");
   msg.set_utf8_message(body_str);
 #ifdef DEBUG_EVENTS
+#ifdef DEBUG_PAYLOADS
   std::cout << "[SENDING] " << body_str << std::endl;
+#else
+  std::cout << "[SENDING] " << event << std::endl;
+#endif
 #endif
   return wsclient_.send(msg);
 }

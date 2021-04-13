@@ -95,7 +95,8 @@ namespace DigitalStage {
                      (std::string, getId));
 
   EVENTPP_MAKE_EVENT(EventStageMemberAdded, Event,
-                     EventType::STAGE_MEMBER_ADDED, (stage_t, getStage));
+                     EventType::STAGE_MEMBER_ADDED,
+                     (stage_member_t, getStageMember));
   EVENTPP_MAKE_EVENT(EventStageMemberChanged, Event,
                      EventType::STAGE_MEMBER_CHANGED, (std::string, getId),
                      (nlohmann::json, getUpdate));
@@ -109,6 +110,16 @@ namespace DigitalStage {
                      (nlohmann::json, getUpdate));
   EVENTPP_MAKE_EVENT(EventSoundCardRemoved, Event,
                      EventType::SOUND_CARD_REMOVED, (std::string, getId));
+
+  EVENTPP_MAKE_EVENT(EventUserAdded, Event, EventType::REMOTE_USER_ADDED,
+                     (user_t, getUser));
+  EVENTPP_MAKE_EVENT(EventUserChanged, Event, EventType::REMOTE_USER_CHANGED,
+                     (std::string, getId), (nlohmann::json, getUpdate));
+  EVENTPP_MAKE_EVENT(EventUserRemoved, Event, EventType::REMOTE_USER_REMOVED,
+                     (std::string, getId));
+
+  EVENTPP_MAKE_EVENT(EventStageJoined, Event, EventType::STAGE_JOINED,
+                     (std::string, getStageId), (std::string, getGroupId));
 
   namespace WSEvents {
     extern const std::string READY;
