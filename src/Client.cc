@@ -24,11 +24,28 @@ const DigitalStage::Store& DigitalStage::Client::getStore()
   return *this->store_;
 }
 
-void DigitalStage::Client::connect(const std::string& apiToken,
-                                   nlohmann::json initialDevice)
+void DigitalStage::Client::disconnect()
+{
+  tce.set();         // task completion event is set closing wss listening task
+  wsclient_.close(); // wss client is closed
+}
+
+bool DigitalStage::Client::isConnected()
+{
+  try {
+    return !receiveTask_.is_done();
+  }
+  catch(...) {
+    return false;
+  }
+}
+
+pplx::task<void>
+DigitalStage::Client::connect(const std::string& apiToken,
+                              const nlohmann::json initialDevice)
 {
   wsclient_.connect(U(this->apiUrl_)).wait();
-  auto receive_task = create_task(tce);
+  receiveTask_ = create_task(tce);
 
   // Set handler
   wsclient_.set_message_handler([&](const websocket_incoming_message& ret_msg) {
@@ -41,11 +58,100 @@ void DigitalStage::Client::connect(const std::string& apiToken,
         const nlohmann::json payload = j["data"][1];
 
 #ifdef DEBUG_EVENTS
-        std::cout << "[EVENT] " << event << std::endl;
+        std::cout << "[EVENT] " << event << " " << payload.dump() << std::endl;
 #endif
 
-        if(event == Events::READY) {
-          std::cout << "READY" << std::endl;
+        if(event == WSEvents::READY) {
+          this->dispatch(EventType::READY, EventReady{}, getStore());
+
+          /*
+           * LOCAL DEVICE
+           */
+        } else if(event == WSEvents::LOCAL_DEVICE_READY) {
+          const device_t device = payload.get<device_t>();
+          store_->createDevice(payload);
+          store_->setLocalDeviceId(device._id);
+          this->dispatch(EventType::LOCAL_DEVICE_READY,
+                         EventLocalDeviceReady(device), getStore());
+          this->dispatch(EventType::DEVICE_ADDED, EventDeviceAdded(device),
+                         getStore());
+
+          /*
+           * DEVICES
+           */
+        } else if(event == WSEvents::DEVICE_ADDED) {
+          device_t device = payload.get<device_t>();
+          store_->createDevice(payload);
+          this->dispatch(EventType::DEVICE_ADDED, EventDeviceAdded(device),
+                         getStore());
+        } else if(event == WSEvents::DEVICE_CHANGED) {
+          store_->updateDevice(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::DEVICE_CHANGED,
+                         EventDeviceChanged(id, payload), getStore());
+        } else if(event == WSEvents::DEVICE_REMOVED) {
+          const std::string id = payload;
+          store_->removeDevice(id);
+          // store_->devices_.erase(id);
+          this->dispatch(EventType::DEVICE_REMOVED, EventDeviceRemoved(id),
+                         getStore());
+
+          /*
+           * STAGE
+           */
+        } else if(event == WSEvents::STAGE_ADDED) {
+          stage_t stage = payload.get<stage_t>();
+          store_->createStage(payload);
+          this->dispatch(EventType::STAGE_ADDED, EventStageAdded(stage),
+                         getStore());
+        } else if(event == WSEvents::STAGE_CHANGED) {
+          store_->updateStage(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::STAGE_CHANGED,
+                         EventStageChanged(id, payload), getStore());
+        } else if(event == WSEvents::STAGE_REMOVED) {
+          const std::string id = payload;
+          store_->removeStage(id);
+          this->dispatch(EventType::STAGE_REMOVED, EventStageRemoved(id),
+                         getStore());
+
+          /*
+           * GROUPS
+           */
+        } else if(event == WSEvents::GROUP_ADDED) {
+          store_->createSoundCard(payload);
+          this->dispatch(EventType::SOUND_CARD_ADDED,
+                         EventSoundCardAdded(payload.get<soundcard_t>()),
+                         getStore());
+        } else if(event == WSEvents::GROUP_CHANGED) {
+          store_->updateSoundCard(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::SOUND_CARD_ADDED,
+                         EventSoundCardChanged(id, payload), getStore());
+        } else if(event == WSEvents::GROUP_REMOVED) {
+          const std::string id = payload;
+          store_->removeSoundCard(id);
+          this->dispatch(EventType::SOUND_CARD_REMOVED,
+                         EventSoundCardRemoved(id), getStore());
+
+          /*
+           * SOUND CARD
+           */
+        } else if(event == WSEvents::SOUND_CARD_ADDED) {
+          store_->createSoundCard(payload);
+          this->dispatch(EventType::SOUND_CARD_ADDED,
+                         EventSoundCardAdded(payload.get<soundcard_t>()),
+                         getStore());
+        } else if(event == WSEvents::SOUND_CARD_CHANGED) {
+          store_->updateSoundCard(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::SOUND_CARD_ADDED,
+                         EventSoundCardChanged(id, payload), getStore());
+        } else if(event == WSEvents::SOUND_CARD_REMOVED) {
+          const std::string id = payload;
+          store_->removeSoundCard(id);
+          this->dispatch(EventType::SOUND_CARD_REMOVED,
+                         EventSoundCardRemoved(id), getStore());
         }
       }
       catch(const std::exception& e) {
@@ -76,13 +182,7 @@ void DigitalStage::Client::connect(const std::string& apiToken,
   identificationJson["device"] = initialDevice;
   this->sendAsync("token", identificationJson.dump());
 
-  receive_task.wait();
-}
-
-void DigitalStage::Client::disconnect()
-{
-  tce.set(); // task completion event is set closing wss listening task
-  this->wsclient_.close(); // wss client is closed
+  return receiveTask_;
 }
 
 void DigitalStage::Client::send(const std::string& event,
