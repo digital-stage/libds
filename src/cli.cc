@@ -8,6 +8,36 @@
 
 using namespace DigitalStage;
 
+void printStage(const Store& s)
+{
+  auto stages = s.getStages();
+  for(const auto& stage : stages) {
+    std::cout << "[" << stage.name << "] " << std::endl;
+    auto groups = s.getGroupsByStage(stage._id);
+    for(const auto& group : groups) {
+      std::cout << "  [" << group.name << "]" << std::endl;
+      auto stageMembers = s.getStageMembersByGroup(group._id);
+      for(const auto& stageMember : stageMembers) {
+        auto user = s.getUser(stageMember.userId);
+        std::cout << "    [" << stageMember._id << ": "
+                  << (user ? user->name : "") << "]" << std::endl;
+        auto remoteVideoTracks =
+            s.getRemoteVideoTracksByStageMember(stageMember._id);
+        for(const auto& remoteVideoTrack : remoteVideoTracks) {
+          std::cout << "      [Video Track " << remoteVideoTrack._id << "]"
+                    << std::endl;
+        }
+        auto remoteAudioTracks =
+            s.getRemoteAudioTracksByStageMember(stageMember._id);
+        for(const auto& remoteAudioTrack : remoteAudioTracks) {
+          std::cout << "      [Audio Track " << remoteAudioTrack._id << "]"
+                    << std::endl;
+        }
+      }
+    }
+  }
+}
+
 void handleLocalDeviceReady(const EventLocalDeviceReady& e, const Store& s)
 {
   std::cout << "Local device " << e.getDevice()._id << " ready" << std::endl;
@@ -15,40 +45,24 @@ void handleLocalDeviceReady(const EventLocalDeviceReady& e, const Store& s)
 
 void handleDeviceAdded(const EventDeviceAdded& e, const Store& s)
 {
-  std::cout << "Device " << e.getDevice()._id << " added" << std::endl;
+  std::cout << "NEW Device " << e.getDevice()._id << " added" << std::endl;
 }
 void handleDeviceChanged(const EventDeviceChanged& e, const Store& s)
 {
-  std::cout << "Device " << e.getId() << " changed" << std::endl;
-  // std::cout << "UUID of device is " << s.getDevices()[e.getDeviceId()].uuid
   auto device = s.getDevice(e.getId());
   if(device) {
-    std::cout << "Device MAC is " << device->uuid << std::endl;
+    std::cout << device->type
+              << " device has been updated: " << e.getUpdate().dump()
+              << std::endl;
   }
 }
-void handleDeviceRemoved(const EventDeviceAdded& e, const Store& s)
+void handleDeviceRemoved(const EventDeviceRemoved& e, const Store& s)
 {
-  std::cout << "Device " << e.getDevice()._id << " removed" << std::endl;
+  std::cout << "Device " << e.getId() << " removed" << std::endl;
 }
 void handleReady(const EventReady& e, const Store& s)
 {
   std::cout << "READY TO GO!" << std::endl;
-  std::cout << "Stages:" << std::endl;
-  auto stages = s.getStages();
-  for(const auto& stage : stages) {
-    std::cout << "[" << stage.name << "] " << std::endl;
-    auto groups = s.getGroupsByStage(stage._id);
-    for(const auto& group : groups) {
-      std::cout << "  [" << group.name << "]" << std::endl;
-
-      auto stageMembers = s.getStageMembersByGroup(group._id);
-      for(const auto& stageMember : stageMembers) {
-        auto user = s.getUser(stageMember.userId);
-        std::cout << "    [" << stageMember._id << ": "
-                  << (user ? user->name : "") << "]" << std::endl;
-      }
-    }
-  }
 }
 void handleStageJoined(const EventStageJoined& e, const Store& s)
 {
@@ -56,29 +70,20 @@ void handleStageJoined(const EventStageJoined& e, const Store& s)
   auto group = s.getGroup(e.getGroupId());
   std::cout << "JOINED STAGE " << stage->name << " AND GROUP " << group->name
             << std::endl;
-  std::cout << "Stages:" << std::endl;
-  auto stages = s.getStages();
-  for(const auto& stage : stages) {
-    std::cout << "[" << stage.name << "] " << std::endl;
-    auto groups = s.getGroupsByStage(stage._id);
-    for(const auto& group : groups) {
-      std::cout << "  [" << group.name << "]" << std::endl;
+}
 
-      auto stageMembers = s.getStageMembersByGroup(group._id);
-      for(const auto& stageMember : stageMembers) {
-        auto user = s.getUser(stageMember.userId);
-        std::cout << "    [" << stageMember._id << ": "
-                  << (user ? user->name : "") << "]" << std::endl;
-      }
-    }
-  }
+void handleStageLeft(const EventStageLeft& e, const Store& s)
+{
+  std::cout << "STAGE LEFT" << std::endl;
+}
+
+void handleStageChanges(const Event& e, const Store& s)
+{
+  printStage(s);
 }
 
 int main(int argc, char const* argv[])
 {
-  /* code */
-  std::cout << "Hello World!" << std::endl;
-
   auto authService = AuthService("https://single.dstage.org/api/auth");
 
   std::cout << "Signing in..." << std::endl;
@@ -97,7 +102,8 @@ int main(int argc, char const* argv[])
 
     client->appendListener(EventType::READY, [](const DigitalStage::Event& e,
                                                 const DigitalStage::Store& s) {
-      std::cout << "READY, it works!!!" << std::endl;
+      std::cout << "Ready - this type inside an anonymous callback function"
+                << std::endl;
     });
 
     client->appendListener(EventType::READY,
@@ -106,11 +112,42 @@ int main(int argc, char const* argv[])
     client->appendListener(EventType::DEVICE_ADDED,
                            eventpp::argumentAdapter(handleDeviceAdded));
 
+    client->appendListener(EventType::DEVICE_CHANGED,
+                           eventpp::argumentAdapter(handleDeviceChanged));
+
+    client->appendListener(EventType::DEVICE_REMOVED,
+                           eventpp::argumentAdapter(handleDeviceRemoved));
+
     client->appendListener(EventType::LOCAL_DEVICE_READY,
                            eventpp::argumentAdapter(handleLocalDeviceReady));
 
     client->appendListener(EventType::STAGE_JOINED,
                            eventpp::argumentAdapter(handleStageJoined));
+
+    client->appendListener(EventType::STAGE_JOINED,
+                           eventpp::argumentAdapter(handleStageLeft));
+
+    // Always print on stage changes
+    client->appendListener(EventType::STAGE_JOINED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::GROUP_REMOVED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::GROUP_ADDED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::GROUP_REMOVED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::REMOTE_VIDEO_TRACK_ADDED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::REMOTE_VIDEO_TRACK_REMOVED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::REMOTE_AUDIO_TRACK_ADDED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::REMOTE_AUDIO_TRACK_REMOVED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::STAGE_MEMBER_ADDED,
+                           eventpp::argumentAdapter(handleStageChanges));
+    client->appendListener(EventType::STAGE_MEMBER_REMOVED,
+                           eventpp::argumentAdapter(handleStageChanges));
 
     client->connect(apiToken, initialDevice);
 

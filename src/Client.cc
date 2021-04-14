@@ -81,6 +81,18 @@ DigitalStage::Client::connect(const std::string& apiToken,
                          getStore());
 
           /*
+           * LOCAL USER
+           */
+        } else if(event == WSEvents::USER_READY) {
+          const user_t user = payload.get<user_t>();
+          store_->createUser(payload);
+          store_->setUserId(user._id);
+          this->dispatch(EventType::USER_READY, EventLocalUserReady(user._id),
+                         getStore());
+          this->dispatch(EventType::REMOTE_USER_ADDED, EventUserAdded(user),
+                         getStore());
+
+          /*
            * DEVICES
            */
         } else if(event == WSEvents::DEVICE_ADDED) {
@@ -138,6 +150,44 @@ DigitalStage::Client::connect(const std::string& apiToken,
                          getStore());
 
           /*
+           * CUSTOM GROUP VOLUME AND POSITIONS
+           */
+        } else if(event == WSEvents::CUSTOM_GROUP_POSITION_ADDED) {
+          store_->createCustomGroupPosition(payload);
+          this->dispatch(EventType::CUSTOM_GROUP_POSITION_ADDED,
+                         EventCustomGroupPositionAdded(
+                             payload.get<custom_group_position_t>()),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_GROUP_POSITION_CHANGED) {
+          store_->updateCustomGroupPosition(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::CUSTOM_GROUP_POSITION_CHANGED,
+                         EventCustomGroupPositionChanged(id, payload),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_GROUP_POSITION_REMOVED) {
+          const std::string id = payload;
+          store_->removeCustomGroupPosition(id);
+          this->dispatch(EventType::CUSTOM_GROUP_POSITION_REMOVED,
+                         EventCustomGroupPositionRemoved(id), getStore());
+        } else if(event == WSEvents::CUSTOM_GROUP_VOLUME_ADDED) {
+          store_->createCustomGroupVolume(payload);
+          this->dispatch(
+              EventType::GROUP_ADDED,
+              EventCustomGroupVolumeAdded(payload.get<custom_group_volume_t>()),
+              getStore());
+        } else if(event == WSEvents::CUSTOM_GROUP_VOLUME_CHANGED) {
+          store_->updateCustomGroupVolume(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::CUSTOM_GROUP_VOLUME_CHANGED,
+                         EventCustomGroupVolumeChanged(id, payload),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_GROUP_VOLUME_REMOVED) {
+          const std::string id = payload;
+          store_->removeCustomGroupVolume(id);
+          this->dispatch(EventType::CUSTOM_GROUP_VOLUME_REMOVED,
+                         EventCustomGroupVolumeRemoved(id), getStore());
+
+          /*
            * STAGE MEMBERS
            */
         } else if(event == WSEvents::STAGE_MEMBER_ADDED) {
@@ -155,6 +205,168 @@ DigitalStage::Client::connect(const std::string& apiToken,
           store_->removeStageMember(id);
           this->dispatch(EventType::STAGE_MEMBER_REMOVED,
                          EventStageMemberRemoved(id), getStore());
+
+          /*
+           * CUSTOM STAGE MEMBERS VOLUME AND POSITIONS
+           */
+        } else if(event == WSEvents::CUSTOM_STAGE_MEMBER_POSITION_ADDED) {
+          store_->createCustomStageMemberPosition(payload);
+          this->dispatch(EventType::CUSTOM_STAGE_MEMBER_POSITION_ADDED,
+                         EventCustomStageMemberPositionAdded(
+                             payload.get<custom_stage_member_position_t>()),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_STAGE_MEMBER_POSITION_CHANGED) {
+          store_->updateCustomStageMemberPosition(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::CUSTOM_STAGE_MEMBER_POSITION_CHANGED,
+                         EventCustomStageMemberPositionChanged(id, payload),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_STAGE_MEMBER_POSITION_REMOVED) {
+          const std::string id = payload;
+          store_->removeCustomStageMemberPosition(id);
+          this->dispatch(EventType::CUSTOM_STAGE_MEMBER_POSITION_REMOVED,
+                         EventCustomStageMemberPositionRemoved(id), getStore());
+        } else if(event == WSEvents::CUSTOM_STAGE_MEMBER_VOLUME_ADDED) {
+          store_->createCustomStageMemberVolume(payload);
+          this->dispatch(EventType::STAGE_MEMBER_ADDED,
+                         EventCustomStageMemberVolumeAdded(
+                             payload.get<custom_stage_member_volume_t>()),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_STAGE_MEMBER_VOLUME_CHANGED) {
+          store_->updateCustomStageMemberVolume(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::CUSTOM_STAGE_MEMBER_VOLUME_CHANGED,
+                         EventCustomStageMemberVolumeChanged(id, payload),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_STAGE_MEMBER_VOLUME_REMOVED) {
+          const std::string id = payload;
+          store_->removeCustomStageMemberVolume(id);
+          this->dispatch(EventType::CUSTOM_STAGE_MEMBER_VOLUME_REMOVED,
+                         EventCustomStageMemberVolumeRemoved(id), getStore());
+
+          /*
+           * LOCAL VIDEO TRACKS
+           */
+        } else if(event == WSEvents::LOCAL_VIDEO_TRACK_ADDED) {
+          store_->createLocalVideoTrack(payload);
+          this->dispatch(
+              EventType::LOCAL_VIDEO_TRACK_ADDED,
+              EventLocalVideoTrackAdded(payload.get<local_video_track_t>()),
+              getStore());
+        } else if(event == WSEvents::LOCAL_VIDEO_TRACK_CHANGED) {
+          store_->updateLocalVideoTrack(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::LOCAL_VIDEO_TRACK_CHANGED,
+                         EventLocalVideoTrackChanged(id, payload), getStore());
+        } else if(event == WSEvents::LOCAL_VIDEO_TRACK_REMOVED) {
+          const std::string id = payload;
+          store_->removeLocalVideoTrack(id);
+          this->dispatch(EventType::LOCAL_VIDEO_TRACK_REMOVED,
+                         EventLocalVideoTrackRemoved(id), getStore());
+
+          /*
+           * LOCAL AUDIO TRACKS
+           */
+        } else if(event == WSEvents::LOCAL_AUDIO_TRACK_ADDED) {
+          store_->createLocalAudioTrack(payload);
+          this->dispatch(
+              EventType::LOCAL_AUDIO_TRACK_ADDED,
+              EventLocalAudioTrackAdded(payload.get<local_audio_track_t>()),
+              getStore());
+        } else if(event == WSEvents::LOCAL_AUDIO_TRACK_CHANGED) {
+          store_->updateLocalAudioTrack(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::LOCAL_AUDIO_TRACK_CHANGED,
+                         EventLocalAudioTrackChanged(id, payload), getStore());
+        } else if(event == WSEvents::LOCAL_AUDIO_TRACK_REMOVED) {
+          const std::string id = payload;
+          store_->removeLocalAudioTrack(id);
+          this->dispatch(EventType::LOCAL_AUDIO_TRACK_REMOVED,
+                         EventLocalAudioTrackRemoved(id), getStore());
+
+          /*
+           * REMOTE VIDEO TRACKS
+           */
+        } else if(event == WSEvents::REMOTE_VIDEO_TRACK_ADDED) {
+          store_->createRemoteVideoTrack(payload);
+          this->dispatch(
+              EventType::REMOTE_VIDEO_TRACK_ADDED,
+              EventRemoteVideoTrackAdded(payload.get<remote_video_track_t>()),
+              getStore());
+        } else if(event == WSEvents::REMOTE_VIDEO_TRACK_CHANGED) {
+          store_->updateRemoteVideoTrack(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::REMOTE_VIDEO_TRACK_CHANGED,
+                         EventRemoteAudioTrackChanged(id, payload), getStore());
+        } else if(event == WSEvents::REMOTE_VIDEO_TRACK_REMOVED) {
+          const std::string id = payload;
+          store_->removeRemoteVideoTrack(id);
+          this->dispatch(EventType::REMOTE_VIDEO_TRACK_REMOVED,
+                         EventRemoteVideoTrackRemoved(id), getStore());
+
+          /*
+           * REMOTE AUDIO TRACKS
+           */
+        } else if(event == WSEvents::REMOTE_AUDIO_TRACK_ADDED) {
+          store_->createRemoteAudioTrack(payload);
+          this->dispatch(
+              EventType::REMOTE_AUDIO_TRACK_ADDED,
+              EventRemoteAudioTrackAdded(payload.get<remote_audio_track_t>()),
+              getStore());
+        } else if(event == WSEvents::REMOTE_AUDIO_TRACK_CHANGED) {
+          store_->updateRemoteAudioTrack(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::REMOTE_AUDIO_TRACK_CHANGED,
+                         EventRemoteAudioTrackChanged(id, payload), getStore());
+        } else if(event == WSEvents::REMOTE_AUDIO_TRACK_REMOVED) {
+          const std::string id = payload;
+          store_->removeRemoteAudioTrack(id);
+          this->dispatch(EventType::REMOTE_AUDIO_TRACK_REMOVED,
+                         EventRemoteAudioTrackRemoved(id), getStore());
+
+          /*
+           * CUSTOM REMOTE_AUDIO_TRACK VOLUME AND POSITIONS
+           */
+        } else if(event == WSEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED) {
+          store_->createCustomRemoteAudioTrackPosition(payload);
+          this->dispatch(
+              EventType::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED,
+              EventCustomRemoteAudioTrackPositionAdded(
+                  payload.get<custom_remote_audio_track_position_t>()),
+              getStore());
+        } else if(event ==
+                  WSEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_CHANGED) {
+          store_->updateCustomRemoteAudioTrackPosition(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(
+              EventType::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_CHANGED,
+              EventCustomRemoteAudioTrackPositionChanged(id, payload),
+              getStore());
+        } else if(event ==
+                  WSEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_REMOVED) {
+          const std::string id = payload;
+          store_->removeCustomRemoteAudioTrackPosition(id);
+          this->dispatch(EventType::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_REMOVED,
+                         EventCustomRemoteAudioTrackPositionRemoved(id),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_ADDED) {
+          store_->createCustomRemoteAudioTrackVolume(payload);
+          this->dispatch(EventType::REMOTE_AUDIO_TRACK_ADDED,
+                         EventCustomRemoteAudioTrackVolumeAdded(
+                             payload.get<custom_remote_audio_track_volume_t>()),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_CHANGED) {
+          store_->updateCustomRemoteAudioTrackVolume(payload);
+          const std::string id = payload["_id"];
+          this->dispatch(EventType::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_CHANGED,
+                         EventCustomRemoteAudioTrackVolumeChanged(id, payload),
+                         getStore());
+        } else if(event == WSEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_REMOVED) {
+          const std::string id = payload;
+          store_->removeCustomRemoteAudioTrackVolume(id);
+          this->dispatch(EventType::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_REMOVED,
+                         EventCustomRemoteAudioTrackVolumeRemoved(id),
+                         getStore());
 
           /*
            * USERS
@@ -219,8 +431,22 @@ DigitalStage::Client::connect(const std::string& apiToken,
             }
           }
           for(const auto& item : payload["customGroupVolumes"]) {
+            for(const auto& item : payload["customGroupVolumes"]) {
+              store_->createCustomGroupVolume(item);
+              this->dispatch(EventType::CUSTOM_GROUP_VOLUME_ADDED,
+                             EventCustomGroupVolumeAdded(
+                                 item.get<custom_group_volume_t>()),
+                             getStore());
+            }
           }
           for(const auto& item : payload["customGroupPositions"]) {
+            for(const auto& item : payload["customGroupPositions"]) {
+              store_->createCustomGroupPosition(item);
+              this->dispatch(EventType::CUSTOM_GROUP_POSITION_ADDED,
+                             EventCustomGroupPositionAdded(
+                                 item.get<custom_group_position_t>()),
+                             getStore());
+            }
           }
           for(const auto& item : payload["stageMembers"]) {
             store_->createStageMember(item);
@@ -229,19 +455,65 @@ DigitalStage::Client::connect(const std::string& apiToken,
                            getStore());
           }
           for(const auto& item : payload["customStageMemberVolumes"]) {
+            for(const auto& item : payload["customStageMemberVolumes"]) {
+              store_->createCustomStageMemberVolume(item);
+              this->dispatch(EventType::CUSTOM_STAGE_MEMBER_VOLUME_ADDED,
+                             EventCustomStageMemberVolumeAdded(
+                                 item.get<custom_stage_member_volume_t>()),
+                             getStore());
+            }
           }
           for(const auto& item : payload["customStageMemberPositions"]) {
+            for(const auto& item : payload["customStageMemberPositions"]) {
+              store_->createCustomStageMemberPosition(item);
+              this->dispatch(EventType::CUSTOM_STAGE_MEMBER_POSITION_ADDED,
+                             EventCustomStageMemberPositionAdded(
+                                 item.get<custom_stage_member_position_t>()),
+                             getStore());
+            }
           }
           for(const auto& item : payload["remoteAudioTracks"]) {
+            for(const auto& item : payload["remoteAudioTracks"]) {
+              store_->createRemoteAudioTrack(item);
+              this->dispatch(
+                  EventType::REMOTE_AUDIO_TRACK_ADDED,
+                  EventRemoteAudioTrackAdded(item.get<remote_audio_track_t>()),
+                  getStore());
+            }
           }
           for(const auto& item : payload["remoteVideoTracks"]) {
+            for(const auto& item : payload["remoteVideoTracks"]) {
+              store_->createRemoteVideoTrack(item);
+              this->dispatch(
+                  EventType::REMOTE_VIDEO_TRACK_ADDED,
+                  EventRemoteVideoTrackAdded(item.get<remote_video_track_t>()),
+                  getStore());
+            }
           }
           for(const auto& item : payload["customRemoteAudioTrackPositions"]) {
+            for(const auto& item : payload["customRemoteAudioTrackPositions"]) {
+              store_->createCustomRemoteAudioTrackPosition(item);
+              this->dispatch(
+                  EventType::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED,
+                  EventCustomRemoteAudioTrackPositionAdded(
+                      item.get<custom_remote_audio_track_position_t>()),
+                  getStore());
+            }
           }
           for(const auto& item : payload["customRemoteAudioTrackVolumes"]) {
+            for(const auto& item : payload["customRemoteAudioTrackVolumes"]) {
+              store_->createCustomRemoteAudioTrackVolume(item);
+              this->dispatch(
+                  EventType::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_ADDED,
+                  EventCustomRemoteAudioTrackVolumeAdded(
+                      item.get<custom_remote_audio_track_volume_t>()),
+                  getStore());
+            }
           }
           auto stageId = payload["stageId"].get<std::string>();
           auto groupId = payload["groupId"].get<std::string>();
+          store_->setStageId(stageId);
+          store_->setGroupId(groupId);
           this->dispatch(EventType::STAGE_JOINED,
                          EventStageJoined(stageId, groupId), getStore());
 
@@ -249,7 +521,24 @@ DigitalStage::Client::connect(const std::string& apiToken,
            * STAGE LEFT
            */
         } else if(event == WSEvents::STAGE_LEFT) {
-          // TODO: Remove all stage related data
+          store_->resetStageId();
+          store_->resetGroupId();
+          store_->removeAllStageMembers();
+          store_->removeAllCustomStageMemberPositions();
+          store_->removeAllCustomStageMemberVolumes();
+          store_->removeAllCustomGroupPositions();
+          store_->removeAllCustomGroupVolumes();
+          store_->removeAllRemoteVideoTracks();
+          store_->removeAllRemoteAudioTracks();
+          store_->removeAllCustomRemoteAudioTrackPositions();
+          store_->removeAllCustomRemoteAudioTrackVolumes();
+          // TODO: Discuss, the store may dispatch all the events instead...
+          // TODO: Otherwise we have to dispatch all removals HERE (!)
+          // Current workaround: assuming, that on left all using
+          // components know, that the entities are removed without event
+          this->dispatch(EventType::STAGE_LEFT, EventStageLeft(), getStore());
+        } else {
+          std::cerr << "Unkown event " << event << std::endl;
         }
       }
       catch(const std::exception& e) {

@@ -229,7 +229,7 @@ namespace DigitalStage {
 
   struct remote_video_track_t {
     std::string _id;
-    std::string localAudioTrackId;
+    std::string localVideoTrackId;
     std::string stageMemberId;
     std::string stageId;
     std::string userId;
@@ -629,10 +629,42 @@ namespace DigitalStage {
     optional_from_json(j, "softwareLatency", p.softwareLatency);
   }
 
+  inline void to_json(json& j, const local_video_track_t& p)
+  {
+    j = json{{"_id", p._id},
+             {"userId", p.userId},
+             {"deviceId", p.deviceId},
+             {"type", p.type}};
+  }
+
+  inline void from_json(const json& j, local_video_track_t& p)
+  {
+    j.at("_id").get_to(p._id);
+    j.at("userId").get_to(p.userId);
+    j.at("deviceId").get_to(p.deviceId);
+    j.at("type").get_to(p.type);
+  }
+
+  inline void to_json(json& j, const local_audio_track_t& p)
+  {
+    j = json{{"_id", p._id},
+             {"userId", p.userId},
+             {"deviceId", p.deviceId},
+             {"type", p.type}};
+  }
+
+  inline void from_json(const json& j, local_audio_track_t& p)
+  {
+    j.at("_id").get_to(p._id);
+    j.at("userId").get_to(p.userId);
+    j.at("deviceId").get_to(p.deviceId);
+    j.at("type").get_to(p.type);
+  }
+
   inline void to_json(json& j, const remote_video_track_t& p)
   {
     j = json{{"_id", p._id},
-             {"localAudioTrackId", p.localAudioTrackId},
+             {"localVideoTrackId", p.localVideoTrackId},
              {"stageMemberId", p.stageMemberId},
              {"stageId", p.stageId},
              {"userId", p.userId},
@@ -643,7 +675,7 @@ namespace DigitalStage {
   inline void from_json(const json& j, remote_video_track_t& p)
   {
     j.at("_id").get_to(p._id);
-    j.at("localAudioTrackId").get_to(p.localAudioTrackId);
+    j.at("localVideoTrackId").get_to(p.localVideoTrackId);
     j.at("stageMemberId").get_to(p.stageMemberId);
     j.at("stageId").get_to(p.stageId);
     j.at("userId").get_to(p.userId);

@@ -12,7 +12,7 @@
   }
 
 #define STORE_GET_ALL(TYPE, NAME, MUTEX, VAR)                                  \
-  std::vector<const TYPE> get##NAME() const                                    \
+  std::vector<const TYPE> get##NAME##s() const                                 \
   {                                                                            \
     std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
     std::vector<const TYPE> items = std::vector<const TYPE>();                 \
@@ -46,19 +46,22 @@
   }
 
 #define STORE_REMOVE_ALL(TYPE, NAME, MUTEX, VAR)                               \
-  void remove##NAME()                                                          \
+  void removeAll##NAME##s()                                                    \
   {                                                                            \
     std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
-    VAR.clear();                                                               \
+    for(const auto& item : VAR) {                                              \
+      remove##NAME(item.first);                                                \
+    }                                                                          \
   }
 
 #define ADD_STORE_ENTRY(TYPE, NAME, VAR)                                       \
 public:                                                                        \
   STORE_GET(TYPE, NAME, mutex_##VAR, VAR)                                      \
-  STORE_GET_ALL(TYPE, NAME##s, mutex_##VAR, VAR)                               \
+  STORE_GET_ALL(TYPE, NAME, mutex_##VAR, VAR)                                  \
   STORE_CREATE(TYPE, NAME, mutex_##VAR, VAR)                                   \
   STORE_UPDATE(TYPE, NAME, mutex_##VAR, VAR)                                   \
   STORE_REMOVE(TYPE, NAME, mutex_##VAR, VAR)                                   \
+  STORE_REMOVE_ALL(TYPE, NAME, mutex_##VAR, VAR)                               \
 private:                                                                       \
   mutable std::recursive_mutex mutex_##VAR;                                    \
   std::map<std::string, json> VAR;

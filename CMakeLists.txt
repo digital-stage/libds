@@ -16,7 +16,8 @@ if (APPLE)
         set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 endif (APPLE)
 
-add_compile_definitions(DEBUG_EVENTS)
+#add_compile_definitions(DEBUG_EVENTS)
+#add_compile_definitions(DEBUG_PAYLOADS)
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(cpprestsdk REQUIRED)

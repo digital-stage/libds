@@ -7,7 +7,7 @@ const std::string DigitalStage::WSEvents::DEVICE_CHANGED = "d-c";
 const std::string DigitalStage::WSEvents::DEVICE_REMOVED = "d-r";
 const std::string DigitalStage::WSEvents::STAGE_JOINED = "s-j";
 const std::string DigitalStage::WSEvents::STAGE_LEFT = "s-l";
-const std::string DigitalStage::WSEvents::USER_READY = "user-ready";
+const std::string DigitalStage::WSEvents::USER_READY = "u-r";
 const std::string DigitalStage::WSEvents::STAGE_ADDED = "s-a";
 const std::string DigitalStage::WSEvents::STAGE_CHANGED = "s-c";
 const std::string DigitalStage::WSEvents::STAGE_REMOVED = "s-r";
@@ -43,6 +43,12 @@ const std::string DigitalStage::WSEvents::CUSTOM_STAGE_MEMBER_POSITION_CHANGED =
     "c-sm-p-c";
 const std::string DigitalStage::WSEvents::CUSTOM_STAGE_MEMBER_POSITION_REMOVED =
     "c-sm-p-r";
+const std::string DigitalStage::WSEvents::LOCAL_VIDEO_TRACK_ADDED = "lv-a";
+const std::string DigitalStage::WSEvents::LOCAL_VIDEO_TRACK_CHANGED = "lv-c";
+const std::string DigitalStage::WSEvents::LOCAL_VIDEO_TRACK_REMOVED = "lv-r";
+const std::string DigitalStage::WSEvents::LOCAL_AUDIO_TRACK_ADDED = "la-a";
+const std::string DigitalStage::WSEvents::LOCAL_AUDIO_TRACK_CHANGED = "la-c";
+const std::string DigitalStage::WSEvents::LOCAL_AUDIO_TRACK_REMOVED = "la-r";
 const std::string DigitalStage::WSEvents::REMOTE_VIDEO_TRACK_ADDED = "v-a";
 const std::string DigitalStage::WSEvents::REMOTE_VIDEO_TRACK_CHANGED = "v-c";
 const std::string DigitalStage::WSEvents::REMOTE_VIDEO_TRACK_REMOVED = "v-r";
