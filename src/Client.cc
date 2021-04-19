@@ -524,6 +524,7 @@ DigitalStage::Client::connect(const std::string& apiToken,
           store_->resetStageId();
           store_->resetGroupId();
           store_->removeAllStageMembers();
+          std::cout << "See me?" << event << std::endl;
           store_->removeAllCustomStageMemberPositions();
           store_->removeAllCustomStageMemberVolumes();
           store_->removeAllCustomGroupPositions();
