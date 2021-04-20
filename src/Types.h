@@ -152,7 +152,7 @@ namespace DigitalStage {
     bool online;
     bool isDirector;
 
-    int8_t order;
+    uint8_t order;
 
     bool sendLocal;
 
@@ -225,6 +225,7 @@ namespace DigitalStage {
     std::string deviceId;
     std::string userId;
     std::string type;
+    std::optional<std::string> ovSourcePort;
   };
 
   struct remote_video_track_t {
@@ -240,6 +241,7 @@ namespace DigitalStage {
   struct remote_audio_track_t {
     std::string _id;
     std::string localAudioTrackId;
+    std::string deviceId;
     std::string stageMemberId;
     std::string stageId;
     std::string userId;
@@ -254,6 +256,7 @@ namespace DigitalStage {
     double rX;
     double rY;
     double rZ;
+    std::optional<std::string> ovSourcePort;
   };
 
   struct custom_remote_audio_track_position_t {
@@ -651,6 +654,7 @@ namespace DigitalStage {
              {"userId", p.userId},
              {"deviceId", p.deviceId},
              {"type", p.type}};
+    optional_to_json(j, "ovSourcePort", p.ovSourcePort);
   }
 
   inline void from_json(const json& j, local_audio_track_t& p)
@@ -659,6 +663,7 @@ namespace DigitalStage {
     j.at("userId").get_to(p.userId);
     j.at("deviceId").get_to(p.deviceId);
     j.at("type").get_to(p.type);
+    optional_from_json(j, "ovSourcePort", p.ovSourcePort);
   }
 
   inline void to_json(json& j, const remote_video_track_t& p)
@@ -701,6 +706,7 @@ namespace DigitalStage {
              {"rX", p.rX},
              {"rY", p.rY},
              {"rZ", p.rZ}};
+    optional_to_json(j, "ovSourcePort", p.ovSourcePort);
   }
 
   inline void from_json(const json& j, remote_audio_track_t& p)
@@ -708,6 +714,7 @@ namespace DigitalStage {
     j.at("_id").get_to(p._id);
     j.at("localAudioTrackId").get_to(p.localAudioTrackId);
     j.at("stageMemberId").get_to(p.stageMemberId);
+    j.at("deviceId").get_to(p.deviceId);
     j.at("stageId").get_to(p.stageId);
     j.at("userId").get_to(p.userId);
     j.at("online").get_to(p.online);
@@ -721,6 +728,7 @@ namespace DigitalStage {
     j.at("rX").get_to(p.rX);
     j.at("rY").get_to(p.rY);
     j.at("rZ").get_to(p.rZ);
+    optional_from_json(j, "ovSourcePort", p.ovSourcePort);
   }
 
   inline void to_json(json& j, const custom_remote_audio_track_position_t& p)

@@ -12,12 +12,12 @@
   }
 
 #define STORE_GET_ALL(TYPE, NAME, MUTEX, VAR)                                  \
-  std::vector<const TYPE> get##NAME##s() const                                 \
+  const std::vector<TYPE> get##NAME##s() const                                 \
   {                                                                            \
     std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
-    std::vector<const TYPE> items = std::vector<const TYPE>();                 \
+    std::vector<TYPE> items = std::vector<TYPE>();                             \
     for(const auto& item : VAR) {                                              \
-      items.push_back(item.second.get<const TYPE>());                          \
+      items.push_back(item.second.get<TYPE>());                                \
     }                                                                          \
     return items;                                                              \
   }

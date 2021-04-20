@@ -22,6 +22,18 @@ void DigitalStage::Store::setLocalDeviceId(const std::string& id)
   localDeviceId_ = id;
 }
 
+std::optional<std::string> DigitalStage::Store::getStageMemberId() const
+{
+  std::lock_guard<std::recursive_mutex>(this->stageMemberId_mutex_);
+  return this->stageMemberId_;
+}
+
+void DigitalStage::Store::setStageMemberId(const std::string& id)
+{
+  std::lock_guard<std::recursive_mutex>(this->stageMemberId_mutex_);
+  stageMemberId_ = id;
+}
+
 std::optional<std::string> DigitalStage::Store::getUserId() const
 {
   std::lock_guard<std::recursive_mutex>(this->userId_mutex_);
@@ -91,11 +103,11 @@ void DigitalStage::Store::removeGroup(const std::string& id)
   groupIds_by_stages_[stageId].erase(id);
 }
 
-std::vector<const DigitalStage::group_t>
+const std::vector<DigitalStage::group_t>
 DigitalStage::Store::getGroupsByStage(const std::string& stageId) const
 {
   std::lock_guard<std::recursive_mutex>(this->groups_mutex_);
-  auto groups = std::vector<const DigitalStage::group_t>();
+  auto groups = std::vector<DigitalStage::group_t>();
   if(this->groupIds_by_stages_.count(stageId) > 0) {
     auto groupIds = this->groupIds_by_stages_.at(stageId);
     for(const auto& groupId : groupIds) {
@@ -137,11 +149,11 @@ void DigitalStage::Store::removeStageMember(const std::string& id)
   stageMemberIds_by_groups_[groupId].erase(id);
 }
 
-std::vector<const DigitalStage::stage_member_t>
+const std::vector<DigitalStage::stage_member_t>
 DigitalStage::Store::getStageMembersByStage(const std::string& stageId) const
 {
   std::lock_guard<std::recursive_mutex>(this->stageMembers_mutex_);
-  auto vector = std::vector<const DigitalStage::stage_member_t>();
+  auto vector = std::vector<DigitalStage::stage_member_t>();
   if(this->stageMemberIds_by_stages_.count(stageId) > 0) {
     auto stageMemberIds = this->stageMemberIds_by_stages_.at(stageId);
     for(const auto& stageMemberId : stageMemberIds) {
@@ -154,11 +166,11 @@ DigitalStage::Store::getStageMembersByStage(const std::string& stageId) const
   return vector;
 }
 
-std::vector<const DigitalStage::stage_member_t>
+const std::vector<DigitalStage::stage_member_t>
 DigitalStage::Store::getStageMembersByGroup(const std::string& groupId) const
 {
   std::lock_guard<std::recursive_mutex>(this->stageMembers_mutex_);
-  auto vector = std::vector<const DigitalStage::stage_member_t>();
+  auto vector = std::vector<DigitalStage::stage_member_t>();
   if(this->stageMemberIds_by_groups_.count(groupId) > 0) {
     auto stageMemberIds = this->stageMemberIds_by_groups_.at(groupId);
     for(const auto& stageMemberId : stageMemberIds) {
@@ -171,24 +183,20 @@ DigitalStage::Store::getStageMembersByGroup(const std::string& groupId) const
   return vector;
 }
 
-std::vector<const DigitalStage::custom_group_position_t>
+std::optional<const DigitalStage::custom_group_position_t>
 DigitalStage::Store::getCustomGroupPositionByGroupAndDevice(
     const std::string& groupId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(this->customGroupPositions_mutex_);
-  auto vector = std::vector<const DigitalStage::custom_group_position_t>();
   if(this->customGroupPositionIds_by_Group_and_Device_.count(groupId) > 0) {
     if(this->customGroupPositionIds_by_Group_and_Device_.at(groupId).count(
            deviceId) > 0) {
-      for(const auto& id :
+      return getCustomGroupPosition(
           this->customGroupPositionIds_by_Group_and_Device_.at(groupId).at(
-              deviceId)) {
-        auto item = getCustomGroupPosition(id);
-        vector.push_back(item.value());
-      }
+              deviceId));
     }
   }
-  return vector;
+  return std::nullopt;
 }
 
 void DigitalStage::Store::createCustomGroupPosition(const json payload)
@@ -200,14 +208,9 @@ void DigitalStage::Store::createCustomGroupPosition(const json payload)
   const std::string deviceId = payload.at("deviceId").get<std::string>();
   if(customGroupPositionIds_by_Group_and_Device_.count(groupId) == 0) {
     customGroupPositionIds_by_Group_and_Device_[groupId] =
-        std::map<std::string, std::set<std::string>>();
+        std::map<std::string, std::string>();
   }
-  if(customGroupPositionIds_by_Group_and_Device_[groupId].count(deviceId) ==
-     0) {
-    customGroupPositionIds_by_Group_and_Device_[groupId][deviceId] =
-        std::set<std::string>();
-  }
-  customGroupPositionIds_by_Group_and_Device_[groupId][deviceId].insert(_id);
+  customGroupPositionIds_by_Group_and_Device_[groupId][deviceId] = _id;
 }
 
 void DigitalStage::Store::removeCustomGroupPosition(const std::string& id)
@@ -216,29 +219,25 @@ void DigitalStage::Store::removeCustomGroupPosition(const std::string& id)
   const std::string groupId =
       this->customGroupPositions_.at(id)["groupId"].get<std::string>();
   const std::string deviceId =
-      this->customGroupPositions_.at(id)["groupId"].get<std::string>();
-  customGroupPositionIds_by_Group_and_Device_[groupId][deviceId].erase(id);
+      this->customGroupPositions_.at(id)["deviceId"].get<std::string>();
+  customGroupPositionIds_by_Group_and_Device_[groupId].erase(deviceId);
   customGroupPositions_.erase(id);
 }
 
-std::vector<const DigitalStage::custom_group_volume_t>
+std::optional<const DigitalStage::custom_group_volume_t>
 DigitalStage::Store::getCustomGroupVolumeByGroupAndDevice(
     const std::string& groupId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(this->customGroupVolumes_mutex_);
-  auto vector = std::vector<const DigitalStage::custom_group_volume_t>();
   if(this->customGroupVolumeIds_by_Group_and_Device_.count(groupId) > 0) {
     if(this->customGroupVolumeIds_by_Group_and_Device_.at(groupId).count(
            deviceId) > 0) {
-      for(const auto& id :
+      return getCustomGroupVolume(
           this->customGroupVolumeIds_by_Group_and_Device_.at(groupId).at(
-              deviceId)) {
-        auto item = getCustomGroupVolume(id);
-        vector.push_back(item.value());
-      }
+              deviceId));
     }
   }
-  return vector;
+  return std::nullopt;
 }
 
 void DigitalStage::Store::createCustomGroupVolume(const json payload)
@@ -250,13 +249,9 @@ void DigitalStage::Store::createCustomGroupVolume(const json payload)
   const std::string deviceId = payload.at("deviceId").get<std::string>();
   if(customGroupVolumeIds_by_Group_and_Device_.count(groupId) == 0) {
     customGroupVolumeIds_by_Group_and_Device_[groupId] =
-        std::map<std::string, std::set<std::string>>();
+        std::map<std::string, std::string>();
   }
-  if(customGroupVolumeIds_by_Group_and_Device_[groupId].count(deviceId) == 0) {
-    customGroupVolumeIds_by_Group_and_Device_[groupId][deviceId] =
-        std::set<std::string>();
-  }
-  customGroupVolumeIds_by_Group_and_Device_[groupId][deviceId].insert(_id);
+  customGroupVolumeIds_by_Group_and_Device_[groupId][deviceId] = _id;
 }
 
 void DigitalStage::Store::removeCustomGroupVolume(const std::string& id)
@@ -266,33 +261,28 @@ void DigitalStage::Store::removeCustomGroupVolume(const std::string& id)
       this->customGroupVolumes_.at(id)["groupId"].get<std::string>();
   const std::string deviceId =
       this->customStageMemberVolumes_.at(id)["deviceId"].get<std::string>();
-  customGroupVolumeIds_by_Group_and_Device_[groupId][deviceId].erase(id);
+  customGroupVolumeIds_by_Group_and_Device_[groupId].erase(deviceId);
   customGroupVolumes_.erase(id);
 }
 
-std::vector<const DigitalStage::custom_stage_member_position_t>
+std::optional<const DigitalStage::custom_stage_member_position_t>
 DigitalStage::Store::getCustomStageMemberPositionByStageMemberAndDevice(
     const std::string& stageMemberId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(
       this->customStageMemberPositions_mutex_);
-  auto vector =
-      std::vector<const DigitalStage::custom_stage_member_position_t>();
   if(this->customStageMemberPositionIds_by_StageMember_and_Device_.count(
          stageMemberId) > 0) {
     if(this->customStageMemberPositionIds_by_StageMember_and_Device_
            .at(stageMemberId)
            .count(deviceId) > 0) {
-      for(const auto& id :
+      return getCustomStageMemberPosition(
           this->customStageMemberPositionIds_by_StageMember_and_Device_
               .at(stageMemberId)
-              .at(deviceId)) {
-        auto item = getCustomStageMemberPosition(id);
-        vector.push_back(item.value());
-      }
+              .at(deviceId));
     }
   }
-  return vector;
+  return std::nullopt;
 }
 
 void DigitalStage::Store::createCustomStageMemberPosition(const json payload)
@@ -307,16 +297,10 @@ void DigitalStage::Store::createCustomStageMemberPosition(const json payload)
   if(customStageMemberPositionIds_by_StageMember_and_Device_.count(
          stageMemberId) == 0) {
     customStageMemberPositionIds_by_StageMember_and_Device_[stageMemberId] =
-        std::map<std::string, std::set<std::string>>();
-  }
-  if(customStageMemberPositionIds_by_StageMember_and_Device_[stageMemberId]
-         .count(deviceId) == 0) {
-    customStageMemberPositionIds_by_StageMember_and_Device_
-        [stageMemberId][deviceId] = std::set<std::string>();
+        std::map<std::string, std::string>();
   }
   customStageMemberPositionIds_by_StageMember_and_Device_[stageMemberId]
-                                                         [deviceId]
-                                                             .insert(_id);
+                                                         [deviceId] = _id;
 }
 
 void DigitalStage::Store::removeCustomStageMemberPosition(const std::string& id)
@@ -328,33 +312,28 @@ void DigitalStage::Store::removeCustomStageMemberPosition(const std::string& id)
           .get<std::string>();
   const std::string deviceId =
       this->customStageMemberPositions_.at(id)["deviceId"].get<std::string>();
-  customStageMemberPositionIds_by_StageMember_and_Device_[stageMemberId]
-                                                         [deviceId]
-                                                             .erase(id);
+  customStageMemberPositionIds_by_StageMember_and_Device_[stageMemberId].erase(
+      deviceId);
   customStageMemberPositions_.erase(id);
 }
 
-std::vector<const DigitalStage::custom_stage_member_volume_t>
+std::optional<const DigitalStage::custom_stage_member_volume_t>
 DigitalStage::Store::getCustomStageMemberVolumeByStageMemberAndDevice(
     const std::string& stageMemberId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(this->customStageMemberVolumes_mutex_);
-  auto vector = std::vector<const DigitalStage::custom_stage_member_volume_t>();
   if(this->customStageMemberVolumeIds_by_StageMember_and_Device_.count(
          stageMemberId) > 0) {
     if(this->customStageMemberVolumeIds_by_StageMember_and_Device_
            .at(stageMemberId)
            .count(deviceId) > 0) {
-      for(const auto& id :
+      return getCustomStageMemberVolume(
           this->customStageMemberVolumeIds_by_StageMember_and_Device_
               .at(stageMemberId)
-              .at(deviceId)) {
-        auto item = getCustomStageMemberVolume(id);
-        vector.push_back(item.value());
-      }
+              .at(deviceId));
     }
   }
-  return vector;
+  return std::nullopt;
 }
 
 void DigitalStage::Store::createCustomStageMemberVolume(const json payload)
@@ -368,15 +347,10 @@ void DigitalStage::Store::createCustomStageMemberVolume(const json payload)
   if(customStageMemberVolumeIds_by_StageMember_and_Device_.count(
          stageMemberId) == 0) {
     customStageMemberVolumeIds_by_StageMember_and_Device_[stageMemberId] =
-        std::map<std::string, std::set<std::string>>();
+        std::map<std::string, std::string>();
   }
-  if(customStageMemberVolumeIds_by_StageMember_and_Device_[stageMemberId].count(
-         deviceId) == 0) {
-    customStageMemberVolumeIds_by_StageMember_and_Device_
-        [stageMemberId][deviceId] = std::set<std::string>();
-  }
-  customStageMemberVolumeIds_by_StageMember_and_Device_[stageMemberId][deviceId]
-      .insert(_id);
+  customStageMemberVolumeIds_by_StageMember_and_Device_[stageMemberId]
+                                                       [deviceId] = _id;
 }
 
 void DigitalStage::Store::removeCustomStageMemberVolume(const std::string& id)
@@ -387,12 +361,12 @@ void DigitalStage::Store::removeCustomStageMemberVolume(const std::string& id)
           .get<std::string>();
   const std::string deviceId =
       this->customStageMemberVolumes_.at(id)["deviceId"].get<std::string>();
-  customStageMemberVolumeIds_by_StageMember_and_Device_[stageMemberId][deviceId]
-      .erase(id);
+  customStageMemberVolumeIds_by_StageMember_and_Device_[stageMemberId].erase(
+      deviceId);
   customStageMemberVolumes_.erase(id);
 }
 
-std::vector<const DigitalStage::custom_remote_audio_track_position_t>
+std::optional<const DigitalStage::custom_remote_audio_track_position_t>
 DigitalStage::Store::
     getCustomRemoteAudioTrackPositionByRemoteAudioTrackAndDevice(
         const std::string& remoteAudioTrackId,
@@ -400,23 +374,18 @@ DigitalStage::Store::
 {
   std::lock_guard<std::recursive_mutex>(
       this->customRemoteAudioTrackPositions_mutex_);
-  auto vector =
-      std::vector<const DigitalStage::custom_remote_audio_track_position_t>();
   if(this->customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_
          .count(remoteAudioTrackId) > 0) {
     if(this->customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_
            .at(remoteAudioTrackId)
            .count(deviceId) > 0) {
-      for(const auto& id :
+      return getCustomRemoteAudioTrackPosition(
           this->customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_
               .at(remoteAudioTrackId)
-              .at(deviceId)) {
-        auto item = getCustomRemoteAudioTrackPosition(id);
-        vector.push_back(item.value());
-      }
+              .at(deviceId));
     }
   }
-  return vector;
+  return std::nullopt;
 }
 
 void DigitalStage::Store::createCustomRemoteAudioTrackPosition(
@@ -432,17 +401,10 @@ void DigitalStage::Store::createCustomRemoteAudioTrackPosition(
   if(customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_.count(
          remoteAudioTrackId) == 0) {
     customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_
-        [remoteAudioTrackId] = std::map<std::string, std::set<std::string>>();
-  }
-  if(customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_
-         [remoteAudioTrackId]
-             .count(deviceId) == 0) {
-    customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_
-        [remoteAudioTrackId][deviceId] = std::set<std::string>();
+        [remoteAudioTrackId] = std::map<std::string, std::string>();
   }
   customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_
-      [remoteAudioTrackId][deviceId]
-          .insert(_id);
+      [remoteAudioTrackId][deviceId] = _id;
 }
 
 void DigitalStage::Store::removeCustomRemoteAudioTrackPosition(
@@ -457,34 +419,29 @@ void DigitalStage::Store::removeCustomRemoteAudioTrackPosition(
       this->customRemoteAudioTrackPositions_.at(id)["remoteAudioTrackId"]
           .get<std::string>();
   customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_
-      [remoteAudioTrackId][deviceId]
-          .erase(id);
+      [remoteAudioTrackId]
+          .erase(deviceId);
   customRemoteAudioTrackPositions_.erase(id);
 }
 
-std::vector<const DigitalStage::custom_remote_audio_track_volume_t>
+std::optional<const DigitalStage::custom_remote_audio_track_volume_t>
 DigitalStage::Store::getCustomRemoteAudioTrackVolumeByRemoteAudioTrackAndDevice(
     const std::string& remoteAudioTrackId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(
       this->customRemoteAudioTrackVolumes_mutex_);
-  auto vector =
-      std::vector<const DigitalStage::custom_remote_audio_track_volume_t>();
   if(this->customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
          .count(remoteAudioTrackId) > 0) {
     if(this->customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
            .at(remoteAudioTrackId)
            .count(deviceId) > 0) {
-      for(const auto& id :
+      return getCustomRemoteAudioTrackVolume(
           this->customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
               .at(remoteAudioTrackId)
-              .at(deviceId)) {
-        auto item = getCustomRemoteAudioTrackVolume(id);
-        vector.push_back(item.value());
-      }
+              .at(deviceId));
     }
   }
-  return vector;
+  return std::nullopt;
 }
 
 void DigitalStage::Store::createCustomRemoteAudioTrackVolume(const json payload)
@@ -499,17 +456,10 @@ void DigitalStage::Store::createCustomRemoteAudioTrackVolume(const json payload)
   if(customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_.count(
          remoteAudioTrackId) == 0) {
     customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
-        [remoteAudioTrackId] = std::map<std::string, std::set<std::string>>();
-  }
-  if(customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
-         [remoteAudioTrackId]
-             .count(deviceId) == 0) {
-    customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
-        [remoteAudioTrackId][deviceId] = std::set<std::string>();
+        [remoteAudioTrackId] = std::map<std::string, std::string>();
   }
   customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
-      [remoteAudioTrackId][deviceId]
-          .insert(_id);
+      [remoteAudioTrackId][deviceId] = _id;
 }
 
 void DigitalStage::Store::removeCustomRemoteAudioTrackVolume(
@@ -523,17 +473,17 @@ void DigitalStage::Store::removeCustomRemoteAudioTrackVolume(
   const std::string deviceId =
       this->customStageMemberVolumes_.at(id)["deviceId"].get<std::string>();
   customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
-      [remoteAudioTrackId][deviceId]
-          .erase(id);
+      [remoteAudioTrackId]
+          .erase(deviceId);
   customRemoteAudioTrackVolumes_.erase(id);
 }
 
-std::vector<const DigitalStage::remote_video_track_t>
+const std::vector<DigitalStage::remote_video_track_t>
 DigitalStage::Store::getRemoteVideoTracksByStageMember(
     const std::string& stageMemberId) const
 {
   std::lock_guard<std::recursive_mutex>(this->remoteVideoTracks_mutex_);
-  auto items = std::vector<const DigitalStage::remote_video_track_t>();
+  auto items = std::vector<DigitalStage::remote_video_track_t>();
   if(this->remoteVideoTrackIds_by_StageMember_.count(stageMemberId) > 0) {
     auto ids = this->remoteVideoTrackIds_by_StageMember_.at(stageMemberId);
     for(const auto& id : ids) {
@@ -567,12 +517,12 @@ void DigitalStage::Store::removeRemoteVideoTrack(const std::string& id)
   remoteVideoTrackIds_by_StageMember_[stageMemberId].erase(id);
 }
 
-std::vector<const DigitalStage::remote_audio_track_t>
+const std::vector<DigitalStage::remote_audio_track_t>
 DigitalStage::Store::getRemoteAudioTracksByStageMember(
     const std::string& stageMemberId) const
 {
   std::lock_guard<std::recursive_mutex>(this->remoteAudioTracks_mutex_);
-  auto items = std::vector<const DigitalStage::remote_audio_track_t>();
+  auto items = std::vector<DigitalStage::remote_audio_track_t>();
   if(this->remoteAudioTrackIds_by_StageMember_.count(stageMemberId) > 0) {
     auto ids = this->remoteAudioTrackIds_by_StageMember_.at(stageMemberId);
     for(const auto& id : ids) {

@@ -65,7 +65,7 @@ namespace DigitalStage {
 
   class Event {
   public:
-    explicit Event(const EventType type) : type(type) {}
+    explicit Event(const EventType type_) : type(type_) {}
     virtual ~Event() {}
 
     EventType getType() const { return type; }
@@ -76,6 +76,8 @@ namespace DigitalStage {
 
   EVENTPP_MAKE_EMPTY_EVENT(EventReady, Event, EventType::READY);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow-field-in-constructor"
   EVENTPP_MAKE_EVENT(EventLocalDeviceReady, Event,
                      EventType::LOCAL_DEVICE_READY, (device_t, getDevice));
 
@@ -232,6 +234,7 @@ namespace DigitalStage {
 
   EVENTPP_MAKE_EVENT(EventStageJoined, Event, EventType::STAGE_JOINED,
                      (std::string, getStageId), (std::string, getGroupId));
+#pragma clang diagnostic pop
 
   EVENTPP_MAKE_EMPTY_EVENT(EventStageLeft, Event, EventType::STAGE_LEFT);
 
