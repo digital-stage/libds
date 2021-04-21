@@ -43,7 +43,7 @@ add_library(ds STATIC ${SOURCES})
 set_target_properties(ds PROPERTIES PUBLIC_HEADER "${HEADER}")
 target_include_directories(ds 
         PUBLIC 
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/eventpp/include)
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/eventpp/include)
 target_link_libraries(ds
         PUBLIC
         nlohmann_json::nlohmann_json
