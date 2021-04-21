@@ -44,6 +44,7 @@ pplx::task<void>
 DigitalStage::Client::connect(const std::string& apiToken,
                               const nlohmann::json initialDevice)
 {
+  std::cout << "Connecting to " << apiUrl_ << std::endl;
   wsclient_.connect(U(this->apiUrl_)).wait();
   receiveTask_ = create_task(tce);
 

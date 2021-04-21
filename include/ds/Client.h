@@ -34,7 +34,7 @@ namespace DigitalStage {
                                const std::string& message);
 
   private:
-    const std::string& apiUrl_;
+    const std::string apiUrl_;
     std::unique_ptr<Store> store_;
 
     pplx::task<void> receiveTask_;
