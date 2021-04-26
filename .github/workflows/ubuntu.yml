@@ -20,5 +20,7 @@ jobs:
       - name: dependencies
         run: sudo apt update &&
           sudo apt install --assume-yes git libcpprest-dev nlohmann-json3-dev
+      - name: cmake
+        run: cmake .
       - name: make
         run: make
