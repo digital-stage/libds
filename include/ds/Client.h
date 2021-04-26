@@ -6,6 +6,7 @@
 #include <eventpp/eventdispatcher.h>
 #include <cpprest/ws_client.h>
 #include <pplx/pplxtasks.h>
+#include <mutex>
 
 using namespace web::websockets::client;
 

@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <set>
+#include <mutex>
 
 using namespace nlohmann;
 
