@@ -3,7 +3,7 @@
 
 #include "Events.h"
 #include "Store.h"
-#include "eventpp/eventdispatcher.h"
+#include <eventpp/eventdispatcher.h>
 #include <cpprest/ws_client.h>
 #include <pplx/pplxtasks.h>
 

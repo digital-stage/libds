@@ -6,7 +6,7 @@ DigitalStage::Store::getLocalDevice() const
 {
   std::lock_guard<std::recursive_mutex>(this->local_device_id_mutex_);
   if(localDeviceId_) {
-    return this->getDevice(localDeviceId_.value());
+    return this->getDevice(*localDeviceId_);
   }
   return std::nullopt;
 }
@@ -113,7 +113,7 @@ DigitalStage::Store::getGroupsByStage(const std::string& stageId) const
     for(const auto& groupId : groupIds) {
       auto group = getGroup(groupId);
       if(group) {
-        groups.push_back(group.value());
+        groups.push_back(*group);
       }
     }
   }
@@ -159,7 +159,7 @@ DigitalStage::Store::getStageMembersByStage(const std::string& stageId) const
     for(const auto& stageMemberId : stageMemberIds) {
       auto stageMember = getStageMember(stageMemberId);
       if(stageMember) {
-        vector.push_back(stageMember.value());
+        vector.push_back(*stageMember);
       }
     }
   }
@@ -176,7 +176,7 @@ DigitalStage::Store::getStageMembersByGroup(const std::string& groupId) const
     for(const auto& stageMemberId : stageMemberIds) {
       auto stageMember = getStageMember(stageMemberId);
       if(stageMember) {
-        vector.push_back(stageMember.value());
+        vector.push_back(*stageMember);
       }
     }
   }
@@ -489,7 +489,7 @@ DigitalStage::Store::getRemoteVideoTracksByStageMember(
     for(const auto& id : ids) {
       auto group = getRemoteVideoTrack(id);
       if(group) {
-        items.push_back(group.value());
+        items.push_back(*group);
       }
     }
   }
@@ -528,7 +528,7 @@ DigitalStage::Store::getRemoteAudioTracksByStageMember(
     for(const auto& id : ids) {
       auto group = getRemoteAudioTrack(id);
       if(group) {
-        items.push_back(group.value());
+        items.push_back(*group);
       }
     }
   }

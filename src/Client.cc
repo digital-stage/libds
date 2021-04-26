@@ -432,22 +432,18 @@ DigitalStage::Client::connect(const std::string& apiToken,
             }
           }
           for(const auto& item : payload["customGroupVolumes"]) {
-            for(const auto& item : payload["customGroupVolumes"]) {
               store_->createCustomGroupVolume(item);
               this->dispatch(EventType::CUSTOM_GROUP_VOLUME_ADDED,
                              EventCustomGroupVolumeAdded(
                                  item.get<custom_group_volume_t>()),
                              getStore());
-            }
           }
           for(const auto& item : payload["customGroupPositions"]) {
-            for(const auto& item : payload["customGroupPositions"]) {
               store_->createCustomGroupPosition(item);
               this->dispatch(EventType::CUSTOM_GROUP_POSITION_ADDED,
                              EventCustomGroupPositionAdded(
                                  item.get<custom_group_position_t>()),
                              getStore());
-            }
           }
           for(const auto& item : payload["stageMembers"]) {
             store_->createStageMember(item);
@@ -456,60 +452,48 @@ DigitalStage::Client::connect(const std::string& apiToken,
                            getStore());
           }
           for(const auto& item : payload["customStageMemberVolumes"]) {
-            for(const auto& item : payload["customStageMemberVolumes"]) {
               store_->createCustomStageMemberVolume(item);
               this->dispatch(EventType::CUSTOM_STAGE_MEMBER_VOLUME_ADDED,
                              EventCustomStageMemberVolumeAdded(
                                  item.get<custom_stage_member_volume_t>()),
                              getStore());
-            }
           }
           for(const auto& item : payload["customStageMemberPositions"]) {
-            for(const auto& item : payload["customStageMemberPositions"]) {
               store_->createCustomStageMemberPosition(item);
               this->dispatch(EventType::CUSTOM_STAGE_MEMBER_POSITION_ADDED,
                              EventCustomStageMemberPositionAdded(
                                  item.get<custom_stage_member_position_t>()),
                              getStore());
-            }
           }
           for(const auto& item : payload["remoteAudioTracks"]) {
-            for(const auto& item : payload["remoteAudioTracks"]) {
               store_->createRemoteAudioTrack(item);
               this->dispatch(
                   EventType::REMOTE_AUDIO_TRACK_ADDED,
                   EventRemoteAudioTrackAdded(item.get<remote_audio_track_t>()),
                   getStore());
-            }
           }
           for(const auto& item : payload["remoteVideoTracks"]) {
-            for(const auto& item : payload["remoteVideoTracks"]) {
               store_->createRemoteVideoTrack(item);
               this->dispatch(
                   EventType::REMOTE_VIDEO_TRACK_ADDED,
                   EventRemoteVideoTrackAdded(item.get<remote_video_track_t>()),
                   getStore());
-            }
           }
           for(const auto& item : payload["customRemoteAudioTrackPositions"]) {
-            for(const auto& item : payload["customRemoteAudioTrackPositions"]) {
               store_->createCustomRemoteAudioTrackPosition(item);
               this->dispatch(
                   EventType::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED,
                   EventCustomRemoteAudioTrackPositionAdded(
                       item.get<custom_remote_audio_track_position_t>()),
                   getStore());
-            }
           }
           for(const auto& item : payload["customRemoteAudioTrackVolumes"]) {
-            for(const auto& item : payload["customRemoteAudioTrackVolumes"]) {
               store_->createCustomRemoteAudioTrackVolume(item);
               this->dispatch(
                   EventType::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_ADDED,
                   EventCustomRemoteAudioTrackVolumeAdded(
                       item.get<custom_remote_audio_track_volume_t>()),
                   getStore());
-            }
           }
           auto stageId = payload["stageId"].get<std::string>();
           auto groupId = payload["groupId"].get<std::string>();

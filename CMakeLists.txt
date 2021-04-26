@@ -11,8 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 if (APPLE)
         include(${CMAKE_CURRENT_LIST_DIR}/cmake/FixAppleArchitecture.cmake)
-        include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake) 
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+        include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
 endif (APPLE)
 
 #add_compile_definitions(DEBUG_EVENTS)
@@ -21,6 +21,10 @@ endif (APPLE)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
+add_library(eventpp INTERFACE)
+target_compile_options(eventpp INTERFACE -Wall -Wextra -pedantic -Werror)
+target_include_directories(eventpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/third_party/eventpp/include)
+
 
 ### SOURCE MANAGEMENT
 set(HEADERS
@@ -39,16 +43,17 @@ set(SOURCES
         )
 
 add_library(ds STATIC ${SOURCES})
+target_compile_options(ds PRIVATE -Wall -Wextra -pedantic -Werror)
 set_target_properties(ds PROPERTIES PUBLIC_HEADER "${HEADER}")
 target_include_directories(ds 
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/eventpp/include)
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds)
 target_link_libraries(ds
         PUBLIC
         nlohmann_json::nlohmann_json
         OpenSSL::Crypto
-        cpprestsdk::cpprest)
+        cpprestsdk::cpprest
+        eventpp)
 
 add_executable(cli 
         src/cli.cc)

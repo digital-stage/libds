@@ -38,12 +38,12 @@ void printStage(const Store& s)
   }
 }
 
-void handleLocalDeviceReady(const EventLocalDeviceReady& e, const Store& s)
+void handleLocalDeviceReady(const EventLocalDeviceReady& e, const Store&)
 {
   std::cout << "Local device " << e.getDevice()._id << " ready" << std::endl;
 }
 
-void handleDeviceAdded(const EventDeviceAdded& e, const Store& s)
+void handleDeviceAdded(const EventDeviceAdded& e, const Store&)
 {
   std::cout << "NEW Device " << e.getDevice()._id << " added" << std::endl;
 }
@@ -56,11 +56,11 @@ void handleDeviceChanged(const EventDeviceChanged& e, const Store& s)
               << std::endl;
   }
 }
-void handleDeviceRemoved(const EventDeviceRemoved& e, const Store& s)
+void handleDeviceRemoved(const EventDeviceRemoved& e, const Store&)
 {
   std::cout << "Device " << e.getId() << " removed" << std::endl;
 }
-void handleReady(const EventReady& e, const Store& s)
+void handleReady(const EventReady&, const Store&)
 {
   std::cout << "READY TO GO!" << std::endl;
 }
@@ -72,17 +72,17 @@ void handleStageJoined(const EventStageJoined& e, const Store& s)
             << std::endl;
 }
 
-void handleStageLeft(const EventStageLeft& e, const Store& s)
+void handleStageLeft(const EventStageLeft&, const Store&)
 {
   std::cout << "STAGE LEFT" << std::endl;
 }
 
-void handleStageChanges(const Event& e, const Store& s)
+void handleStageChanges(const Event&, const Store& s)
 {
   printStage(s);
 }
 
-int main(int argc, char const* argv[])
+int main(int, char const*[])
 {
   auto authService = AuthService("https://single.dstage.org/api/auth");
 
@@ -100,8 +100,8 @@ int main(int argc, char const* argv[])
 
     Client* client = new Client("ws://localhost:4000");
 
-    client->appendListener(EventType::READY, [](const DigitalStage::Event& e,
-                                                const DigitalStage::Store& s) {
+    client->appendListener(EventType::READY, [](const DigitalStage::Event&,
+                                                const DigitalStage::Store&) {
       std::cout << "Ready - this type inside an anonymous callback function"
                 << std::endl;
     });
