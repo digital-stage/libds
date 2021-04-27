@@ -22,7 +22,7 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 add_library(eventpp INTERFACE)
-target_compile_options(eventpp INTERFACE -Wall -Wextra -pedantic -Werror)
+target_compile_options(eventpp INTERFACE -Wall -Wextra -pedantic -Werror -Wno-shadow-field-in-constructor)
 target_include_directories(eventpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/third_party/eventpp/include)
 
 
