@@ -22,7 +22,7 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 add_library(eventpp INTERFACE)
-target_compile_options(eventpp INTERFACE -Wall -Wextra -pedantic -Werror -Wno-shadow-field-in-constructor)
+target_compile_options(eventpp INTERFACE -Wall -Wextra -pedantic -Werror)
 target_include_directories(eventpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/third_party/eventpp/include)
 
 
@@ -43,7 +43,7 @@ set(SOURCES
         )
 
 add_library(ds STATIC ${SOURCES})
-target_compile_options(ds PRIVATE -Wall -Wextra -pedantic -Werror)
+target_compile_options(ds PUBLIC -Wall -Wextra -pedantic -Werror)
 set_target_properties(ds PROPERTIES PUBLIC_HEADER "${HEADER}")
 target_include_directories(ds 
         PUBLIC

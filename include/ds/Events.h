@@ -76,6 +76,10 @@ namespace DigitalStage {
 
   EVENTPP_MAKE_EMPTY_EVENT(EventReady, Event, EventType::READY);
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow-field-in-constructor"
+#endif
   EVENTPP_MAKE_EVENT(EventLocalDeviceReady, Event,
                      EventType::LOCAL_DEVICE_READY, (device_t, getDevice));
 
@@ -232,6 +236,10 @@ namespace DigitalStage {
 
   EVENTPP_MAKE_EVENT(EventStageJoined, Event, EventType::STAGE_JOINED,
                      (std::string, getStageId), (std::string, getGroupId));
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
   EVENTPP_MAKE_EMPTY_EVENT(EventStageLeft, Event, EventType::STAGE_LEFT);
 
