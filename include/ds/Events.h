@@ -76,10 +76,8 @@ namespace DigitalStage {
 
   EVENTPP_MAKE_EMPTY_EVENT(EventReady, Event, EventType::READY);
 
-#ifndef __GNUC__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow-field-in-constructor"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow-field-in-constructor"
   EVENTPP_MAKE_EVENT(EventLocalDeviceReady, Event,
                      EventType::LOCAL_DEVICE_READY, (device_t, getDevice));
 
@@ -236,9 +234,7 @@ namespace DigitalStage {
 
   EVENTPP_MAKE_EVENT(EventStageJoined, Event, EventType::STAGE_JOINED,
                      (std::string, getStageId), (std::string, getGroupId));
-#ifndef __GNUC__
-#pragma clang diagnostic pop
-#endif
+#pragma GCC diagnostic pop
 
   EVENTPP_MAKE_EMPTY_EVENT(EventStageLeft, Event, EventType::STAGE_LEFT);
 
