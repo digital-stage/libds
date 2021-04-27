@@ -1,12 +1,13 @@
 
-#include "AuthService.h"
-#include "Client.h"
+#include "DigitalStage/Auth/AuthService.h"
+#include "DigitalStage/Api/Client.h"
 #include "eventpp/utilities/argumentadapter.h"
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <thread>
 
-using namespace DigitalStage;
+using namespace DigitalStage::Api;
+using namespace DigitalStage::Auth;
 
 void printStage(const Store& s)
 {
@@ -100,8 +101,8 @@ int main(int, char const*[])
 
     Client* client = new Client("ws://localhost:4000");
 
-    client->appendListener(EventType::READY, [](const DigitalStage::Event&,
-                                                const DigitalStage::Store&) {
+    client->appendListener(EventType::READY, [](const Event&,
+                                                const Store&) {
       std::cout << "Ready - this type inside an anonymous callback function"
                 << std::endl;
     });

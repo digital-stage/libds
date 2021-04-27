@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0)
 
 ### GLOBAL CONFIGURATION
-project(ds
+project(DigitalStageApi
         LANGUAGES CXX
         VERSION 0.1
         DESCRIPTION "Library for interacting with the digital stage universe"
@@ -27,13 +27,13 @@ target_include_directories(eventpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/third_par
 
 
 ### SOURCE MANAGEMENT
-set(HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds/AuthService.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds/Client.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds/Events.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds/Types.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds/Store.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds/Macros.h
+set(PUBLIC_HEADER
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Client.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Events.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Store.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Macros.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Types.h
         )
 set(SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc
@@ -42,13 +42,14 @@ set(SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Store.cc
         )
 
-add_library(ds STATIC ${SOURCES})
-target_compile_options(ds PUBLIC -Wall -Wextra -pedantic -Werror)
-set_target_properties(ds PROPERTIES PUBLIC_HEADER "${HEADER}")
-target_include_directories(ds 
+add_library(DigitalStageApi STATIC ${SOURCES})
+add_library(DigitalStage::Api ALIAS DigitalStageApi)
+target_compile_options(DigitalStageApi PUBLIC -Wall -Wextra -pedantic -Werror)
+#set_target_properties(DigitalStageApi PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADER}")
+target_include_directories(DigitalStageApi
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/ds)
-target_link_libraries(ds
+        ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(DigitalStageApi
         PUBLIC
         nlohmann_json::nlohmann_json
         OpenSSL::Crypto
@@ -58,6 +59,7 @@ target_link_libraries(ds
 add_executable(cli 
         src/cli.cc)
 target_include_directories(cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(cli ds)
+target_link_libraries(cli DigitalStageApi)
 
-install(FILES ${HEADER} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ds)
+include(GNUInstallDirs)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

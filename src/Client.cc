@@ -1,5 +1,5 @@
-#include "Client.h"
-#include "Events.h"
+#include "DigitalStage/Api/Client.h"
+#include "DigitalStage/Api/Events.h"
 
 #include <exception>
 #include <iostream>
@@ -12,25 +12,27 @@ using namespace utility::conversions;
 using namespace pplx;
 using namespace concurrency::streams;
 
+using namespace DigitalStage::Api;
+
 task_completion_event<void> tce;
 
-DigitalStage::Client::Client(const std::string& apiUrl) : apiUrl_(apiUrl)
+Client::Client(const std::string& apiUrl) : apiUrl_(apiUrl)
 {
-  store_ = std::unique_ptr<DigitalStage::Store>(new DigitalStage::Store());
+  store_ = std::unique_ptr<Store>(new Store());
 }
 
-const DigitalStage::Store& DigitalStage::Client::getStore()
+const Store& Client::getStore()
 {
   return *this->store_;
 }
 
-void DigitalStage::Client::disconnect()
+void Client::disconnect()
 {
   tce.set();         // task completion event is set closing wss listening task
   wsclient_.close(); // wss client is closed
 }
 
-bool DigitalStage::Client::isConnected()
+bool Client::isConnected()
 {
   try {
     return !receiveTask_.is_done();
@@ -41,7 +43,7 @@ bool DigitalStage::Client::isConnected()
 }
 
 pplx::task<void>
-DigitalStage::Client::connect(const std::string& apiToken,
+Client::connect(const std::string& apiToken,
                               const nlohmann::json initialDevice)
 {
   std::cout << "Connecting to " << apiUrl_ << std::endl;
@@ -558,13 +560,13 @@ DigitalStage::Client::connect(const std::string& apiToken,
   return receiveTask_;
 }
 
-void DigitalStage::Client::send(const std::string& event,
+void Client::send(const std::string& event,
                                 const std::string& message)
 {
   sendAsync(event, message).wait();
 }
 
-pplx::task<void> DigitalStage::Client::sendAsync(const std::string& event,
+pplx::task<void> Client::sendAsync(const std::string& event,
                                                  const std::string& message)
 {
   websocket_outgoing_message msg;

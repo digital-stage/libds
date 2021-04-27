@@ -1,8 +1,11 @@
 
-#include "Store.h"
+#include "DigitalStage/Api/Store.h"
 
-std::optional<const DigitalStage::device_t>
-DigitalStage::Store::getLocalDevice() const
+using namespace DigitalStage::Api;
+using namespace DigitalStage::Types;
+
+std::optional<const device_t>
+Store::getLocalDevice() const
 {
   std::lock_guard<std::recursive_mutex>(this->local_device_id_mutex_);
   if(localDeviceId_) {
@@ -10,79 +13,79 @@ DigitalStage::Store::getLocalDevice() const
   }
   return std::nullopt;
 }
-std::optional<std::string> DigitalStage::Store::getLocalDeviceId() const
+std::optional<std::string> Store::getLocalDeviceId() const
 {
   std::lock_guard<std::recursive_mutex>(this->local_device_id_mutex_);
   return localDeviceId_;
 }
 
-void DigitalStage::Store::setLocalDeviceId(const std::string& id)
+void Store::setLocalDeviceId(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->local_device_id_mutex_);
   localDeviceId_ = id;
 }
 
-std::optional<std::string> DigitalStage::Store::getStageMemberId() const
+std::optional<std::string> Store::getStageMemberId() const
 {
   std::lock_guard<std::recursive_mutex>(this->stageMemberId_mutex_);
   return this->stageMemberId_;
 }
 
-void DigitalStage::Store::setStageMemberId(const std::string& id)
+void Store::setStageMemberId(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->stageMemberId_mutex_);
   stageMemberId_ = id;
 }
 
-std::optional<std::string> DigitalStage::Store::getUserId() const
+std::optional<std::string> Store::getUserId() const
 {
   std::lock_guard<std::recursive_mutex>(this->userId_mutex_);
   return userId_;
 }
 
-void DigitalStage::Store::setUserId(const std::string& id)
+void Store::setUserId(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->userId_mutex_);
   userId_ = id;
 }
 
-std::optional<std::string> DigitalStage::Store::getStageId() const
+std::optional<std::string> Store::getStageId() const
 {
   std::lock_guard<std::recursive_mutex>(this->stageId_mutex_);
   return stageId_;
 }
 
-void DigitalStage::Store::setStageId(const std::string& id)
+void Store::setStageId(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->stageId_mutex_);
   stageId_ = id;
 }
 
-void DigitalStage::Store::resetStageId()
+void Store::resetStageId()
 {
   std::lock_guard<std::recursive_mutex>(this->stageId_mutex_);
   stageId_ = std::nullopt;
 }
 
-std::optional<std::string> DigitalStage::Store::getGroupId() const
+std::optional<std::string> Store::getGroupId() const
 {
   std::lock_guard<std::recursive_mutex>(this->groupId_mutex_);
   return groupId_;
 }
 
-void DigitalStage::Store::setGroupId(const std::string& id)
+void Store::setGroupId(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->groupId_mutex_);
   groupId_ = id;
 }
 
-void DigitalStage::Store::resetGroupId()
+void Store::resetGroupId()
 {
   std::lock_guard<std::recursive_mutex>(this->groupId_mutex_);
   groupId_ = std::nullopt;
 }
 
-void DigitalStage::Store::createGroup(const nlohmann::json payload)
+void Store::createGroup(const nlohmann::json payload)
 {
   std::lock_guard<std::recursive_mutex>(this->groups_mutex_);
   const std::string _id = payload.at("_id").get<std::string>();
@@ -94,7 +97,7 @@ void DigitalStage::Store::createGroup(const nlohmann::json payload)
   groupIds_by_stages_[stageId].insert(_id);
 }
 
-void DigitalStage::Store::removeGroup(const std::string& id)
+void Store::removeGroup(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->groups_mutex_);
   const std::string stageId =
@@ -103,11 +106,11 @@ void DigitalStage::Store::removeGroup(const std::string& id)
   groupIds_by_stages_[stageId].erase(id);
 }
 
-const std::vector<DigitalStage::group_t>
-DigitalStage::Store::getGroupsByStage(const std::string& stageId) const
+const std::vector<group_t>
+Store::getGroupsByStage(const std::string& stageId) const
 {
   std::lock_guard<std::recursive_mutex>(this->groups_mutex_);
-  auto groups = std::vector<DigitalStage::group_t>();
+  auto groups = std::vector<group_t>();
   if(this->groupIds_by_stages_.count(stageId) > 0) {
     auto groupIds = this->groupIds_by_stages_.at(stageId);
     for(const auto& groupId : groupIds) {
@@ -120,7 +123,7 @@ DigitalStage::Store::getGroupsByStage(const std::string& stageId) const
   return groups;
 }
 
-void DigitalStage::Store::createStageMember(const nlohmann::json payload)
+void Store::createStageMember(const nlohmann::json payload)
 {
   std::lock_guard<std::recursive_mutex>(this->stageMembers_mutex_);
   const std::string _id = payload.at("_id").get<std::string>();
@@ -137,7 +140,7 @@ void DigitalStage::Store::createStageMember(const nlohmann::json payload)
   stageMemberIds_by_groups_[groupId].insert(_id);
 }
 
-void DigitalStage::Store::removeStageMember(const std::string& id)
+void Store::removeStageMember(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->stageMembers_mutex_);
   const std::string stageId =
@@ -149,11 +152,11 @@ void DigitalStage::Store::removeStageMember(const std::string& id)
   stageMemberIds_by_groups_[groupId].erase(id);
 }
 
-const std::vector<DigitalStage::stage_member_t>
-DigitalStage::Store::getStageMembersByStage(const std::string& stageId) const
+const std::vector<stage_member_t>
+Store::getStageMembersByStage(const std::string& stageId) const
 {
   std::lock_guard<std::recursive_mutex>(this->stageMembers_mutex_);
-  auto vector = std::vector<DigitalStage::stage_member_t>();
+  auto vector = std::vector<stage_member_t>();
   if(this->stageMemberIds_by_stages_.count(stageId) > 0) {
     auto stageMemberIds = this->stageMemberIds_by_stages_.at(stageId);
     for(const auto& stageMemberId : stageMemberIds) {
@@ -166,11 +169,11 @@ DigitalStage::Store::getStageMembersByStage(const std::string& stageId) const
   return vector;
 }
 
-const std::vector<DigitalStage::stage_member_t>
-DigitalStage::Store::getStageMembersByGroup(const std::string& groupId) const
+const std::vector<stage_member_t>
+Store::getStageMembersByGroup(const std::string& groupId) const
 {
   std::lock_guard<std::recursive_mutex>(this->stageMembers_mutex_);
-  auto vector = std::vector<DigitalStage::stage_member_t>();
+  auto vector = std::vector<stage_member_t>();
   if(this->stageMemberIds_by_groups_.count(groupId) > 0) {
     auto stageMemberIds = this->stageMemberIds_by_groups_.at(groupId);
     for(const auto& stageMemberId : stageMemberIds) {
@@ -183,8 +186,8 @@ DigitalStage::Store::getStageMembersByGroup(const std::string& groupId) const
   return vector;
 }
 
-std::optional<const DigitalStage::custom_group_position_t>
-DigitalStage::Store::getCustomGroupPositionByGroupAndDevice(
+std::optional<const custom_group_position_t>
+Store::getCustomGroupPositionByGroupAndDevice(
     const std::string& groupId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(this->customGroupPositions_mutex_);
@@ -199,7 +202,7 @@ DigitalStage::Store::getCustomGroupPositionByGroupAndDevice(
   return std::nullopt;
 }
 
-void DigitalStage::Store::createCustomGroupPosition(const json payload)
+void Store::createCustomGroupPosition(const json payload)
 {
   std::lock_guard<std::recursive_mutex>(this->customGroupPositions_mutex_);
   const std::string _id = payload.at("_id").get<std::string>();
@@ -213,7 +216,7 @@ void DigitalStage::Store::createCustomGroupPosition(const json payload)
   customGroupPositionIds_by_Group_and_Device_[groupId][deviceId] = _id;
 }
 
-void DigitalStage::Store::removeCustomGroupPosition(const std::string& id)
+void Store::removeCustomGroupPosition(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->customGroupPositions_mutex_);
   const std::string groupId =
@@ -224,8 +227,8 @@ void DigitalStage::Store::removeCustomGroupPosition(const std::string& id)
   customGroupPositions_.erase(id);
 }
 
-std::optional<const DigitalStage::custom_group_volume_t>
-DigitalStage::Store::getCustomGroupVolumeByGroupAndDevice(
+std::optional<const custom_group_volume_t>
+Store::getCustomGroupVolumeByGroupAndDevice(
     const std::string& groupId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(this->customGroupVolumes_mutex_);
@@ -240,7 +243,7 @@ DigitalStage::Store::getCustomGroupVolumeByGroupAndDevice(
   return std::nullopt;
 }
 
-void DigitalStage::Store::createCustomGroupVolume(const json payload)
+void Store::createCustomGroupVolume(const json payload)
 {
   std::lock_guard<std::recursive_mutex>(this->customGroupVolumes_mutex_);
   const std::string _id = payload.at("_id").get<std::string>();
@@ -254,7 +257,7 @@ void DigitalStage::Store::createCustomGroupVolume(const json payload)
   customGroupVolumeIds_by_Group_and_Device_[groupId][deviceId] = _id;
 }
 
-void DigitalStage::Store::removeCustomGroupVolume(const std::string& id)
+void Store::removeCustomGroupVolume(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->customGroupVolumes_mutex_);
   const std::string groupId =
@@ -265,8 +268,8 @@ void DigitalStage::Store::removeCustomGroupVolume(const std::string& id)
   customGroupVolumes_.erase(id);
 }
 
-std::optional<const DigitalStage::custom_stage_member_position_t>
-DigitalStage::Store::getCustomStageMemberPositionByStageMemberAndDevice(
+std::optional<const custom_stage_member_position_t>
+Store::getCustomStageMemberPositionByStageMemberAndDevice(
     const std::string& stageMemberId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(
@@ -285,7 +288,7 @@ DigitalStage::Store::getCustomStageMemberPositionByStageMemberAndDevice(
   return std::nullopt;
 }
 
-void DigitalStage::Store::createCustomStageMemberPosition(const json payload)
+void Store::createCustomStageMemberPosition(const json payload)
 {
   std::lock_guard<std::recursive_mutex>(
       this->customStageMemberPositions_mutex_);
@@ -303,7 +306,7 @@ void DigitalStage::Store::createCustomStageMemberPosition(const json payload)
                                                          [deviceId] = _id;
 }
 
-void DigitalStage::Store::removeCustomStageMemberPosition(const std::string& id)
+void Store::removeCustomStageMemberPosition(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(
       this->customStageMemberPositions_mutex_);
@@ -317,8 +320,8 @@ void DigitalStage::Store::removeCustomStageMemberPosition(const std::string& id)
   customStageMemberPositions_.erase(id);
 }
 
-std::optional<const DigitalStage::custom_stage_member_volume_t>
-DigitalStage::Store::getCustomStageMemberVolumeByStageMemberAndDevice(
+std::optional<const custom_stage_member_volume_t>
+Store::getCustomStageMemberVolumeByStageMemberAndDevice(
     const std::string& stageMemberId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(this->customStageMemberVolumes_mutex_);
@@ -336,7 +339,7 @@ DigitalStage::Store::getCustomStageMemberVolumeByStageMemberAndDevice(
   return std::nullopt;
 }
 
-void DigitalStage::Store::createCustomStageMemberVolume(const json payload)
+void Store::createCustomStageMemberVolume(const json payload)
 {
   std::lock_guard<std::recursive_mutex>(this->customStageMemberVolumes_mutex_);
   const std::string _id = payload.at("_id").get<std::string>();
@@ -353,7 +356,7 @@ void DigitalStage::Store::createCustomStageMemberVolume(const json payload)
                                                        [deviceId] = _id;
 }
 
-void DigitalStage::Store::removeCustomStageMemberVolume(const std::string& id)
+void Store::removeCustomStageMemberVolume(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->customStageMemberVolumes_mutex_);
   const std::string stageMemberId =
@@ -366,8 +369,8 @@ void DigitalStage::Store::removeCustomStageMemberVolume(const std::string& id)
   customStageMemberVolumes_.erase(id);
 }
 
-std::optional<const DigitalStage::custom_remote_audio_track_position_t>
-DigitalStage::Store::
+std::optional<const custom_remote_audio_track_position_t>
+Store::
     getCustomRemoteAudioTrackPositionByRemoteAudioTrackAndDevice(
         const std::string& remoteAudioTrackId,
         const std::string& deviceId) const
@@ -388,7 +391,7 @@ DigitalStage::Store::
   return std::nullopt;
 }
 
-void DigitalStage::Store::createCustomRemoteAudioTrackPosition(
+void Store::createCustomRemoteAudioTrackPosition(
     const json payload)
 {
   std::lock_guard<std::recursive_mutex>(
@@ -407,7 +410,7 @@ void DigitalStage::Store::createCustomRemoteAudioTrackPosition(
       [remoteAudioTrackId][deviceId] = _id;
 }
 
-void DigitalStage::Store::removeCustomRemoteAudioTrackPosition(
+void Store::removeCustomRemoteAudioTrackPosition(
     const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(
@@ -424,8 +427,8 @@ void DigitalStage::Store::removeCustomRemoteAudioTrackPosition(
   customRemoteAudioTrackPositions_.erase(id);
 }
 
-std::optional<const DigitalStage::custom_remote_audio_track_volume_t>
-DigitalStage::Store::getCustomRemoteAudioTrackVolumeByRemoteAudioTrackAndDevice(
+std::optional<const custom_remote_audio_track_volume_t>
+Store::getCustomRemoteAudioTrackVolumeByRemoteAudioTrackAndDevice(
     const std::string& remoteAudioTrackId, const std::string& deviceId) const
 {
   std::lock_guard<std::recursive_mutex>(
@@ -444,7 +447,7 @@ DigitalStage::Store::getCustomRemoteAudioTrackVolumeByRemoteAudioTrackAndDevice(
   return std::nullopt;
 }
 
-void DigitalStage::Store::createCustomRemoteAudioTrackVolume(const json payload)
+void Store::createCustomRemoteAudioTrackVolume(const json payload)
 {
   std::lock_guard<std::recursive_mutex>(
       this->customRemoteAudioTrackVolumes_mutex_);
@@ -462,7 +465,7 @@ void DigitalStage::Store::createCustomRemoteAudioTrackVolume(const json payload)
       [remoteAudioTrackId][deviceId] = _id;
 }
 
-void DigitalStage::Store::removeCustomRemoteAudioTrackVolume(
+void Store::removeCustomRemoteAudioTrackVolume(
     const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(
@@ -478,12 +481,12 @@ void DigitalStage::Store::removeCustomRemoteAudioTrackVolume(
   customRemoteAudioTrackVolumes_.erase(id);
 }
 
-const std::vector<DigitalStage::remote_video_track_t>
-DigitalStage::Store::getRemoteVideoTracksByStageMember(
+const std::vector<remote_video_track_t>
+Store::getRemoteVideoTracksByStageMember(
     const std::string& stageMemberId) const
 {
   std::lock_guard<std::recursive_mutex>(this->remoteVideoTracks_mutex_);
-  auto items = std::vector<DigitalStage::remote_video_track_t>();
+  auto items = std::vector<remote_video_track_t>();
   if(this->remoteVideoTrackIds_by_StageMember_.count(stageMemberId) > 0) {
     auto ids = this->remoteVideoTrackIds_by_StageMember_.at(stageMemberId);
     for(const auto& id : ids) {
@@ -495,7 +498,7 @@ DigitalStage::Store::getRemoteVideoTracksByStageMember(
   }
   return items;
 }
-void DigitalStage::Store::createRemoteVideoTrack(const json payload)
+void Store::createRemoteVideoTrack(const json payload)
 {
   std::lock_guard<std::recursive_mutex>(this->remoteVideoTracks_mutex_);
   const std::string _id = payload.at("_id").get<std::string>();
@@ -508,7 +511,7 @@ void DigitalStage::Store::createRemoteVideoTrack(const json payload)
   }
   remoteVideoTrackIds_by_StageMember_[stageMemberId].insert(_id);
 }
-void DigitalStage::Store::removeRemoteVideoTrack(const std::string& id)
+void Store::removeRemoteVideoTrack(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->remoteVideoTracks_mutex_);
   const std::string stageMemberId =
@@ -517,12 +520,12 @@ void DigitalStage::Store::removeRemoteVideoTrack(const std::string& id)
   remoteVideoTrackIds_by_StageMember_[stageMemberId].erase(id);
 }
 
-const std::vector<DigitalStage::remote_audio_track_t>
-DigitalStage::Store::getRemoteAudioTracksByStageMember(
+const std::vector<remote_audio_track_t>
+Store::getRemoteAudioTracksByStageMember(
     const std::string& stageMemberId) const
 {
   std::lock_guard<std::recursive_mutex>(this->remoteAudioTracks_mutex_);
-  auto items = std::vector<DigitalStage::remote_audio_track_t>();
+  auto items = std::vector<remote_audio_track_t>();
   if(this->remoteAudioTrackIds_by_StageMember_.count(stageMemberId) > 0) {
     auto ids = this->remoteAudioTrackIds_by_StageMember_.at(stageMemberId);
     for(const auto& id : ids) {
@@ -534,7 +537,7 @@ DigitalStage::Store::getRemoteAudioTracksByStageMember(
   }
   return items;
 }
-void DigitalStage::Store::createRemoteAudioTrack(const json payload)
+void Store::createRemoteAudioTrack(const json payload)
 {
   std::lock_guard<std::recursive_mutex>(this->remoteAudioTracks_mutex_);
   const std::string _id = payload.at("_id").get<std::string>();
@@ -547,7 +550,7 @@ void DigitalStage::Store::createRemoteAudioTrack(const json payload)
   }
   remoteAudioTrackIds_by_StageMember_[stageMemberId].insert(_id);
 }
-void DigitalStage::Store::removeRemoteAudioTrack(const std::string& id)
+void Store::removeRemoteAudioTrack(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex>(this->remoteAudioTracks_mutex_);
   const std::string stageMemberId =

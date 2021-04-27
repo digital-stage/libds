@@ -1,7 +1,7 @@
 //
 // Created by Tobias Hegemann on 24.02.21.
 //
-#include "AuthService.h"
+#include "DigitalStage/Auth/AuthService.h"
 #include <cpprest/http_client.h>
 #include <cpprest/json.h>
 #include <cpprest/uri.h>
@@ -12,8 +12,10 @@ using namespace web;
 using namespace web::http;
 using namespace web::http::client;
 
+using namespace DigitalStage::Auth;
+
 pplx::task<bool>
-DigitalStage::AuthService::verifyToken(const std::string& token)
+AuthService::verifyToken(const std::string& token)
 {
   const std::string url = this->url;
   return pplx::create_task([url, token]() {
@@ -42,7 +44,7 @@ DigitalStage::AuthService::verifyToken(const std::string& token)
       });
 }
 
-bool DigitalStage::AuthService::verifyTokenSync(const std::string& token)
+bool AuthService::verifyTokenSync(const std::string& token)
 {
   auto postJson = this->verifyToken(token);
   try {
@@ -55,13 +57,13 @@ bool DigitalStage::AuthService::verifyTokenSync(const std::string& token)
   }
 }
 
-DigitalStage::AuthService::AuthService(const std::string& authUrl)
+AuthService::AuthService(const std::string& authUrl)
 {
   this->url = authUrl;
 }
 
 pplx::task<std::string>
-DigitalStage::AuthService::signIn(const std::string& email,
+AuthService::signIn(const std::string& email,
                                   const std::string& password)
 {
   const std::string url = this->url;
@@ -87,7 +89,7 @@ DigitalStage::AuthService::signIn(const std::string& email,
       .then([](json::value jsonObject) { return jsonObject.as_string(); });
 }
 
-std::string DigitalStage::AuthService::signInSync(const std::string& email,
+std::string AuthService::signInSync(const std::string& email,
                                                   const std::string& password)
 {
   auto postJson = this->signIn(email, password);
@@ -101,7 +103,7 @@ std::string DigitalStage::AuthService::signInSync(const std::string& email,
   }
 }
 
-pplx::task<bool> DigitalStage::AuthService::signOut(const std::string& token)
+pplx::task<bool> AuthService::signOut(const std::string& token)
 {
   const std::string url = this->url;
   return pplx::create_task([url, token]() {
@@ -121,7 +123,7 @@ pplx::task<bool> DigitalStage::AuthService::signOut(const std::string& token)
       });
 }
 
-bool DigitalStage::AuthService::signOutSync(const std::string& token)
+bool AuthService::signOutSync(const std::string& token)
 {
   auto postJson = this->signOut(token);
   try {
