@@ -1,13 +1,14 @@
 #ifndef DS_EVENTS
 #define DS_EVENTS
 
-#include "DigitalStage/Types.h"
-#include "eventpp/utilities/eventmaker.h"
+#include <DigitalStage/Types.h>
+#include <eventpp/utilities/eventmaker.h>
 #include <nlohmann/json.hpp>
 #include <string>
 
+using namespace DigitalStage::Types;
+
 namespace DigitalStage {
-  using namespace Types;
 
   namespace Api {
     enum class EventType {

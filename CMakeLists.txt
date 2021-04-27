@@ -10,9 +10,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 if (APPLE)
-        include(${CMAKE_CURRENT_LIST_DIR}/cmake/FixAppleArchitecture.cmake)
-        include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake)
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/FixAppleArchitecture.cmake)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
 endif (APPLE)
 
 #add_compile_definitions(DEBUG_EVENTS)
@@ -27,26 +27,32 @@ target_include_directories(eventpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/third_par
 
 
 ### SOURCE MANAGEMENT
-set(PUBLIC_HEADER
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h
+set(API_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Client.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Events.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Store.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Macros.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Types.h
         )
-set(SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc
+set(AUTH_HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h
+        )
+set(API_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Events.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Store.cc
         )
 
-add_library(DigitalStageApi STATIC ${SOURCES})
+add_library(DigitalStageApi STATIC ${API_SOURCES})
 add_library(DigitalStage::Api ALIAS DigitalStageApi)
+add_library(DigitalStageAuth STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc)
+add_library(DigitalStage::Auth ALIAS DigitalStageAuth)
+target_compile_options(DigitalStageAuth PUBLIC -Wall -Wextra -pedantic -Werror)
 target_compile_options(DigitalStageApi PUBLIC -Wall -Wextra -pedantic -Werror)
-#set_target_properties(DigitalStageApi PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADER}")
 target_include_directories(DigitalStageApi
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(DigitalStageAuth
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(DigitalStageApi
@@ -54,12 +60,22 @@ target_link_libraries(DigitalStageApi
         nlohmann_json::nlohmann_json
         OpenSSL::Crypto
         cpprestsdk::cpprest
-        eventpp)
+        eventpp
+        )
+target_link_libraries(DigitalStageAuth
+        PUBLIC
+        OpenSSL::Crypto
+        cpprestsdk::cpprest
+        )
 
-add_executable(cli 
+add_executable(cli
         src/cli.cc)
 target_include_directories(cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(cli DigitalStageApi)
+target_link_libraries(cli PRIVATE DigitalStageAuth DigitalStageApi)
 
 include(GNUInstallDirs)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS DigitalStageAuth DigitalStageApi
+        PUBLIC_HEADER
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/DigitalStage
+        )
