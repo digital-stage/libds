@@ -4,7 +4,7 @@
 #define STORE_GET(TYPE, NAME, MUTEX, VAR)                                      \
   std::optional<const TYPE> get##NAME(const std::string& id) const             \
   {                                                                            \
-    std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
+    std::lock_guard<std::recursive_mutex> lock(this->MUTEX);                   \
     if(VAR.count(id) > 0) {                                                    \
       return VAR.at(id).get<const TYPE>();                                     \
     }                                                                          \
@@ -12,9 +12,9 @@
   }
 
 #define STORE_GET_ALL(TYPE, NAME, MUTEX, VAR)                                  \
-  const std::vector<TYPE> get##NAME##s() const                                 \
+  std::vector<TYPE> get##NAME##s() const                                       \
   {                                                                            \
-    std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
+    std::lock_guard<std::recursive_mutex> lock(this->MUTEX);                   \
     std::vector<TYPE> items = std::vector<TYPE>();                             \
     for(const auto& item : VAR) {                                              \
       items.push_back(item.second.get<TYPE>());                                \
@@ -23,32 +23,32 @@
   }
 
 #define STORE_CREATE(TYPE, NAME, MUTEX, VAR)                                   \
-  void create##NAME(const json payload)                                        \
+  void create##NAME(const json& payload)                                       \
   {                                                                            \
-    std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
+    std::lock_guard<std::recursive_mutex> lock(this->MUTEX);                   \
     const std::string _id = payload.at("_id").get<std::string>();              \
     VAR[_id] = payload;                                                        \
   }
 
 #define STORE_UPDATE(TYPE, NAME, MUTEX, VAR)                                   \
-  void update##NAME(const json payload)                                        \
+  void update##NAME(const json& payload)                                       \
   {                                                                            \
     const std::string& id = payload.at("_id").get<std::string>();              \
-    std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
+    std::lock_guard<std::recursive_mutex> lock(this->MUTEX);                   \
     VAR[id].merge_patch(payload);                                              \
   }
 
 #define STORE_REMOVE(TYPE, NAME, MUTEX, VAR)                                   \
   void remove##NAME(const std::string& id)                                     \
   {                                                                            \
-    std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
+    std::lock_guard<std::recursive_mutex> lock(this->MUTEX);                   \
     VAR.erase(id);                                                             \
   }
 
 #define STORE_REMOVE_ALL(TYPE, NAME, MUTEX, VAR)                               \
   void removeAll##NAME##s()                                                    \
   {                                                                            \
-    std::lock_guard<std::recursive_mutex>(this->MUTEX);                        \
+    std::lock_guard<std::recursive_mutex> lock(this->MUTEX);                   \
     for(const auto& item : VAR) {                                              \
       remove##NAME(item.first);                                                \
     }                                                                          \

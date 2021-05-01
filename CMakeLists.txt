@@ -15,16 +15,13 @@ if (APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
 endif (APPLE)
 
-#add_compile_definitions(DEBUG_EVENTS)
-#add_compile_definitions(DEBUG_PAYLOADS)
-
+add_compile_definitions(DEBUG_EVENTS)
+add_compile_definitions(DEBUG_PAYLOADS)
+add_subdirectory(libteckos EXCLUDE_FROM_ALL)
+add_subdirectory(sigslot)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
-add_library(eventpp INTERFACE)
-target_compile_options(eventpp INTERFACE -Wall -Wextra -pedantic -Werror)
-target_include_directories(eventpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/third_party/eventpp/include)
-
 
 ### SOURCE MANAGEMENT
 set(API_HEADERS
@@ -58,14 +55,13 @@ target_include_directories(DigitalStageAuth
 target_link_libraries(DigitalStageApi
         PUBLIC
         nlohmann_json::nlohmann_json
-        OpenSSL::Crypto
-        cpprestsdk::cpprest
-        eventpp
+        teckos
+        Pal::Sigslot
         )
 target_link_libraries(DigitalStageAuth
         PUBLIC
-        OpenSSL::Crypto
         cpprestsdk::cpprest
+        OpenSSL::Crypto
         )
 
 add_executable(cli

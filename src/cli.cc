@@ -1,7 +1,6 @@
 
-#include "DigitalStage/Auth/AuthService.h"
 #include "DigitalStage/Api/Client.h"
-#include "eventpp/utilities/argumentadapter.h"
+#include "DigitalStage/Auth/AuthService.h"
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <thread>
@@ -9,27 +8,27 @@
 using namespace DigitalStage::Api;
 using namespace DigitalStage::Auth;
 
-void printStage(const Store& s)
+void printStage(const Store* s)
 {
-  auto stages = s.getStages();
+  auto stages = s->getStages();
   for(const auto& stage : stages) {
     std::cout << "[" << stage.name << "] " << std::endl;
-    auto groups = s.getGroupsByStage(stage._id);
+    auto groups = s->getGroupsByStage(stage._id);
     for(const auto& group : groups) {
       std::cout << "  [" << group.name << "]" << std::endl;
-      auto stageMembers = s.getStageMembersByGroup(group._id);
+      auto stageMembers = s->getStageMembersByGroup(group._id);
       for(const auto& stageMember : stageMembers) {
-        auto user = s.getUser(stageMember.userId);
+        auto user = s->getUser(stageMember.userId);
         std::cout << "    [" << stageMember._id << ": "
                   << (user ? user->name : "") << "]" << std::endl;
         auto remoteVideoTracks =
-            s.getRemoteVideoTracksByStageMember(stageMember._id);
+            s->getRemoteVideoTracksByStageMember(stageMember._id);
         for(const auto& remoteVideoTrack : remoteVideoTracks) {
           std::cout << "      [Video Track " << remoteVideoTrack._id << "]"
                     << std::endl;
         }
         auto remoteAudioTracks =
-            s.getRemoteAudioTracksByStageMember(stageMember._id);
+            s->getRemoteAudioTracksByStageMember(stageMember._id);
         for(const auto& remoteAudioTrack : remoteAudioTracks) {
           std::cout << "      [Audio Track " << remoteAudioTrack._id << "]"
                     << std::endl;
@@ -39,48 +38,44 @@ void printStage(const Store& s)
   }
 }
 
-void handleLocalDeviceReady(const EventLocalDeviceReady& e, const Store&)
+void handleLocalDeviceReady(const Device& d, const Store*)
 {
-  std::cout << "Local device " << e.getDevice()._id << " ready" << std::endl;
+  std::cout << "Local device " << d._id << " ready" << std::endl;
 }
 
-void handleDeviceAdded(const EventDeviceAdded& e, const Store&)
+void handleDeviceAdded(const Device& d, const Store*)
 {
-  std::cout << "NEW Device " << e.getDevice()._id << " added" << std::endl;
+  std::cout << "NEW Device " << d._id << " added" << std::endl;
 }
-void handleDeviceChanged(const EventDeviceChanged& e, const Store& s)
+void handleDeviceChanged(const ID_TYPE& id, const nlohmann::json& update,
+                         const Store* s)
 {
-  auto device = s.getDevice(e.getId());
+  auto device = s->getDevice(id);
   if(device) {
-    std::cout << device->type
-              << " device has been updated: " << e.getUpdate().dump()
+    std::cout << device->type << " device has been updated: " << update.dump()
               << std::endl;
   }
 }
-void handleDeviceRemoved(const EventDeviceRemoved& e, const Store&)
+void handleDeviceRemoved(const ID_TYPE& id, const Store*)
 {
-  std::cout << "Device " << e.getId() << " removed" << std::endl;
+  std::cout << "Device " << id << " removed" << std::endl;
 }
-void handleReady(const EventReady&, const Store&)
+void handleReady(const Store*)
 {
   std::cout << "READY TO GO!" << std::endl;
 }
-void handleStageJoined(const EventStageJoined& e, const Store& s)
+void handleStageJoined(const ID_TYPE& stageId, const ID_TYPE& groupId,
+                       const Store* s)
 {
-  auto stage = s.getStage(e.getStageId());
-  auto group = s.getGroup(e.getGroupId());
+  auto stage = s->getStage(stageId);
+  auto group = s->getGroup(groupId);
   std::cout << "JOINED STAGE " << stage->name << " AND GROUP " << group->name
             << std::endl;
 }
 
-void handleStageLeft(const EventStageLeft&, const Store&)
+void handleStageLeft(const Store*)
 {
   std::cout << "STAGE LEFT" << std::endl;
-}
-
-void handleStageChanges(const Event&, const Store& s)
-{
-  printStage(s);
 }
 
 int main(int, char const*[])
@@ -98,57 +93,39 @@ int main(int, char const*[])
     initialDevice["type"] = "ov";
     initialDevice["canAudio"] = true;
     initialDevice["canVideo"] = false;
+    initialDevice["availableSoundCardIds"] = {};
+    auto* client = new Client("ws://localhost:4000");
 
-    Client* client = new Client("ws://localhost:4000");
-
-    client->appendListener(EventType::READY, [](const Event&,
-                                                const Store&) {
+    client->ready.connect([](const Store*) {
       std::cout << "Ready - this type inside an anonymous callback function"
                 << std::endl;
     });
 
-    client->appendListener(EventType::READY,
-                           eventpp::argumentAdapter(handleReady));
+    client->ready.connect(handleReady);
 
-    client->appendListener(EventType::DEVICE_ADDED,
-                           eventpp::argumentAdapter(handleDeviceAdded));
-
-    client->appendListener(EventType::DEVICE_CHANGED,
-                           eventpp::argumentAdapter(handleDeviceChanged));
-
-    client->appendListener(EventType::DEVICE_REMOVED,
-                           eventpp::argumentAdapter(handleDeviceRemoved));
-
-    client->appendListener(EventType::LOCAL_DEVICE_READY,
-                           eventpp::argumentAdapter(handleLocalDeviceReady));
-
-    client->appendListener(EventType::STAGE_JOINED,
-                           eventpp::argumentAdapter(handleStageJoined));
-
-    client->appendListener(EventType::STAGE_JOINED,
-                           eventpp::argumentAdapter(handleStageLeft));
+    client->deviceAdded.connect(handleDeviceAdded);
+    client->deviceChanged.connect(handleDeviceChanged);
+    client->deviceRemoved.connect(handleDeviceRemoved);
+    client->localDeviceReady.connect(handleLocalDeviceReady);
+    client->stageJoined.connect(handleStageJoined);
+    client->stageLeft.connect(handleStageLeft);
 
     // Always print on stage changes
-    client->appendListener(EventType::STAGE_JOINED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::GROUP_REMOVED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::GROUP_ADDED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::GROUP_REMOVED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::REMOTE_VIDEO_TRACK_ADDED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::REMOTE_VIDEO_TRACK_REMOVED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::REMOTE_AUDIO_TRACK_ADDED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::REMOTE_AUDIO_TRACK_REMOVED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::STAGE_MEMBER_ADDED,
-                           eventpp::argumentAdapter(handleStageChanges));
-    client->appendListener(EventType::STAGE_MEMBER_REMOVED,
-                           eventpp::argumentAdapter(handleStageChanges));
+    client->stageJoined.connect(
+        [](const auto&, const auto&, const Store* s) { printStage(s); });
+    client->stageLeft.connect([](const Store* s) { printStage(s); });
+    client->groupAdded.connect(
+        [](const auto&, const Store* s) { printStage(s); });
+    client->groupChanged.connect(
+        [](const auto&, const auto&, const Store* s) { printStage(s); });
+    client->groupRemoved.connect(
+        [](const auto&, const Store* s) { printStage(s); });
+    client->stageMemberAdded.connect(
+        [](const auto&, const Store* s) { printStage(s); });
+    client->stageMemberChanged.connect(
+        [](const auto&, const auto&, const Store* s) { printStage(s); });
+    client->stageMemberRemoved.connect(
+        [](const auto&, const Store* s) { printStage(s); });
 
     client->connect(apiToken, initialDevice);
 

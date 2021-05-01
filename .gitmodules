@@ -1,3 +1,6 @@
-[submodule "third_party/eventpp"]
-	path = third_party/eventpp
-	url = https://github.com/wqking/eventpp.git
+[submodule "third_party/sigslot"]
+	path = sigslot
+	url = https://github.com/palacaze/sigslot.git
+[submodule "libteckos"]
+	path = libteckos
+	url = https://github.com/delude88/libteckos.git

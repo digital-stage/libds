@@ -2,7 +2,7 @@
 #define DS_EVENTS
 
 #include <DigitalStage/Types.h>
-#include <eventpp/utilities/eventmaker.h>
+//#include <eventpp/utilities/eventmaker.h>
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -11,6 +11,10 @@ using namespace DigitalStage::Types;
 namespace DigitalStage {
 
   namespace Api {
+    enum class SendEventType {
+
+    };
+
     enum class EventType {
       READY,
       LOCAL_DEVICE_READY,
@@ -67,187 +71,15 @@ namespace DigitalStage {
       SOUND_CARD_REMOVED
     };
 
-    class Event {
-    public:
-      explicit Event(const EventType type_) : type(type_) {}
-      virtual ~Event() {}
+    namespace SendEvents {
+      extern const std::string CHANGE_DEVICE;
+      extern const std::string SET_SOUND_CARD;
+      extern const std::string CREATE_LOCAL_AUDIO_TRACK;
+      extern const std::string CHANGE_LOCAL_AUDIO_TRACK;
+      extern const std::string REMOVE_LOCAL_AUDIO_TRACK;
+    } // namespace SendEvents
 
-      EventType getType() const { return type; }
-
-    private:
-      EventType type;
-    };
-
-    EVENTPP_MAKE_EMPTY_EVENT(EventReady, Event, EventType::READY);
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow-field-in-constructor"
-#endif
-    EVENTPP_MAKE_EVENT(EventLocalDeviceReady, Event,
-                       EventType::LOCAL_DEVICE_READY, (device_t, getDevice));
-
-    EVENTPP_MAKE_EVENT(EventDeviceAdded, Event, EventType::DEVICE_ADDED,
-                       (device_t, getDevice));
-    EVENTPP_MAKE_EVENT(EventDeviceChanged, Event, EventType::DEVICE_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventDeviceRemoved, Event, EventType::DEVICE_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventStageAdded, Event, EventType::STAGE_ADDED,
-                       (stage_t, getStage));
-    EVENTPP_MAKE_EVENT(EventStageChanged, Event, EventType::STAGE_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventStageRemoved, Event, EventType::STAGE_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventGroupAdded, Event, EventType::GROUP_ADDED,
-                       (DigitalStage::Types::group_t, getGroup));
-    EVENTPP_MAKE_EVENT(EventGroupChanged, Event, EventType::GROUP_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventGroupRemoved, Event, EventType::GROUP_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventCustomGroupPositionAdded, Event,
-                       EventType::CUSTOM_GROUP_POSITION_ADDED,
-                       (custom_group_position_t, getCustomGroupPosition));
-    EVENTPP_MAKE_EVENT(EventCustomGroupPositionChanged, Event,
-                       EventType::CUSTOM_GROUP_POSITION_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventCustomGroupPositionRemoved, Event,
-                       EventType::CUSTOM_GROUP_POSITION_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventCustomGroupVolumeAdded, Event,
-                       EventType::CUSTOM_GROUP_VOLUME_ADDED,
-                       (DigitalStage::Types::custom_group_volume_t, getCustomGroupVolume));
-    EVENTPP_MAKE_EVENT(EventCustomGroupVolumeChanged, Event,
-                       EventType::CUSTOM_GROUP_VOLUME_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventCustomGroupVolumeRemoved, Event,
-                       EventType::CUSTOM_GROUP_VOLUME_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventStageMemberAdded, Event,
-                       EventType::STAGE_MEMBER_ADDED,
-                       (stage_member_t, getStageMember));
-    EVENTPP_MAKE_EVENT(EventStageMemberChanged, Event,
-                       EventType::STAGE_MEMBER_CHANGED, (std::string, getId),
-                       (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventStageMemberRemoved, Event,
-                       EventType::STAGE_MEMBER_REMOVED, (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventCustomStageMemberPositionAdded, Event,
-                       EventType::CUSTOM_STAGE_MEMBER_POSITION_ADDED,
-                       (custom_stage_member_position_t,
-                        getCustomStageMemberPosition));
-    EVENTPP_MAKE_EVENT(EventCustomStageMemberPositionChanged, Event,
-                       EventType::CUSTOM_STAGE_MEMBER_POSITION_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventCustomStageMemberPositionRemoved, Event,
-                       EventType::CUSTOM_STAGE_MEMBER_POSITION_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventCustomStageMemberVolumeAdded, Event,
-                       EventType::CUSTOM_STAGE_MEMBER_VOLUME_ADDED,
-                       (custom_stage_member_volume_t,
-                        getCustomStageMemberVolume));
-    EVENTPP_MAKE_EVENT(EventCustomStageMemberVolumeChanged, Event,
-                       EventType::CUSTOM_STAGE_MEMBER_VOLUME_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventCustomStageMemberVolumeRemoved, Event,
-                       EventType::CUSTOM_STAGE_MEMBER_VOLUME_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventLocalVideoTrackAdded, Event,
-                       EventType::LOCAL_VIDEO_TRACK_ADDED,
-                       (local_video_track_t, getLocalVideoTrack));
-    EVENTPP_MAKE_EVENT(EventLocalVideoTrackChanged, Event,
-                       EventType::LOCAL_VIDEO_TRACK_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventLocalVideoTrackRemoved, Event,
-                       EventType::LOCAL_VIDEO_TRACK_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventLocalAudioTrackAdded, Event,
-                       EventType::LOCAL_AUDIO_TRACK_ADDED,
-                       (local_audio_track_t, getLocalAudioTrack));
-    EVENTPP_MAKE_EVENT(EventLocalAudioTrackChanged, Event,
-                       EventType::LOCAL_AUDIO_TRACK_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventLocalAudioTrackRemoved, Event,
-                       EventType::LOCAL_AUDIO_TRACK_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventRemoteVideoTrackAdded, Event,
-                       EventType::REMOTE_VIDEO_TRACK_ADDED,
-                       (remote_video_track_t, getRemoteVideoTrack));
-    EVENTPP_MAKE_EVENT(EventRemoteVideoTrackChanged, Event,
-                       EventType::REMOTE_VIDEO_TRACK_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventRemoteVideoTrackRemoved, Event,
-                       EventType::REMOTE_VIDEO_TRACK_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventRemoteAudioTrackAdded, Event,
-                       EventType::REMOTE_AUDIO_TRACK_ADDED,
-                       (remote_audio_track_t, getRemoteAudioTrack));
-    EVENTPP_MAKE_EVENT(EventRemoteAudioTrackChanged, Event,
-                       EventType::REMOTE_AUDIO_TRACK_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventRemoteAudioTrackRemoved, Event,
-                       EventType::REMOTE_AUDIO_TRACK_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventCustomRemoteAudioTrackPositionAdded, Event,
-                       EventType::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED,
-                       (custom_remote_audio_track_position_t,
-                        getCustomRemoteAudioTrackPosition));
-    EVENTPP_MAKE_EVENT(EventCustomRemoteAudioTrackPositionChanged, Event,
-                       EventType::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventCustomRemoteAudioTrackPositionRemoved, Event,
-                       EventType::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventCustomRemoteAudioTrackVolumeAdded, Event,
-                       EventType::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_ADDED,
-                       (custom_remote_audio_track_volume_t,
-                        getCustomRemoteAudioTrackVolume));
-    EVENTPP_MAKE_EVENT(EventCustomRemoteAudioTrackVolumeChanged, Event,
-                       EventType::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventCustomRemoteAudioTrackVolumeRemoved, Event,
-                       EventType::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventSoundCardAdded, Event, EventType::SOUND_CARD_ADDED,
-                       (soundcard_t, getSoundCard));
-    EVENTPP_MAKE_EVENT(EventSoundCardChanged, Event,
-                       EventType::SOUND_CARD_CHANGED, (std::string, getId),
-                       (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventSoundCardRemoved, Event,
-                       EventType::SOUND_CARD_REMOVED, (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventLocalUserReady, Event, EventType::USER_READY,
-                       (std::string, getId));
-    EVENTPP_MAKE_EVENT(EventUserAdded, Event, EventType::REMOTE_USER_ADDED,
-                       (user_t, getUser));
-    EVENTPP_MAKE_EVENT(EventUserChanged, Event, EventType::REMOTE_USER_CHANGED,
-                       (std::string, getId), (nlohmann::json, getUpdate));
-    EVENTPP_MAKE_EVENT(EventUserRemoved, Event, EventType::REMOTE_USER_REMOVED,
-                       (std::string, getId));
-
-    EVENTPP_MAKE_EVENT(EventStageJoined, Event, EventType::STAGE_JOINED,
-                       (std::string, getStageId), (std::string, getGroupId));
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
-    EVENTPP_MAKE_EMPTY_EVENT(EventStageLeft, Event, EventType::STAGE_LEFT);
-
-    namespace WSEvents {
+    namespace RetrieveEvents {
       extern const std::string READY;
       extern const std::string LOCAL_DEVICE_READY;
       extern const std::string DEVICE_ADDED;
@@ -301,8 +133,8 @@ namespace DigitalStage {
       extern const std::string SOUND_CARD_ADDED;
       extern const std::string SOUND_CARD_CHANGED;
       extern const std::string SOUND_CARD_REMOVED;
-    } // namespace WSEvents
-  } // namespace Api
+    } // namespace RetrieveEvents
+  }   // namespace Api
 } // namespace DigitalStage
 
 #endif // DS_EVENTS
