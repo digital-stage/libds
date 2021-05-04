@@ -14,8 +14,7 @@ using namespace web::http::client;
 
 using namespace DigitalStage::Auth;
 
-pplx::task<bool>
-AuthService::verifyToken(const std::string& token)
+pplx::task<bool> AuthService::verifyToken(const std::string& token)
 {
   const std::string url = this->url;
   return pplx::create_task([url, token]() {
@@ -62,9 +61,8 @@ AuthService::AuthService(const std::string& authUrl)
   this->url = authUrl;
 }
 
-pplx::task<std::string>
-AuthService::signIn(const std::string& email,
-                                  const std::string& password)
+pplx::task<std::string> AuthService::signIn(const std::string& email,
+                                            const std::string& password)
 {
   const std::string url = this->url;
   return pplx::create_task([url, email, password]() {
@@ -90,7 +88,7 @@ AuthService::signIn(const std::string& email,
 }
 
 std::string AuthService::signInSync(const std::string& email,
-                                                  const std::string& password)
+                                    const std::string& password)
 {
   auto postJson = this->signIn(email, password);
   try {

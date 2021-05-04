@@ -561,16 +561,18 @@ bool Store::isReady() const
 }
 
 std::optional<DigitalStage::Types::SoundCard>
-Store::getSoundCardByUUID(const std::string& uuid) const {
+Store::getSoundCardByUUID(const std::string& uuid) const
+{
   std::lock_guard<std::recursive_mutex> lock(this->mutex_soundCards_);
-  for(auto& pair: this->soundCards_) {
-    if( pair.second["uuid"] == uuid )
+  for(auto& pair : this->soundCards_) {
+    if(pair.second["uuid"] == uuid)
       return pair.second;
   }
   return std::nullopt;
 }
 
-void Store::createStageDevice(const json& payload) {
+void Store::createStageDevice(const json& payload)
+{
   std::lock_guard<std::recursive_mutex> lock(this->stageDevices_mutex_);
   const auto _id = payload.at("_id").get<std::string>();
   stageDevices_[_id] = payload;
@@ -587,7 +589,8 @@ Store::getStageDevicesByStageMember(const std::string& stageMemberId) const
   std::lock_guard<std::recursive_mutex> lock(this->stageDevices_mutex_);
   auto vector = std::vector<StageDevice>();
   if(this->stageDeviceIds_by_stageMember_.count(stageMemberId) > 0) {
-    auto stageDeviceIds = this->stageDeviceIds_by_stageMember_.at(stageMemberId);
+    auto stageDeviceIds =
+        this->stageDeviceIds_by_stageMember_.at(stageMemberId);
     for(const auto& stageDeviceId : stageDeviceIds) {
       auto stageDevice = getStageDevice(stageDeviceId);
       if(stageDevice) {
@@ -598,14 +601,17 @@ Store::getStageDevicesByStageMember(const std::string& stageMemberId) const
   return vector;
 }
 
-void Store::removeStageDevice(const std::string& id) {
+void Store::removeStageDevice(const std::string& id)
+{
   std::lock_guard<std::recursive_mutex> lock(this->stageDevices_mutex_);
-  const auto stageMemberId = this->stageDevices_.at(id)["stageMemberId"].get<std::string>();
+  const auto stageMemberId =
+      this->stageDevices_.at(id)["stageMemberId"].get<std::string>();
   this->stageMembers_.erase(id);
   stageDeviceIds_by_stageMember_[stageMemberId].erase(id);
 }
 
-void Store::createCustomStageDevicePosition(const json& payload) {
+void Store::createCustomStageDevicePosition(const json& payload)
+{
   std::lock_guard<std::recursive_mutex> lock(
       this->customStageDevicePositions_mutex_);
   const auto _id = payload.at("_id").get<std::string>();
@@ -613,15 +619,16 @@ void Store::createCustomStageDevicePosition(const json& payload) {
   const auto stageDeviceId = payload.at("stageDeviceId").get<std::string>();
   const auto deviceId = payload.at("deviceId").get<std::string>();
   if(customStageDevicePositionIds_by_StageDevice_and_Device_.count(
-      stageDeviceId) == 0) {
+         stageDeviceId) == 0) {
     customStageDevicePositionIds_by_StageDevice_and_Device_[stageDeviceId] =
         std::map<std::string, std::string>();
   }
   customStageDevicePositionIds_by_StageDevice_and_Device_[stageDeviceId]
-  [deviceId] = _id;
+                                                         [deviceId] = _id;
 }
 
-void Store::removeCustomStageDevicePosition(const std::string& id) {
+void Store::removeCustomStageDevicePosition(const std::string& id)
+{
   std::lock_guard<std::recursive_mutex> lock(
       this->customStageDevicePositions_mutex_);
   const auto stageDeviceId =
@@ -643,12 +650,12 @@ void Store::createCustomStageDeviceVolume(const json& payload)
   const auto stageDeviceId = payload.at("stageDeviceId").get<std::string>();
   const auto deviceId = payload.at("deviceId").get<std::string>();
   if(customStageDeviceVolumeIds_by_StageDevice_and_Device_.count(
-      stageDeviceId) == 0) {
+         stageDeviceId) == 0) {
     customStageDeviceVolumeIds_by_StageDevice_and_Device_[stageDeviceId] =
         std::map<std::string, std::string>();
   }
   customStageDeviceVolumeIds_by_StageDevice_and_Device_[stageDeviceId]
-  [deviceId] = _id;
+                                                       [deviceId] = _id;
 }
 
 void Store::removeCustomStageDeviceVolume(const std::string& id)

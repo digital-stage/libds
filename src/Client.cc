@@ -42,7 +42,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
   // Set handler
   wsclient_->setMessageHandler([&](const nlohmann::json& j) {
     try {
-      if( !j.is_array() ) {
+      if(!j.is_array()) {
         std::cerr << "WARNING: not an array: " << j.dump() << std::endl;
         return;
       }
@@ -241,7 +241,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         const std::string id = payload;
         store_->removeCustomStageDeviceVolume(id);
         this->customStageDeviceVolumeRemoved(id, getStore());
-        
+
         /*
          * LOCAL VIDEO TRACKS
          */
