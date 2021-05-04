@@ -198,9 +198,22 @@ namespace DigitalStage::Api {
     sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
         userRemoved;
 
+    /**
+     * Not implemented, but could be an alternative to the store
+     * @return
+     */
+    DigitalStage::Types::WholeStage getWholeStage() const;
+
+    /**
+     * Not implemented, but could be an alternative to the store
+     */
+    void setWholeStage(nlohmann::json wholeStage);
+
   private:
     const std::string apiUrl_;
     std::unique_ptr<Store> store_;
+    nlohmann::json wholeStage_;
+    mutable std::mutex wholeStage_mutex_;
     std::unique_ptr<teckos::client> wsclient_;
   };
 } // namespace DigitalStage::Api

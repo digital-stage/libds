@@ -467,7 +467,7 @@ void Store::removeCustomRemoteAudioTrackVolume(const std::string& id)
       this->customRemoteAudioTrackVolumes_.at(id)["remoteAudioTrackId"]
           .get<std::string>();
   const auto deviceId =
-      this->customStageMemberVolumes_.at(id)["deviceId"].get<std::string>();
+      this->customRemoteAudioTrackVolumes_.at(id)["deviceId"].get<std::string>();
   customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
       [remoteAudioTrackId]
           .erase(deviceId);
@@ -475,12 +475,12 @@ void Store::removeCustomRemoteAudioTrackVolume(const std::string& id)
 }
 
 std::vector<remote_video_track_t>
-Store::getRemoteVideoTracksByStageMember(const std::string& stageMemberId) const
+Store::getRemoteVideoTracksByStageDevice(const std::string& stageDeviceId) const
 {
   std::lock_guard<std::recursive_mutex> lock(this->remoteVideoTracks_mutex_);
   auto items = std::vector<remote_video_track_t>();
-  if(this->remoteVideoTrackIds_by_StageMember_.count(stageMemberId) > 0) {
-    auto ids = this->remoteVideoTrackIds_by_StageMember_.at(stageMemberId);
+  if(this->remoteVideoTrackIds_by_StageDevice_.count(stageDeviceId) > 0) {
+    auto ids = this->remoteVideoTrackIds_by_StageDevice_.at(stageDeviceId);
     for(const auto& id : ids) {
       auto group = getRemoteVideoTrack(id);
       if(group) {
@@ -495,29 +495,29 @@ void Store::createRemoteVideoTrack(const json& payload)
   std::lock_guard<std::recursive_mutex> lock(this->remoteVideoTracks_mutex_);
   const auto _id = payload.at("_id").get<std::string>();
   remoteVideoTracks_[_id] = payload;
-  const auto stageMemberId = payload.at("stageMemberId").get<std::string>();
-  if(remoteVideoTrackIds_by_StageMember_.count(stageMemberId) == 0) {
-    remoteVideoTrackIds_by_StageMember_[stageMemberId] =
+  const auto stageDeviceId = payload.at("stageDeviceId").get<std::string>();
+  if(remoteVideoTrackIds_by_StageDevice_.count(stageDeviceId) == 0) {
+    remoteVideoTrackIds_by_StageDevice_[stageDeviceId] =
         std::set<std::string>();
   }
-  remoteVideoTrackIds_by_StageMember_[stageMemberId].insert(_id);
+  remoteVideoTrackIds_by_StageDevice_[stageDeviceId].insert(_id);
 }
 void Store::removeRemoteVideoTrack(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex> lock(this->remoteVideoTracks_mutex_);
-  const auto stageMemberId =
-      this->remoteVideoTracks_.at(id)["stageMemberId"].get<std::string>();
+  const auto stageDeviceId =
+      this->remoteVideoTracks_.at(id)["stageDeviceId"].get<std::string>();
   this->remoteVideoTracks_.erase(id);
-  remoteVideoTrackIds_by_StageMember_[stageMemberId].erase(id);
+  remoteVideoTrackIds_by_StageDevice_[stageDeviceId].erase(id);
 }
 
 std::vector<remote_audio_track_t>
-Store::getRemoteAudioTracksByStageMember(const std::string& stageMemberId) const
+Store::getRemoteAudioTracksByStageDevice(const std::string& stageDeviceId) const
 {
   std::lock_guard<std::recursive_mutex> lock(this->remoteAudioTracks_mutex_);
   auto items = std::vector<remote_audio_track_t>();
-  if(this->remoteAudioTrackIds_by_StageMember_.count(stageMemberId) > 0) {
-    auto ids = this->remoteAudioTrackIds_by_StageMember_.at(stageMemberId);
+  if(this->remoteAudioTrackIds_by_StageDevice_.count(stageDeviceId) > 0) {
+    auto ids = this->remoteAudioTrackIds_by_StageDevice_.at(stageDeviceId);
     for(const auto& id : ids) {
       auto group = getRemoteAudioTrack(id);
       if(group) {
@@ -532,20 +532,20 @@ void Store::createRemoteAudioTrack(const json& payload)
   std::lock_guard<std::recursive_mutex> lock(this->remoteAudioTracks_mutex_);
   const auto _id = payload.at("_id").get<std::string>();
   remoteAudioTracks_[_id] = payload;
-  const auto stageMemberId = payload.at("stageMemberId").get<std::string>();
-  if(remoteAudioTrackIds_by_StageMember_.count(stageMemberId) == 0) {
-    remoteAudioTrackIds_by_StageMember_[stageMemberId] =
+  const auto stageDeviceId = payload.at("stageDeviceId").get<std::string>();
+  if(remoteAudioTrackIds_by_StageDevice_.count(stageDeviceId) == 0) {
+    remoteAudioTrackIds_by_StageDevice_[stageDeviceId] =
         std::set<std::string>();
   }
-  remoteAudioTrackIds_by_StageMember_[stageMemberId].insert(_id);
+  remoteAudioTrackIds_by_StageDevice_[stageDeviceId].insert(_id);
 }
 void Store::removeRemoteAudioTrack(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex> lock(this->remoteAudioTracks_mutex_);
-  const auto stageMemberId =
-      this->remoteAudioTracks_.at(id)["stageMemberId"].get<std::string>();
+  const auto stageDeviceId =
+      this->remoteAudioTracks_.at(id)["stageDeviceId"].get<std::string>();
   this->remoteAudioTracks_.erase(id);
-  remoteAudioTrackIds_by_StageMember_[stageMemberId].erase(id);
+  remoteAudioTrackIds_by_StageDevice_[stageDeviceId].erase(id);
 }
 
 void Store::setReady(bool ready)

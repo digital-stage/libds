@@ -511,3 +511,14 @@ pplx::task<void> Client::send(
     throw std::runtime_error("Not ready");
   return wsclient_->emit(event, message, callback);
 }
+
+DigitalStage::Types::WholeStage Client::getWholeStage() const
+{
+  const std::lock_guard<std::mutex> lock(wholeStage_mutex_);
+  return wholeStage_.get<DigitalStage::Types::WholeStage>();
+}
+
+void Client::setWholeStage(nlohmann::json wholeStage) {
+  const std::lock_guard<std::mutex> lock(wholeStage_mutex_);
+  this->wholeStage_ = std::move(wholeStage);
+}

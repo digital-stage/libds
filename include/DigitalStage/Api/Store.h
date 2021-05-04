@@ -90,7 +90,7 @@ namespace DigitalStage::Api {
                      RemoteVideoTrack, remoteVideoTracks_mutex_,
                      remoteVideoTracks_)
     std::vector<DigitalStage::Types::remote_video_track_t>
-    getRemoteVideoTracksByStageMember(const std::string& stageMemberId) const;
+    getRemoteVideoTracksByStageDevice(const std::string& stageDeviceId) const;
     void createRemoteVideoTrack(const json& payload);
     void removeRemoteVideoTrack(const std::string& id);
 
@@ -105,7 +105,7 @@ namespace DigitalStage::Api {
                      RemoteAudioTrack, remoteAudioTracks_mutex_,
                      remoteAudioTracks_)
     std::vector<remote_audio_track_t>
-    getRemoteAudioTracksByStageMember(const std::string& stageMemberId) const;
+    getRemoteAudioTracksByStageDevice(const std::string& stageDeviceId) const;
     void createRemoteAudioTrack(const json& payload);
     void removeRemoteAudioTrack(const std::string& id);
 
@@ -338,12 +338,12 @@ namespace DigitalStage::Api {
     mutable std::recursive_mutex remoteVideoTracks_mutex_;
     std::map<std::string, json> remoteVideoTracks_;
     std::map<std::string, std::set<std::string>>
-        remoteVideoTrackIds_by_StageMember_;
+        remoteVideoTrackIds_by_StageDevice_;
 
     mutable std::recursive_mutex remoteAudioTracks_mutex_;
     std::map<std::string, json> remoteAudioTracks_;
     std::map<std::string, std::set<std::string>>
-        remoteAudioTrackIds_by_StageMember_;
+        remoteAudioTrackIds_by_StageDevice_;
 
     mutable std::recursive_mutex customRemoteAudioTrackVolumes_mutex_;
     std::map<std::string, json> customRemoteAudioTrackVolumes_;

@@ -153,10 +153,6 @@ namespace DigitalStage::Types {
     bool active;
     bool isDirector;
 
-    uint8_t order;
-
-    bool sendLocal;
-
     double volume;
     bool muted;
     std::string directivity = "cardoid"; // "omni" or "cardoid"
@@ -339,6 +335,28 @@ namespace DigitalStage::Types {
     std::optional<ID_TYPE> stageId;
     std::optional<ID_TYPE> groupId;
     std::optional<ID_TYPE> stageMemberId;
+  };
+
+  struct WholeStage {
+    std::map<std::string, user_t> users;
+    std::map<std::string, Device> devices;
+    std::map<std::string, SoundCard> soundCards;
+    std::map<std::string, Stage> stages;
+    std::map<std::string, Group> groups;
+    std::map<std::string, std::map<std::string, CustomGroupPosition>> customGroupPositions;
+    std::map<std::string, std::map<std::string, CustomGroupVolume>> customGroupVolumes;
+    std::map<std::string, StageMember> stageMembers;
+    std::map<std::string, std::map<std::string, custom_stage_member_position_t>> customStageMemberPositions;
+    std::map<std::string, std::map<std::string, custom_stage_member_volume_t>> customStageMemberVolumes;
+    std::map<std::string, StageDevice> stageDevices;
+    std::map<std::string, std::map<std::string, CustomStageDevicePosition>> customStageDevicePositions;
+    std::map<std::string, std::map<std::string, CustomStageDeviceVolume>> customStageDeviceVolumes;
+    std::map<std::string, remote_audio_track_t> remoteAudioTracks;
+    std::map<std::string, std::map<std::string, custom_remote_audio_track_position_t>> customRemoteAudioPositions;
+    std::map<std::string, std::map<std::string, custom_remote_audio_track_volume_t>> customRemoteAudioVolumes;
+    std::map<std::string, remote_video_track_t> remoteVideoTracks;
+    std::map<std::string, local_audio_track_t> localAudioTracks;
+    std::map<std::string, local_video_track_t> localVideoTracks;
   };
 
   inline void to_json(json& j, const Device& p)
@@ -568,8 +586,6 @@ namespace DigitalStage::Types {
              {"userId", p.userId},
              {"active", p.active},
              {"isDirector", p.isDirector},
-             {"order", p.order},
-             {"sendLocal", p.sendLocal},
              {"volume", p.volume},
              {"muted", p.muted},
              {"x", p.x},
@@ -588,8 +604,6 @@ namespace DigitalStage::Types {
     j.at("userId").get_to(p.userId);
     j.at("active").get_to(p.active);
     j.at("isDirector").get_to(p.isDirector);
-    j.at("order").get_to(p.order);
-    j.at("sendLocal").get_to(p.sendLocal);
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
     j.at("x").get_to(p.x);
@@ -937,6 +951,54 @@ namespace DigitalStage::Types {
     optional_from_json(j, "stageId", p.stageId);
     optional_from_json(j, "groupId", p.groupId);
     optional_from_json(j, "stageMemberId", p.stageMemberId);
+  }
+
+  inline void to_json(json& j, const WholeStage& p)
+  {
+    j = json{
+        {"users", p.users},
+        {"devices", p.devices},
+        {"soundCards", p.soundCards},
+        {"stages", p.stages},
+        {"groups", p.groups},
+        {"customGroupVolumes", p.customGroupVolumes},
+        {"customGroupVolumes", p.customGroupPositions},
+        {"stageMembers", p.stageMembers},
+        {"customStageMemberVolumes", p.customStageMemberVolumes},
+        {"customStageMemberPositions", p.customStageMemberPositions},
+        {"stageDevices", p.stageDevices},
+        {"customStageMemberVolumes", p.customStageMemberVolumes},
+        {"customStageMemberPositions", p.customStageMemberPositions},
+        {"remoteAudioTracks", p.remoteAudioTracks},
+        {"customRemoteAudioPositions", p.customRemoteAudioPositions},
+        {"customRemoteAudioVolumes", p.customRemoteAudioVolumes},
+        {"remoteVideoTracks", p.remoteVideoTracks},
+        {"localAudioTracks", p.localAudioTracks},
+        {"localVideoTracks", p.localVideoTracks}
+    };
+  }
+
+  inline void from_json(const json& j, WholeStage& p)
+  {
+    j.at("users").get_to(p.users);
+    j.at("devices").get_to(p.devices);
+    j.at("soundCards").get_to(p.soundCards);
+    j.at("stages").get_to(p.stages);
+    j.at("groups").get_to(p.groups);
+    j.at("customGroupVolumes").get_to(p.customGroupVolumes);
+    j.at("customGroupVolumes").get_to(p.customGroupPositions);
+    j.at("stageMembers").get_to(p.stageMembers);
+    j.at("customStageMemberVolumes").get_to(p.customStageMemberVolumes);
+    j.at("customStageMemberPositions").get_to(p.customStageMemberPositions);
+    j.at("stageDevices").get_to(p.stageDevices);
+    j.at("customStageMemberVolumes").get_to(p.customStageMemberVolumes);
+    j.at("customStageMemberPositions").get_to(p.customStageMemberPositions);
+    j.at("remoteAudioTracks").get_to(p.remoteAudioTracks);
+    j.at("customRemoteAudioPositions").get_to(p.customRemoteAudioPositions);
+    j.at("customRemoteAudioVolumes").get_to(p.customRemoteAudioVolumes);
+    j.at("remoteVideoTracks").get_to(p.remoteVideoTracks);
+    j.at("localAudioTracks").get_to(p.localAudioTracks);
+    j.at("localVideoTracks").get_to(p.localVideoTracks);
   }
 } // namespace DigitalStage::Types
 
