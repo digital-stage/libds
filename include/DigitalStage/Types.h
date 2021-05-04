@@ -150,7 +150,7 @@ namespace DigitalStage::Types {
     ID_TYPE stageId;
     std::string groupId;
     ID_TYPE userId;
-    bool online;
+    bool active;
     bool isDirector;
 
     uint8_t order;
@@ -186,6 +186,55 @@ namespace DigitalStage::Types {
     ID_TYPE userId;
     ID_TYPE deviceId;
     ID_TYPE stageMemberId;
+    double volume = 1;
+    bool muted = false;
+  };
+
+  struct stage_device_t {
+    std::string _id;
+    std::string userId;
+    std::string deviceId;
+    std::string stageId;
+    std::string groupId;
+    std::string stageMemberId;
+    bool active;
+
+    uint8_t order;
+
+    bool sendLocal;
+
+    double volume;
+    bool muted;
+    std::string directivity = "cardoid"; // "omni" or "cardoid"
+    double x;
+    double y;
+    double z;
+    double rX;
+    double rY;
+    double rZ;
+  };
+
+  struct custom_stage_device_position_t {
+    std::string _id;
+    std::string userId;
+    std::string deviceId;
+    std::string stageId;
+    std::string stageDeviceId;
+    std::string directivity = "cardoid"; // "omni" or "cardoid"
+    double x = std::numeric_limits<double>::lowest();
+    double y = std::numeric_limits<double>::lowest();
+    double z = std::numeric_limits<double>::lowest();
+    double rX = std::numeric_limits<double>::lowest();
+    double rY = std::numeric_limits<double>::lowest();
+    double rZ = std::numeric_limits<double>::lowest();
+  };
+
+  struct custom_stage_device_volume_t {
+    std::string _id;
+    std::string userId;
+    std::string deviceId;
+    std::string stageId;
+    std::string stageDeviceId;
     double volume = 1;
     bool muted = false;
   };
@@ -517,7 +566,7 @@ namespace DigitalStage::Types {
              {"stageId", p.stageId},
              {"groupId", p.groupId},
              {"userId", p.userId},
-             {"online", p.online},
+             {"active", p.active},
              {"isDirector", p.isDirector},
              {"order", p.order},
              {"sendLocal", p.sendLocal},
@@ -537,7 +586,7 @@ namespace DigitalStage::Types {
     j.at("stageId").get_to(p.stageId);
     j.at("groupId").get_to(p.groupId);
     j.at("userId").get_to(p.userId);
-    j.at("online").get_to(p.online);
+    j.at("active").get_to(p.active);
     j.at("isDirector").get_to(p.isDirector);
     j.at("order").get_to(p.order);
     j.at("sendLocal").get_to(p.sendLocal);
@@ -565,6 +614,7 @@ namespace DigitalStage::Types {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
     j.at("deviceId").get_to(p.deviceId);
+    j.at("stageId").get_to(p.deviceId);
     j.at("stageMemberId").get_to(p.stageMemberId);
     j.at("x").get_to(p.x);
     j.at("y").get_to(p.y);
@@ -586,6 +636,99 @@ namespace DigitalStage::Types {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
     j.at("stageMemberId").get_to(p.stageMemberId);
+    j.at("volume").get_to(p.volume);
+    j.at("muted").get_to(p.muted);
+  }
+
+  inline void to_json(json& j, const stage_device_t& p)
+  {
+    j = json{{"_id", p._id},
+             {"userId", p.userId},
+             {"deviceId", p.deviceId},
+             {"stageId", p.stageId},
+             {"groupId", p.groupId},
+             {"stageMemberId", p.stageMemberId},
+             {"active", p.active},
+             {"order", p.order},
+             {"sendLocal", p.sendLocal},
+             {"volume", p.volume},
+             {"muted", p.muted},
+             {"x", p.x},
+             {"y", p.y},
+             {"z", p.z},
+             {"rX", p.rX},
+             {"rY", p.rY},
+             {"rZ", p.rZ}};
+  }
+
+  inline void from_json(const json& j, stage_device_t& p)
+  {
+    j.at("_id").get_to(p._id);
+    j.at("userId").get_to(p.userId);
+    j.at("deviceId").get_to(p.deviceId);
+    j.at("stageId").get_to(p.stageId);
+    j.at("groupId").get_to(p.groupId);
+    j.at("stageMemberId").get_to(p.stageMemberId);
+    j.at("active").get_to(p.active);
+    j.at("order").get_to(p.order);
+    j.at("sendLocal").get_to(p.sendLocal);
+    j.at("volume").get_to(p.volume);
+    j.at("muted").get_to(p.muted);
+    j.at("x").get_to(p.x);
+    j.at("y").get_to(p.y);
+    j.at("z").get_to(p.z);
+    j.at("rX").get_to(p.rX);
+    j.at("rY").get_to(p.rY);
+    j.at("rZ").get_to(p.rZ);
+  }
+
+  inline void to_json(json& j, const custom_stage_device_position_t& p)
+  {
+    j = json{{"_id", p._id},
+             {"deviceId", p.deviceId},
+             {"userId", p.userId},
+             {"stageId", p.stageId},
+             {"stageDeviceId", p.stageDeviceId},
+             {"x", p.x},
+             {"y", p.y},
+             {"z", p.z},
+             {"rX", p.rX},
+             {"rY", p.rY},
+             {"rZ", p.rZ}};
+  }
+
+  inline void from_json(const json& j, custom_stage_device_position_t& p)
+  {
+    j.at("_id").get_to(p._id);
+    j.at("userId").get_to(p.userId);
+    j.at("deviceId").get_to(p.deviceId);
+    j.at("stageId").get_to(p.stageId);
+    j.at("stageDeviceId").get_to(p.stageDeviceId);
+    j.at("x").get_to(p.x);
+    j.at("y").get_to(p.y);
+    j.at("z").get_to(p.z);
+    j.at("rX").get_to(p.rX);
+    j.at("rY").get_to(p.rY);
+    j.at("rZ").get_to(p.rZ);
+  }
+
+  inline void to_json(json& j, const custom_stage_device_volume_t& p)
+  {
+    j = json{{"_id", p._id},
+             {"userId", p.userId},
+             {"deviceId", p.deviceId},
+             {"stageId", p.stageId},
+             {"stageDeviceId", p.stageDeviceId},
+             {"volume", p.volume},
+             {"muted", p.muted}};
+  }
+
+  inline void from_json(const json& j, custom_stage_device_volume_t& p)
+  {
+    j.at("_id").get_to(p._id);
+    j.at("userId").get_to(p.userId);
+    j.at("stageId").get_to(p.stageId);
+    j.at("stageDeviceId").get_to(p.stageDeviceId);
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
   }
