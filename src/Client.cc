@@ -199,6 +199,50 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         this->customStageMemberVolumeRemoved(id, getStore());
 
         /*
+         * STAGE DEVICES
+         */
+      } else if(event == RetrieveEvents::STAGE_DEVICE_ADDED) {
+        store_->createStageDevice(payload);
+        this->stageDeviceAdded(payload.get<StageDevice>(), getStore());
+      } else if(event == RetrieveEvents::STAGE_DEVICE_CHANGED) {
+        store_->updateStageDevice(payload);
+        const std::string id = payload["_id"];
+        this->stageDeviceChanged(id, payload, getStore());
+      } else if(event == RetrieveEvents::STAGE_DEVICE_REMOVED) {
+        const std::string id = payload;
+        auto stageDevice = store_->getStageDevice(id);
+        store_->removeStageDevice(id);
+        this->stageDeviceRemoved(*stageDevice, getStore());
+
+        /*
+         * CUSTOM STAGE DEVICES VOLUME AND POSITIONS
+         */
+      } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_ADDED) {
+        store_->createCustomStageDevicePosition(payload);
+        this->customStageDevicePositionAdded(
+            payload.get<CustomStageDevicePosition>(), getStore());
+      } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_CHANGED) {
+        store_->updateCustomStageDevicePosition(payload);
+        const std::string id = payload["_id"];
+        this->customStageDevicePositionChanged(id, payload, getStore());
+      } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_REMOVED) {
+        const std::string id = payload;
+        store_->removeCustomStageDevicePosition(id);
+        this->customStageDevicePositionRemoved(id, getStore());
+      } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_ADDED) {
+        store_->createCustomStageDeviceVolume(payload);
+        this->customStageDeviceVolumeAdded(
+            payload.get<CustomStageDeviceVolume>(), getStore());
+      } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_CHANGED) {
+        store_->updateCustomStageDeviceVolume(payload);
+        const std::string id = payload["_id"];
+        this->customStageDeviceVolumeChanged(id, payload, getStore());
+      } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_REMOVED) {
+        const std::string id = payload;
+        store_->removeCustomStageDeviceVolume(id);
+        this->customStageDeviceVolumeRemoved(id, getStore());
+        
+        /*
          * LOCAL VIDEO TRACKS
          */
       } else if(event == RetrieveEvents::LOCAL_VIDEO_TRACK_ADDED) {
@@ -243,8 +287,9 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         this->remoteVideoTrackChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::REMOTE_VIDEO_TRACK_REMOVED) {
         const std::string id = payload;
+        auto track = store_->getRemoteVideoTrack(id);
         store_->removeRemoteVideoTrack(id);
-        this->remoteVideoTrackRemoved(id, getStore());
+        this->remoteVideoTrackRemoved(*track, getStore());
 
         /*
          * REMOTE AUDIO TRACKS
@@ -261,7 +306,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         const std::string id = payload;
         auto track = store_->getRemoteAudioTrack(id);
         store_->removeRemoteAudioTrack(id);
-        this->remoteAudioTrackRemoved(track, getStore());
+        this->remoteAudioTrackRemoved(*track, getStore());
 
         /*
          * CUSTOM REMOTE_AUDIO_TRACK VOLUME AND POSITIONS
@@ -317,7 +362,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
          */
       } else if(event == RetrieveEvents::SOUND_CARD_ADDED) {
         store_->createSoundCard(payload);
-        this->soundCardAdded(payload.get<soundcard_t>(), getStore());
+        this->soundCardAdded(payload.get<SoundCard>(), getStore());
       } else if(event == RetrieveEvents::SOUND_CARD_CHANGED) {
         store_->updateSoundCard(payload);
         const std::string id = payload["_id"];

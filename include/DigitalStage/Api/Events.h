@@ -108,6 +108,9 @@ namespace DigitalStage {
       extern const std::string STAGE_MEMBER_ADDED;
       extern const std::string STAGE_MEMBER_CHANGED;
       extern const std::string STAGE_MEMBER_REMOVED;
+      extern const std::string STAGE_DEVICE_ADDED;
+      extern const std::string STAGE_DEVICE_CHANGED;
+      extern const std::string STAGE_DEVICE_REMOVED;
       extern const std::string CUSTOM_GROUP_VOLUME_ADDED;
       extern const std::string CUSTOM_GROUP_VOLUME_CHANGED;
       extern const std::string CUSTOM_GROUP_VOLUME_REMOVED;
@@ -120,6 +123,12 @@ namespace DigitalStage {
       extern const std::string CUSTOM_STAGE_MEMBER_VOLUME_ADDED;
       extern const std::string CUSTOM_STAGE_MEMBER_VOLUME_CHANGED;
       extern const std::string CUSTOM_STAGE_MEMBER_VOLUME_REMOVED;
+      extern const std::string CUSTOM_STAGE_DEVICE_POSITION_ADDED;
+      extern const std::string CUSTOM_STAGE_DEVICE_POSITION_CHANGED;
+      extern const std::string CUSTOM_STAGE_DEVICE_POSITION_REMOVED;
+      extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_ADDED;
+      extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_CHANGED;
+      extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_REMOVED;
       extern const std::string LOCAL_VIDEO_TRACK_ADDED;
       extern const std::string LOCAL_VIDEO_TRACK_CHANGED;
       extern const std::string LOCAL_VIDEO_TRACK_REMOVED;

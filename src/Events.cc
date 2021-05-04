@@ -28,6 +28,9 @@ const std::string RetrieveEvents::GROUP_REMOVED = "g-r";
 const std::string RetrieveEvents::STAGE_MEMBER_ADDED = "sm-a";
 const std::string RetrieveEvents::STAGE_MEMBER_CHANGED = "sm-c";
 const std::string RetrieveEvents::STAGE_MEMBER_REMOVED = "sm-r";
+const std::string RetrieveEvents::STAGE_DEVICE_ADDED = "sd-a";
+const std::string RetrieveEvents::STAGE_DEVICE_CHANGED = "sd-c";
+const std::string RetrieveEvents::STAGE_DEVICE_REMOVED = "sd-r";
 const std::string RetrieveEvents::CUSTOM_GROUP_POSITION_ADDED = "c-g-p-a";
 const std::string RetrieveEvents::CUSTOM_GROUP_POSITION_CHANGED = "c-g-p-c";
 const std::string RetrieveEvents::CUSTOM_GROUP_POSITION_REMOVED = "c-g-p-r";
@@ -45,6 +48,17 @@ const std::string RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_CHANGED =
     "c-sm-p-c";
 const std::string RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_REMOVED =
     "c-sm-p-r";
+const std::string RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_ADDED = "c-sd-v-a";
+const std::string RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_CHANGED =
+    "c-sd-v-c";
+const std::string RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_REMOVED =
+    "c-sd-v-r";
+const std::string RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_ADDED =
+    "c-sd-p-a";
+const std::string RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_CHANGED =
+    "c-sd-p-c";
+const std::string RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_REMOVED =
+    "c-sd-p-r";
 const std::string RetrieveEvents::LOCAL_VIDEO_TRACK_ADDED = "lv-a";
 const std::string RetrieveEvents::LOCAL_VIDEO_TRACK_CHANGED = "lv-c";
 const std::string RetrieveEvents::LOCAL_VIDEO_TRACK_REMOVED = "lv-r";

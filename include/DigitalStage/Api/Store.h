@@ -66,6 +66,19 @@ namespace DigitalStage::Api {
     STORE_UPDATE(StageMember, StageMember, stageMembers_mutex_, stageMembers_)
     void removeStageMember(const std::string& id);
 
+    // Stage devices
+    STORE_GET(DigitalStage::Types::StageDevice, StageDevice,
+              stageDevices_mutex_, stageDevices_)
+    STORE_GET_ALL(DigitalStage::Types::StageDevice, StageDevice,
+                  stageDevices_mutex_, stageDevices_)
+    STORE_REMOVE_ALL(DigitalStage::Types::StageDevice, StageDevice,
+                     stageDevices_mutex_, stageDevices_)
+    std::vector<DigitalStage::Types::StageDevice>
+    getStageDevicesByStageMember(const std::string& stageMemberId) const;
+    void createStageDevice(const json& payload);
+    STORE_UPDATE(StageDevice, StageDevice, stageDevices_mutex_, stageDevices_)
+    void removeStageDevice(const std::string& id);
+
     // Remote video tracks
     STORE_GET(DigitalStage::Types::remote_video_track_t, RemoteVideoTrack,
               remoteVideoTracks_mutex_, remoteVideoTracks_)
@@ -159,6 +172,38 @@ namespace DigitalStage::Api {
     void createCustomStageMemberVolume(const json& payload);
     void removeCustomStageMemberVolume(const std::string& id);
 
+    // Custom stage device positions
+    STORE_GET(CustomStageDevicePosition, CustomStageDevicePosition,
+              customStageDevicePositions_mutex_, customStageDevicePositions_)
+    STORE_GET_ALL(CustomStageDevicePosition, CustomStageDevicePosition,
+                  customStageDevicePositions_mutex_,
+                  customStageDevicePositions_)
+    STORE_REMOVE_ALL(CustomStageDevicePosition, CustomStageDevicePosition,
+                     customStageDevicePositions_mutex_,
+                     customStageDevicePositions_)
+    std::optional<const CustomStageDevicePosition>
+    getCustomStageDevicePositionByStageDeviceAndDevice(
+        const std::string& stageDeviceId, const std::string& deviceId) const;
+    void createCustomStageDevicePosition(const json& payload);
+    STORE_UPDATE(CustomStageDevicePosition, CustomStageDevicePosition,
+                 customStageDevicePositions_mutex_, customStageDevicePositions_)
+    void removeCustomStageDevicePosition(const std::string& id);
+
+    // Custom stage device volumes
+    STORE_GET(CustomStageDeviceVolume, CustomStageDeviceVolume,
+              customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
+    STORE_GET_ALL(CustomStageDeviceVolume, CustomStageDeviceVolume,
+                  customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
+    STORE_UPDATE(CustomStageDeviceVolume, CustomStageDeviceVolume,
+                 customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
+    STORE_REMOVE_ALL(CustomStageDeviceVolume, CustomStageDeviceVolume,
+                     customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
+    std::optional<const CustomStageDeviceVolume>
+    getCustomStageDeviceVolumeByStageDeviceAndDevice(
+        const std::string& stageDeviceId, const std::string& deviceId) const;
+    void createCustomStageDeviceVolume(const json& payload);
+    void removeCustomStageDeviceVolume(const std::string& id);
+
     // Custom remote audio track positions
     STORE_GET(custom_remote_audio_track_position_t,
               CustomRemoteAudioTrackPosition,
@@ -207,14 +252,14 @@ namespace DigitalStage::Api {
     void removeCustomRemoteAudioTrackVolume(const std::string& id);
 
     // Sound cards
-    std::optional<DigitalStage::Types::soundcard_t>
+    std::optional<DigitalStage::Types::SoundCard>
     getSoundCardByUUID(const std::string& uuid) const;
 
     // Devices
     ADD_STORE_ENTRY(DigitalStage::Types::Device, Device, devices_)
 
     // Sound cards
-    ADD_STORE_ENTRY(DigitalStage::Types::soundcard_t, SoundCard, soundCards_)
+    ADD_STORE_ENTRY(DigitalStage::Types::SoundCard, SoundCard, soundCards_)
 
     // Stages
     ADD_STORE_ENTRY(DigitalStage::Types::Stage, Stage, stages_)
@@ -256,6 +301,10 @@ namespace DigitalStage::Api {
     std::map<std::string, std::set<std::string>> stageMemberIds_by_stages_;
     std::map<std::string, std::set<std::string>> stageMemberIds_by_groups_;
 
+    mutable std::recursive_mutex stageDevices_mutex_;
+    std::map<std::string, json> stageDevices_;
+    std::map<std::string, std::set<std::string>> stageDeviceIds_by_stageMember_;
+
     mutable std::recursive_mutex customGroupVolumes_mutex_;
     std::map<std::string, json> customGroupVolumes_;
     std::map<std::string, std::map<std::string, std::string>>
@@ -275,6 +324,16 @@ namespace DigitalStage::Api {
     std::map<std::string, json> customStageMemberVolumes_;
     std::map<std::string, std::map<std::string, std::string>>
         customStageMemberVolumeIds_by_StageMember_and_Device_;
+
+    mutable std::recursive_mutex customStageDevicePositions_mutex_;
+    std::map<std::string, json> customStageDevicePositions_;
+    std::map<std::string, std::map<std::string, std::string>>
+        customStageDevicePositionIds_by_StageDevice_and_Device_;
+
+    mutable std::recursive_mutex customStageDeviceVolumes_mutex_;
+    std::map<std::string, json> customStageDeviceVolumes_;
+    std::map<std::string, std::map<std::string, std::string>>
+        customStageDeviceVolumeIds_by_StageDevice_and_Device_;
 
     mutable std::recursive_mutex remoteVideoTracks_mutex_;
     std::map<std::string, json> remoteVideoTracks_;

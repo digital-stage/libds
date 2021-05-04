@@ -108,7 +108,33 @@ namespace DigitalStage::Api {
       sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
           customStageMemberVolumeRemoved;
 
-      sigslot::signal<const soundcard_t, const DigitalStage::Api::Store*>
+      sigslot::signal<const StageDevice, const DigitalStage::Api::Store*>
+          stageDeviceAdded;
+      sigslot::signal<const std::string&, nlohmann::json,
+                      const DigitalStage::Api::Store*>
+          stageDeviceChanged;
+      sigslot::signal<const StageDevice&, const DigitalStage::Api::Store*>
+          stageDeviceRemoved;
+
+      sigslot::signal<const CustomStageDevicePosition,
+                      const DigitalStage::Api::Store*>
+          customStageDevicePositionAdded;
+      sigslot::signal<const std::string&, nlohmann::json,
+                      const DigitalStage::Api::Store*>
+          customStageDevicePositionChanged;
+      sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
+          customStageDevicePositionRemoved;
+
+      sigslot::signal<const CustomStageDeviceVolume,
+                      const DigitalStage::Api::Store*>
+          customStageDeviceVolumeAdded;
+      sigslot::signal<const std::string&, nlohmann::json,
+                      const DigitalStage::Api::Store*>
+          customStageDeviceVolumeChanged;
+      sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
+          customStageDeviceVolumeRemoved;
+
+      sigslot::signal<const SoundCard, const DigitalStage::Api::Store*>
           soundCardAdded;
       sigslot::signal<const std::string&, nlohmann::json,
                       const DigitalStage::Api::Store*>
@@ -140,7 +166,7 @@ namespace DigitalStage::Api {
       sigslot::signal<const std::string&, nlohmann::json,
                       const DigitalStage::Api::Store*>
           remoteVideoTrackChanged;
-      sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
+      sigslot::signal<const remote_video_track_t, const DigitalStage::Api::Store*>
           remoteVideoTrackRemoved;
 
       sigslot::signal<const remote_audio_track_t,

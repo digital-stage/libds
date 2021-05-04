@@ -560,7 +560,7 @@ bool Store::isReady() const
   return this->isReady_;
 }
 
-std::optional<DigitalStage::Types::soundcard_t>
+std::optional<DigitalStage::Types::SoundCard>
 Store::getSoundCardByUUID(const std::string& uuid) const {
   std::lock_guard<std::recursive_mutex> lock(this->mutex_soundCards_);
   for(auto& pair: this->soundCards_) {
@@ -568,4 +568,99 @@ Store::getSoundCardByUUID(const std::string& uuid) const {
       return pair.second;
   }
   return std::nullopt;
+}
+
+void Store::createStageDevice(const json& payload) {
+  std::lock_guard<std::recursive_mutex> lock(this->stageDevices_mutex_);
+  const auto _id = payload.at("_id").get<std::string>();
+  stageDevices_[_id] = payload;
+  const auto stageMemberId = payload.at("stageMemberId").get<std::string>();
+  if(stageDeviceIds_by_stageMember_.count(stageMemberId) == 0) {
+    stageDeviceIds_by_stageMember_[stageMemberId] = std::set<std::string>();
+  }
+  stageDeviceIds_by_stageMember_[stageMemberId].insert(_id);
+}
+
+std::vector<DigitalStage::Types::StageDevice>
+Store::getStageDevicesByStageMember(const std::string& stageMemberId) const
+{
+  std::lock_guard<std::recursive_mutex> lock(this->stageDevices_mutex_);
+  auto vector = std::vector<StageDevice>();
+  if(this->stageDeviceIds_by_stageMember_.count(stageMemberId) > 0) {
+    auto stageDeviceIds = this->stageDeviceIds_by_stageMember_.at(stageMemberId);
+    for(const auto& stageDeviceId : stageDeviceIds) {
+      auto stageDevice = getStageDevice(stageDeviceId);
+      if(stageDevice) {
+        vector.push_back(*stageDevice);
+      }
+    }
+  }
+  return vector;
+}
+
+void Store::removeStageDevice(const std::string& id) {
+  std::lock_guard<std::recursive_mutex> lock(this->stageDevices_mutex_);
+  const auto stageMemberId = this->stageDevices_.at(id)["stageMemberId"].get<std::string>();
+  this->stageMembers_.erase(id);
+  stageDeviceIds_by_stageMember_[stageMemberId].erase(id);
+}
+
+void Store::createCustomStageDevicePosition(const json& payload) {
+  std::lock_guard<std::recursive_mutex> lock(
+      this->customStageDevicePositions_mutex_);
+  const auto _id = payload.at("_id").get<std::string>();
+  customStageDevicePositions_[_id] = payload;
+  const auto stageDeviceId = payload.at("stageDeviceId").get<std::string>();
+  const auto deviceId = payload.at("deviceId").get<std::string>();
+  if(customStageDevicePositionIds_by_StageDevice_and_Device_.count(
+      stageDeviceId) == 0) {
+    customStageDevicePositionIds_by_StageDevice_and_Device_[stageDeviceId] =
+        std::map<std::string, std::string>();
+  }
+  customStageDevicePositionIds_by_StageDevice_and_Device_[stageDeviceId]
+  [deviceId] = _id;
+}
+
+void Store::removeCustomStageDevicePosition(const std::string& id) {
+  std::lock_guard<std::recursive_mutex> lock(
+      this->customStageDevicePositions_mutex_);
+  const auto stageDeviceId =
+      this->customStageDevicePositions_.at(id)["stageDeviceId"]
+          .get<std::string>();
+  const auto deviceId =
+      this->customStageDevicePositions_.at(id)["deviceId"].get<std::string>();
+  customStageDevicePositionIds_by_StageDevice_and_Device_[stageDeviceId].erase(
+      deviceId);
+  customStageDevicePositions_.erase(id);
+}
+
+void Store::createCustomStageDeviceVolume(const json& payload)
+{
+  std::lock_guard<std::recursive_mutex> lock(
+      this->customStageDeviceVolumes_mutex_);
+  const auto _id = payload.at("_id").get<std::string>();
+  customStageDeviceVolumes_[_id] = payload;
+  const auto stageDeviceId = payload.at("stageDeviceId").get<std::string>();
+  const auto deviceId = payload.at("deviceId").get<std::string>();
+  if(customStageDeviceVolumeIds_by_StageDevice_and_Device_.count(
+      stageDeviceId) == 0) {
+    customStageDeviceVolumeIds_by_StageDevice_and_Device_[stageDeviceId] =
+        std::map<std::string, std::string>();
+  }
+  customStageDeviceVolumeIds_by_StageDevice_and_Device_[stageDeviceId]
+  [deviceId] = _id;
+}
+
+void Store::removeCustomStageDeviceVolume(const std::string& id)
+{
+  std::lock_guard<std::recursive_mutex> lock(
+      this->customStageDeviceVolumes_mutex_);
+  const auto stageDeviceId =
+      this->customStageDeviceVolumes_.at(id)["stageDeviceId"]
+          .get<std::string>();
+  const auto deviceId =
+      this->customStageDeviceVolumes_.at(id)["deviceId"].get<std::string>();
+  customStageDeviceVolumeIds_by_StageDevice_and_Device_[stageDeviceId].erase(
+      deviceId);
+  customStageDeviceVolumes_.erase(id);
 }

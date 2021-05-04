@@ -190,7 +190,7 @@ namespace DigitalStage::Types {
     bool muted = false;
   };
 
-  struct stage_device_t {
+  struct StageDevice {
     std::string _id;
     std::string userId;
     std::string deviceId;
@@ -214,7 +214,7 @@ namespace DigitalStage::Types {
     double rZ;
   };
 
-  struct custom_stage_device_position_t {
+  struct CustomStageDevicePosition {
     std::string _id;
     std::string userId;
     std::string deviceId;
@@ -229,7 +229,7 @@ namespace DigitalStage::Types {
     double rZ = std::numeric_limits<double>::lowest();
   };
 
-  struct custom_stage_device_volume_t {
+  struct CustomStageDeviceVolume {
     std::string _id;
     std::string userId;
     std::string deviceId;
@@ -239,7 +239,7 @@ namespace DigitalStage::Types {
     bool muted = false;
   };
 
-  struct soundcard_t {
+  struct SoundCard {
     ID_TYPE _id;
     ID_TYPE userId;
     std::string uuid;
@@ -640,7 +640,7 @@ namespace DigitalStage::Types {
     j.at("muted").get_to(p.muted);
   }
 
-  inline void to_json(json& j, const stage_device_t& p)
+  inline void to_json(json& j, const StageDevice& p)
   {
     j = json{{"_id", p._id},
              {"userId", p.userId},
@@ -661,7 +661,7 @@ namespace DigitalStage::Types {
              {"rZ", p.rZ}};
   }
 
-  inline void from_json(const json& j, stage_device_t& p)
+  inline void from_json(const json& j, StageDevice& p)
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
@@ -682,7 +682,7 @@ namespace DigitalStage::Types {
     j.at("rZ").get_to(p.rZ);
   }
 
-  inline void to_json(json& j, const custom_stage_device_position_t& p)
+  inline void to_json(json& j, const CustomStageDevicePosition& p)
   {
     j = json{{"_id", p._id},
              {"deviceId", p.deviceId},
@@ -697,7 +697,7 @@ namespace DigitalStage::Types {
              {"rZ", p.rZ}};
   }
 
-  inline void from_json(const json& j, custom_stage_device_position_t& p)
+  inline void from_json(const json& j, CustomStageDevicePosition& p)
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
@@ -712,7 +712,7 @@ namespace DigitalStage::Types {
     j.at("rZ").get_to(p.rZ);
   }
 
-  inline void to_json(json& j, const custom_stage_device_volume_t& p)
+  inline void to_json(json& j, const CustomStageDeviceVolume& p)
   {
     j = json{{"_id", p._id},
              {"userId", p.userId},
@@ -723,7 +723,7 @@ namespace DigitalStage::Types {
              {"muted", p.muted}};
   }
 
-  inline void from_json(const json& j, custom_stage_device_volume_t& p)
+  inline void from_json(const json& j, CustomStageDeviceVolume& p)
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
@@ -733,7 +733,7 @@ namespace DigitalStage::Types {
     j.at("muted").get_to(p.muted);
   }
 
-  inline void to_json(json& j, const soundcard_t& p)
+  inline void to_json(json& j, const SoundCard& p)
   {
     j = json{{"_id", p._id},
              {"userId", p.userId},
@@ -751,7 +751,7 @@ namespace DigitalStage::Types {
     optional_to_json(j, "softwareLatency", p.softwareLatency);
   }
 
-  inline void from_json(const json& j, soundcard_t& p)
+  inline void from_json(const json& j, SoundCard& p)
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
