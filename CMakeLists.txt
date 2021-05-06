@@ -31,9 +31,6 @@ set(API_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Macros.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Types.h
         )
-set(AUTH_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h
-        )
 set(API_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Events.cc
@@ -67,7 +64,10 @@ target_link_libraries(DigitalStageAuth
 add_executable(cli
         src/cli.cc)
 target_include_directories(cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(cli PRIVATE DigitalStageAuth DigitalStageApi)
+target_link_libraries(cli
+        PRIVATE
+        DigitalStageAuth
+        DigitalStageApi)
 
 include(GNUInstallDirs)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

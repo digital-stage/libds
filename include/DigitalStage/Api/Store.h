@@ -31,7 +31,7 @@ namespace DigitalStage::Api {
     void setUserId(const std::string& id);
     std::optional<std::string> getUserId() const;
     void setStageMemberId(const std::string& id);
-    std::optional<std::string> getStageMemberId() const;
+    [[maybe_unused]] std::optional<std::string> getStageMemberId() const;
 
     // Stage management
     void setStageId(const std::string& id);
@@ -40,7 +40,7 @@ namespace DigitalStage::Api {
 
     void setGroupId(const std::string& id);
     void resetGroupId();
-    std::optional<std::string> getGroupId() const;
+    [[maybe_unused]] std::optional<std::string> getGroupId() const;
 
     void setStageDeviceId(const std::string& id);
     void resetStageDeviceId();
@@ -154,7 +154,7 @@ namespace DigitalStage::Api {
     STORE_REMOVE_ALL(custom_stage_member_position_t, CustomStageMemberPosition,
                      customStageMemberPositions_mutex_,
                      customStageMemberPositions_)
-    std::optional<const custom_stage_member_position_t>
+    [[maybe_unused]] std::optional<const custom_stage_member_position_t>
     getCustomStageMemberPositionByStageMemberAndDevice(
         const std::string& stageMemberId, const std::string& deviceId) const;
     void createCustomStageMemberPosition(const json& payload);
@@ -171,7 +171,7 @@ namespace DigitalStage::Api {
                  customStageMemberVolumes_mutex_, customStageMemberVolumes_)
     STORE_REMOVE_ALL(custom_stage_member_volume_t, CustomStageMemberVolume,
                      customStageMemberVolumes_mutex_, customStageMemberVolumes_)
-    std::optional<const custom_stage_member_volume_t>
+    [[maybe_unused]] std::optional<const custom_stage_member_volume_t>
     getCustomStageMemberVolumeByStageMemberAndDevice(
         const std::string& stageMemberId, const std::string& deviceId) const;
     void createCustomStageMemberVolume(const json& payload);
@@ -186,7 +186,7 @@ namespace DigitalStage::Api {
     STORE_REMOVE_ALL(CustomStageDevicePosition, CustomStageDevicePosition,
                      customStageDevicePositions_mutex_,
                      customStageDevicePositions_)
-    std::optional<const CustomStageDevicePosition>
+    [[maybe_unused]] std::optional<const CustomStageDevicePosition>
     getCustomStageDevicePositionByStageDeviceAndDevice(
         const std::string& stageDeviceId, const std::string& deviceId) const;
     void createCustomStageDevicePosition(const json& payload);
@@ -203,7 +203,7 @@ namespace DigitalStage::Api {
                  customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
     STORE_REMOVE_ALL(CustomStageDeviceVolume, CustomStageDeviceVolume,
                      customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
-    std::optional<const CustomStageDeviceVolume>
+    [[maybe_unused]] std::optional<const CustomStageDeviceVolume>
     getCustomStageDeviceVolumeByStageDeviceAndDevice(
         const std::string& stageDeviceId, const std::string& deviceId) const;
     void createCustomStageDeviceVolume(const json& payload);

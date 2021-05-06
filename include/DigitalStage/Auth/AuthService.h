@@ -8,8 +8,7 @@
 #include <pplx/pplxtasks.h>
 #include <string>
 
-namespace DigitalStage {
-  namespace Auth {
+namespace DigitalStage::Auth {
     class AuthService {
     public:
       /**
@@ -32,7 +31,7 @@ namespace DigitalStage {
        * @param token
        * @return true if token is valid, otherwise false
        */
-      bool verifyTokenSync(const std::string& token);
+      [[maybe_unused]] bool verifyTokenSync(const std::string& token);
 
       /**
        * Sign into the auth service with given email and password
@@ -65,12 +64,11 @@ namespace DigitalStage {
        * @param token
        * @return true if successful, otherwise false
        */
-      bool signOutSync(const std::string& token);
+      [[maybe_unused]] bool signOutSync(const std::string& token);
 
     private:
-      std::string url;
+      std::string url_;
     };
-  } // namespace Auth
-} // namespace DigitalStage
+  } // namespace DigitalStage
 
 #endif // DS_AUTH_SERVICE_H

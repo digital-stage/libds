@@ -55,7 +55,7 @@ std::optional<StageDevice> Store::getStageDevice() const
   return std::nullopt;
 }
 
-std::optional<std::string> Store::getStageMemberId() const
+[[maybe_unused]] std::optional<std::string> Store::getStageMemberId() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->stageMemberId_mutex_);
   return this->stageMemberId_;
@@ -294,7 +294,7 @@ void Store::removeCustomGroupVolume(const std::string& id)
   customGroupVolumes_.erase(id);
 }
 
-std::optional<const custom_stage_member_position_t>
+[[maybe_unused]] std::optional<const custom_stage_member_position_t>
 Store::getCustomStageMemberPositionByStageMemberAndDevice(
     const std::string& stageMemberId, const std::string& deviceId) const
 {
@@ -699,4 +699,44 @@ void Store::removeCustomStageDeviceVolume(const std::string& id)
   customStageDeviceVolumeIds_by_StageDevice_and_Device_[stageDeviceId].erase(
       deviceId);
   customStageDeviceVolumes_.erase(id);
+}
+
+std::optional<const CustomStageDeviceVolume>
+Store::getCustomStageDeviceVolumeByStageDeviceAndDevice(
+    const std::string& stageDeviceId, const std::string& deviceId) const
+{
+  std::lock_guard<std::recursive_mutex> lock(
+      this->customStageDeviceVolumes_mutex_);
+  if(this->customStageDeviceVolumeIds_by_StageDevice_and_Device_.count(
+      stageDeviceId) > 0) {
+    if(this->customStageDeviceVolumeIds_by_StageDevice_and_Device_
+           .at(stageDeviceId)
+           .count(deviceId) > 0) {
+      return getCustomStageDeviceVolume(
+          this->customStageDeviceVolumeIds_by_StageDevice_and_Device_
+              .at(stageDeviceId)
+              .at(deviceId));
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<const CustomStageDevicePosition>
+Store::getCustomStageDevicePositionByStageDeviceAndDevice(
+    const std::string& stageDeviceId, const std::string& deviceId) const
+{
+  std::lock_guard<std::recursive_mutex> lock(
+      this->customStageDevicePositions_mutex_);
+  if(this->customStageDevicePositionIds_by_StageDevice_and_Device_.count(
+      stageDeviceId) > 0) {
+    if(this->customStageDevicePositionIds_by_StageDevice_and_Device_
+           .at(stageDeviceId)
+           .count(deviceId) > 0) {
+      return getCustomStageDevicePosition(
+          this->customStageDevicePositionIds_by_StageDevice_and_Device_
+              .at(stageDeviceId)
+              .at(deviceId));
+    }
+  }
+  return std::nullopt;
 }

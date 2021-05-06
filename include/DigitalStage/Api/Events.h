@@ -7,9 +7,7 @@
 
 using namespace DigitalStage::Types;
 
-namespace DigitalStage {
-
-  namespace Api {
+namespace DigitalStage::Api {
     enum class SendEventType {
 
     };
@@ -80,10 +78,10 @@ namespace DigitalStage {
     };
 
     namespace SendEvents {
-      extern const std::string CHANGE_DEVICE;
+      [[maybe_unused]] extern const std::string CHANGE_DEVICE;
       extern const std::string SET_SOUND_CARD;
       extern const std::string CREATE_LOCAL_AUDIO_TRACK;
-      extern const std::string CHANGE_LOCAL_AUDIO_TRACK;
+      [[maybe_unused]] extern const std::string CHANGE_LOCAL_AUDIO_TRACK;
       extern const std::string REMOVE_LOCAL_AUDIO_TRACK;
     } // namespace SendEvents
 
@@ -151,7 +149,6 @@ namespace DigitalStage {
       extern const std::string SOUND_CARD_CHANGED;
       extern const std::string SOUND_CARD_REMOVED;
     } // namespace RetrieveEvents
-  }   // namespace Api
-} // namespace DigitalStage
+  } // namespace DigitalStage
 
 #endif // DS_EVENTS

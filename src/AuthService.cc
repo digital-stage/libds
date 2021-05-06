@@ -16,7 +16,7 @@ using namespace DigitalStage::Auth;
 
 pplx::task<bool> AuthService::verifyToken(const std::string& token)
 {
-  const std::string url = this->url;
+  const std::string url = this->url_;
   return pplx::create_task([url, token]() {
            http_client client(url);
            http_request request(methods::POST);
@@ -32,7 +32,7 @@ pplx::task<bool> AuthService::verifyToken(const std::string& token)
                jsonObject.serialize(), U("application/json"));
            */
          })
-      .then([](http_response response) {
+      .then([](const http_response& response) {
         // Check the status code.
         std::cout << response.status_code() << std::endl;
         if(response.status_code() != 200) {
@@ -43,7 +43,7 @@ pplx::task<bool> AuthService::verifyToken(const std::string& token)
       });
 }
 
-bool AuthService::verifyTokenSync(const std::string& token)
+[[maybe_unused]] bool AuthService::verifyTokenSync(const std::string& token)
 {
   auto postJson = this->verifyToken(token);
   try {
@@ -58,13 +58,13 @@ bool AuthService::verifyTokenSync(const std::string& token)
 
 AuthService::AuthService(const std::string& authUrl)
 {
-  this->url = authUrl;
+  this->url_ = authUrl;
 }
 
 pplx::task<std::string> AuthService::signIn(const std::string& email,
                                             const std::string& password)
 {
-  const std::string url = this->url;
+  const std::string url = this->url_;
   return pplx::create_task([url, email, password]() {
            json::value jsonObject;
            jsonObject[U("email")] = json::value::string(U(email));
@@ -74,7 +74,7 @@ pplx::task<std::string> AuthService::signIn(const std::string& email,
                methods::POST, uri_builder(U("login")).to_string(),
                jsonObject.serialize(), U("application/json"));
          })
-      .then([](http_response response) {
+      .then([](const http_response& response) {
         // Check the status code.
         if(response.status_code() != 200) {
           throw std::invalid_argument("Returned " +
@@ -84,7 +84,7 @@ pplx::task<std::string> AuthService::signIn(const std::string& email,
         return response.extract_json();
       })
       // Parse the user details.
-      .then([](json::value jsonObject) { return jsonObject.as_string(); });
+      .then([](const json::value& jsonObject) { return jsonObject.as_string(); });
 }
 
 std::string AuthService::signInSync(const std::string& email,
@@ -103,7 +103,7 @@ std::string AuthService::signInSync(const std::string& email,
 
 pplx::task<bool> AuthService::signOut(const std::string& token)
 {
-  const std::string url = this->url;
+  const std::string url = this->url_;
   return pplx::create_task([url, token]() {
            http_client client(U(url + "/logout"));
            http_request request(methods::POST);
@@ -111,7 +111,7 @@ pplx::task<bool> AuthService::signOut(const std::string& token)
            request.headers().add(U("Authorization"), U("Bearer " + token));
            return client.request(request);
          })
-      .then([](http_response response) {
+      .then([](const http_response& response) {
         // Check the status code.
         if(response.status_code() != 200) {
           return false;
@@ -121,7 +121,7 @@ pplx::task<bool> AuthService::signOut(const std::string& token)
       });
 }
 
-bool AuthService::signOutSync(const std::string& token)
+[[maybe_unused]] bool AuthService::signOutSync(const std::string& token)
 {
   auto postJson = this->signOut(token);
   try {

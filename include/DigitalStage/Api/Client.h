@@ -202,12 +202,12 @@ namespace DigitalStage::Api {
      * Not implemented, but could be an alternative to the store
      * @return
      */
-    DigitalStage::Types::WholeStage getWholeStage() const;
+    [[maybe_unused]] DigitalStage::Types::WholeStage getWholeStage() const;
 
     /**
      * Not implemented, but could be an alternative to the store
      */
-    void setWholeStage(nlohmann::json wholeStage);
+    [[maybe_unused]] void setWholeStage(nlohmann::json wholeStage);
 
   private:
     const std::string apiUrl_;
