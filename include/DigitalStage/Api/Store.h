@@ -42,6 +42,11 @@ namespace DigitalStage::Api {
     void resetGroupId();
     std::optional<std::string> getGroupId() const;
 
+    void setStageDeviceId(const std::string& id);
+    void resetStageDeviceId();
+    std::optional<std::string> getStageDeviceId() const;
+    std::optional<DigitalStage::Types::StageDevice> getStageDevice() const;
+
     // Groups
     STORE_GET(DigitalStage::Types::Group, Group, groups_mutex_, groups_)
     STORE_GET_ALL(DigitalStage::Types::Group, Group, groups_mutex_, groups_)
@@ -291,6 +296,9 @@ namespace DigitalStage::Api {
 
     mutable std::recursive_mutex local_device_id_mutex_;
     std::optional<std::string> localDeviceId_;
+
+    mutable std::recursive_mutex stage_device_id_mutex_;
+    std::optional<std::string> stageDeviceId_;
 
     mutable std::recursive_mutex groups_mutex_;
     std::map<std::string, json> groups_;

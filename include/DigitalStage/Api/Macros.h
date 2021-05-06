@@ -2,7 +2,7 @@
 #define DS_MACROS
 
 #define STORE_GET(TYPE, NAME, MUTEX, VAR)                                      \
-  std::optional<const TYPE> get##NAME(const std::string& id) const             \
+  const std::optional<TYPE> get##NAME(const std::string& id) const             \
   {                                                                            \
     std::lock_guard<std::recursive_mutex> lock(this->MUTEX);                   \
     if(VAR.count(id) > 0) {                                                    \

@@ -203,7 +203,14 @@ pplx::task<void> Client::connect(const std::string& apiToken,
          */
       } else if(event == RetrieveEvents::STAGE_DEVICE_ADDED) {
         store_->createStageDevice(payload);
-        this->stageDeviceAdded(payload.get<StageDevice>(), getStore());
+        auto stageDevice = payload.get<StageDevice>();
+        auto localDeviceId = store_->getLocalDeviceId();
+        auto stageId = store_->getStageId();
+        if(localDeviceId && stageId && *stageId == stageDevice.stageId &&
+           *localDeviceId == stageDevice.deviceId) {
+          store_->setStageDeviceId(stageDevice._id);
+        }
+        this->stageDeviceAdded(stageDevice, getStore());
       } else if(event == RetrieveEvents::STAGE_DEVICE_CHANGED) {
         store_->updateStageDevice(payload);
         const std::string id = payload["_id"];
@@ -211,8 +218,16 @@ pplx::task<void> Client::connect(const std::string& apiToken,
       } else if(event == RetrieveEvents::STAGE_DEVICE_REMOVED) {
         const std::string id = payload;
         auto stageDevice = store_->getStageDevice(id);
-        store_->removeStageDevice(id);
-        this->stageDeviceRemoved(*stageDevice, getStore());
+        if(stageDevice) {
+          store_->removeStageDevice(id);
+          auto stageId = store_->getStageId();
+          auto localDeviceId = store_->getLocalDeviceId();
+          if(localDeviceId && stageId && *stageId == stageDevice->stageId &&
+             *localDeviceId == stageDevice->deviceId) {
+            store_->resetStageDeviceId();
+          }
+          this->stageDeviceRemoved(*stageDevice, getStore());
+        }
 
         /*
          * CUSTOM STAGE DEVICES VOLUME AND POSITIONS
@@ -376,6 +391,9 @@ pplx::task<void> Client::connect(const std::string& apiToken,
          * STAGE JOINED
          */
       } else if(event == RetrieveEvents::STAGE_JOINED) {
+        auto stageId = payload["stageId"].get<std::string>();
+        auto groupId = payload["groupId"].get<std::string>();
+        auto localDeviceId = store_->getLocalDeviceId();
         if(payload.count("remoteUsers") > 0) {
           for(const auto& item : payload["remoteUsers"]) {
             store_->createUser(item);
@@ -418,6 +436,25 @@ pplx::task<void> Client::connect(const std::string& apiToken,
           this->customStageMemberPositionAdded(
               item.get<custom_stage_member_position_t>(), getStore());
         }
+        for(const auto& item : payload["stageDevices"]) {
+          store_->createStageDevice(item);
+          auto stageDevice = item.get<StageDevice>();
+          if(localDeviceId && stageId == stageDevice.stageId &&
+             *localDeviceId == stageDevice.deviceId) {
+            store_->setStageDeviceId(stageDevice._id);
+          }
+          this->stageDeviceAdded(stageDevice, getStore());
+        }
+        for(const auto& item : payload["customStageDeviceVolumes"]) {
+          store_->createCustomStageDeviceVolume(item);
+          this->customStageDeviceVolumeAdded(
+              item.get<CustomStageDeviceVolume>(), getStore());
+        }
+        for(const auto& item : payload["customStageDevicePositions"]) {
+          store_->createCustomStageDevicePosition(item);
+          this->customStageDevicePositionAdded(
+              item.get<CustomStageDevicePosition>(), getStore());
+        }
         for(const auto& item : payload["remoteAudioTracks"]) {
           store_->createRemoteAudioTrack(item);
           this->remoteAudioTrackAdded(item.get<remote_audio_track_t>(),
@@ -438,8 +475,6 @@ pplx::task<void> Client::connect(const std::string& apiToken,
           this->customRemoteAudioTrackVolumeAdded(
               item.get<custom_remote_audio_track_volume_t>(), getStore());
         }
-        auto stageId = payload["stageId"].get<std::string>();
-        auto groupId = payload["groupId"].get<std::string>();
         store_->setStageId(stageId);
         store_->setGroupId(groupId);
         this->stageJoined(stageId, groupId, getStore());
@@ -450,8 +485,8 @@ pplx::task<void> Client::connect(const std::string& apiToken,
       } else if(event == RetrieveEvents::STAGE_LEFT) {
         store_->resetStageId();
         store_->resetGroupId();
+        store_->resetStageDeviceId();
         store_->removeAllStageMembers();
-        std::cout << "See me?" << event << std::endl;
         store_->removeAllCustomStageMemberPositions();
         store_->removeAllCustomStageMemberVolumes();
         store_->removeAllCustomGroupPositions();
@@ -460,6 +495,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         store_->removeAllRemoteAudioTracks();
         store_->removeAllCustomRemoteAudioTrackPositions();
         store_->removeAllCustomRemoteAudioTrackVolumes();
+        std::cout << "See me?" << event << std::endl;
         // TODO: Discuss, the store may dispatch all the events instead...
         // TODO: Otherwise we have to dispatch all removals HERE (!)
         // Current workaround: assuming, that on left all using
@@ -518,7 +554,8 @@ DigitalStage::Types::WholeStage Client::getWholeStage() const
   return wholeStage_.get<DigitalStage::Types::WholeStage>();
 }
 
-void Client::setWholeStage(nlohmann::json wholeStage) {
+void Client::setWholeStage(nlohmann::json wholeStage)
+{
   const std::lock_guard<std::mutex> lock(wholeStage_mutex_);
   this->wholeStage_ = std::move(wholeStage);
 }

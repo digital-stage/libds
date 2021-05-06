@@ -4,7 +4,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
+#include <set>
 
 using nlohmann::json;
 
@@ -42,7 +42,7 @@ namespace DigitalStage::Types {
     bool receiveVideo;
     bool receiveAudio;
 
-    std::vector<std::string> availableSoundCardIds;
+    std::set<std::string> availableSoundCardIds;
     std::optional<std::string> soundCardId;
 
     // jammer specific
@@ -69,8 +69,8 @@ namespace DigitalStage::Types {
     std::string name;
     std::string description;
     std::optional<std::string> password;
-    std::vector<std::string> admins;
-    std::vector<std::string> soundEditors;
+    std::set<std::string> admins;
+    std::set<std::string> soundEditors;
     std::optional<std::string> iconUrl;
 
     std::string videoType;
@@ -243,11 +243,11 @@ namespace DigitalStage::Types {
     bool isDefault;
 
     std::string label;
-    std::vector<std::string> drivers;
+    std::set<std::string> drivers;
     std::optional<std::string> driver; //'jack' | 'alsa' | 'asio' | 'webrtc'
 
     double sampleRate;
-    std::vector<double> sampleRates;
+    std::set<double> sampleRates;
     unsigned int periodSize;
     unsigned int numPeriods;
     std::optional<double> softwareLatency;
@@ -277,7 +277,6 @@ namespace DigitalStage::Types {
     ID_TYPE stageMemberId;
     ID_TYPE stageId;
     ID_TYPE userId;
-    bool online;
     std::string type;
   };
 
@@ -288,7 +287,6 @@ namespace DigitalStage::Types {
     ID_TYPE stageMemberId;
     ID_TYPE stageId;
     ID_TYPE userId;
-    bool online;
     std::string type;
     double volume;
     bool muted;
@@ -403,7 +401,7 @@ namespace DigitalStage::Types {
     if(!j.at("availableSoundCardIds").is_null()) {
       j.at("availableSoundCardIds").get_to(p.availableSoundCardIds);
     } else {
-      p.availableSoundCardIds = std::vector<std::string>();
+      p.availableSoundCardIds = std::set<std::string>();
     }
     optional_from_json(j, "soundCardId", p.soundCardId);
 
@@ -824,7 +822,6 @@ namespace DigitalStage::Types {
              {"stageMemberId", p.stageMemberId},
              {"stageId", p.stageId},
              {"userId", p.userId},
-             {"online", p.online},
              {"type", p.type}};
   }
 
@@ -835,7 +832,6 @@ namespace DigitalStage::Types {
     j.at("stageMemberId").get_to(p.stageMemberId);
     j.at("stageId").get_to(p.stageId);
     j.at("userId").get_to(p.userId);
-    j.at("online").get_to(p.online);
     j.at("type").get_to(p.type);
   }
 
@@ -846,7 +842,6 @@ namespace DigitalStage::Types {
              {"stageMemberId", p.stageMemberId},
              {"stageId", p.stageId},
              {"userId", p.userId},
-             {"online", p.online},
              {"type", p.type},
              {"volume", p.volume},
              {"muted", p.muted},
@@ -868,7 +863,6 @@ namespace DigitalStage::Types {
     j.at("deviceId").get_to(p.deviceId);
     j.at("stageId").get_to(p.stageId);
     j.at("userId").get_to(p.userId);
-    j.at("online").get_to(p.online);
     j.at("type").get_to(p.type);
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);

@@ -14,6 +14,7 @@ std::optional<const Device> Store::getLocalDevice() const
   }
   return std::nullopt;
 }
+
 std::optional<std::string> Store::getLocalDeviceId() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->local_device_id_mutex_);
@@ -24,6 +25,34 @@ void Store::setLocalDeviceId(const std::string& id)
 {
   std::lock_guard<std::recursive_mutex> lock(this->local_device_id_mutex_);
   localDeviceId_ = id;
+}
+
+std::optional<std::string> Store::getStageDeviceId() const
+{
+  std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
+  return stageDeviceId_;
+}
+
+void Store::setStageDeviceId(const std::string& id)
+{
+  std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
+  stageDeviceId_ = id;
+}
+
+void Store::resetStageDeviceId()
+{
+  std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
+  stageDeviceId_ = std::nullopt;
+}
+
+std::optional<StageDevice> Store::getStageDevice() const
+{
+  std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
+  auto stageDeviceId = getStageDeviceId();
+  if(stageDeviceId) {
+    return getStageDevice(*stageDeviceId);
+  }
+  return std::nullopt;
 }
 
 std::optional<std::string> Store::getStageMemberId() const
@@ -466,8 +495,8 @@ void Store::removeCustomRemoteAudioTrackVolume(const std::string& id)
   const auto remoteAudioTrackId =
       this->customRemoteAudioTrackVolumes_.at(id)["remoteAudioTrackId"]
           .get<std::string>();
-  const auto deviceId =
-      this->customRemoteAudioTrackVolumes_.at(id)["deviceId"].get<std::string>();
+  const auto deviceId = this->customRemoteAudioTrackVolumes_.at(id)["deviceId"]
+                            .get<std::string>();
   customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_
       [remoteAudioTrackId]
           .erase(deviceId);
