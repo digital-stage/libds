@@ -22,6 +22,7 @@ add_subdirectory(sigslot)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(Boost REQUIRED)
 
 ### SOURCE MANAGEMENT
 set(API_HEADERS
@@ -59,6 +60,7 @@ target_link_libraries(DigitalStageAuth
         PUBLIC
         cpprestsdk::cpprest
         OpenSSL::Crypto
+        Boost::boost
         )
 
 add_executable(cli
