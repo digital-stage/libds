@@ -76,7 +76,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
          * LOCAL USER
          */
       } else if(event == RetrieveEvents::USER_READY) {
-        const auto user = payload.get<user_t>();
+        const auto user = payload.get<User>();
         store_->createUser(payload);
         store_->setUserId(user._id);
         this->userAdded(user, getStore());
@@ -176,7 +176,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_ADDED) {
         store_->createCustomStageMemberPosition(payload);
         this->customStageMemberPositionAdded(
-            payload.get<custom_stage_member_position_t>(), getStore());
+            payload.get<CustomStageMemberPosition>(), getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_CHANGED) {
         store_->updateCustomStageMemberPosition(payload);
         const std::string id = payload["_id"];
@@ -188,7 +188,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_ADDED) {
         store_->createCustomStageMemberVolume(payload);
         this->customStageMemberVolumeAdded(
-            payload.get<custom_stage_member_volume_t>(), getStore());
+            payload.get<CustomStageMemberVolume>(), getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_CHANGED) {
         store_->updateCustomStageMemberVolume(payload);
         const std::string id = payload["_id"];
@@ -258,111 +258,79 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         this->customStageDeviceVolumeRemoved(id, getStore());
 
         /*
-         * LOCAL VIDEO TRACKS
+         * VIDEO TRACKS
          */
-      } else if(event == RetrieveEvents::LOCAL_VIDEO_TRACK_ADDED) {
-        store_->createLocalVideoTrack(payload);
-        this->localVideoTrackAdded(payload.get<local_video_track_t>(),
-                                   getStore());
-      } else if(event == RetrieveEvents::LOCAL_VIDEO_TRACK_CHANGED) {
-        store_->updateLocalVideoTrack(payload);
-        const std::string id = payload["_id"];
-        this->localVideoTrackChanged(id, payload, getStore());
-      } else if(event == RetrieveEvents::LOCAL_VIDEO_TRACK_REMOVED) {
-        const std::string id = payload;
-        store_->removeLocalVideoTrack(id);
-        this->localVideoTrackRemoved(id, getStore());
-
-        /*
-         * LOCAL AUDIO TRACKS
-         */
-      } else if(event == RetrieveEvents::LOCAL_AUDIO_TRACK_ADDED) {
-        store_->createLocalAudioTrack(payload);
-        this->localAudioTrackAdded(payload.get<local_audio_track_t>(),
-                                   getStore());
-      } else if(event == RetrieveEvents::LOCAL_AUDIO_TRACK_CHANGED) {
-        store_->updateLocalAudioTrack(payload);
-        const std::string id = payload["_id"];
-        this->localAudioTrackChanged(id, payload, getStore());
-      } else if(event == RetrieveEvents::LOCAL_AUDIO_TRACK_REMOVED) {
-        const std::string id = payload;
-        store_->removeLocalAudioTrack(id);
-        this->localAudioTrackRemoved(id, getStore());
-
-        /*
-         * REMOTE VIDEO TRACKS
-         */
-      } else if(event == RetrieveEvents::REMOTE_VIDEO_TRACK_ADDED) {
-        store_->createRemoteVideoTrack(payload);
-        this->remoteVideoTrackAdded(payload.get<remote_video_track_t>(),
+      } else if(event == RetrieveEvents::VIDEO_TRACK_ADDED) {
+        store_->createVideoTrack(payload);
+        this->videoTrackAdded(payload.get<VideoTrack>(),
                                     getStore());
-      } else if(event == RetrieveEvents::REMOTE_VIDEO_TRACK_CHANGED) {
-        store_->updateRemoteVideoTrack(payload);
+      } else if(event == RetrieveEvents::VIDEO_TRACK_CHANGED) {
+        store_->updateVideoTrack(payload);
         const std::string id = payload["_id"];
-        this->remoteVideoTrackChanged(id, payload, getStore());
-      } else if(event == RetrieveEvents::REMOTE_VIDEO_TRACK_REMOVED) {
+        this->videoTrackChanged(id, payload, getStore());
+      } else if(event == RetrieveEvents::VIDEO_TRACK_REMOVED) {
         const std::string id = payload;
-        auto track = store_->getRemoteVideoTrack(id);
-        store_->removeRemoteVideoTrack(id);
-        this->remoteVideoTrackRemoved(*track, getStore());
+        auto track = store_->getVideoTrack(id);
+        store_->removeVideoTrack(id);
+        this->videoTrackRemoved(*track, getStore());
 
         /*
-         * REMOTE AUDIO TRACKS
+         * AUDIO TRACKS
          */
-      } else if(event == RetrieveEvents::REMOTE_AUDIO_TRACK_ADDED) {
-        store_->createRemoteAudioTrack(payload);
-        this->remoteAudioTrackAdded(payload.get<remote_audio_track_t>(),
+      } else if(event == RetrieveEvents::AUDIO_TRACK_ADDED) {
+        store_->createAudioTrack(payload);
+        this->audioTrackAdded(payload.get<AudioTrack>(),
                                     getStore());
-      } else if(event == RetrieveEvents::REMOTE_AUDIO_TRACK_CHANGED) {
-        store_->updateRemoteAudioTrack(payload);
+      } else if(event == RetrieveEvents::AUDIO_TRACK_CHANGED) {
+        store_->updateAudioTrack(payload);
         const std::string id = payload["_id"];
-        this->remoteAudioTrackChanged(id, payload, getStore());
-      } else if(event == RetrieveEvents::REMOTE_AUDIO_TRACK_REMOVED) {
+        this->audioTrackChanged(id, payload, getStore());
+      } else if(event == RetrieveEvents::AUDIO_TRACK_REMOVED) {
         const std::string id = payload;
-        auto track = store_->getRemoteAudioTrack(id);
-        store_->removeRemoteAudioTrack(id);
-        this->remoteAudioTrackRemoved(*track, getStore());
+        auto track = store_->getAudioTrack(id);
+        store_->removeAudioTrack(id);
+        this->audioTrackRemoved(*track, getStore());
 
         /*
-         * CUSTOM REMOTE_AUDIO_TRACK VOLUME AND POSITIONS
+         * AUDIO TRACK VOLUME AND POSITIONS
          */
       } else if(event ==
-                RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED) {
-        store_->createCustomRemoteAudioTrackPosition(payload);
-        this->customRemoteAudioTrackPositionAdded(
-            payload.get<custom_remote_audio_track_position_t>(), getStore());
+                RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_ADDED) {
+        store_->createCustomAudioTrackPosition(payload);
+        this->customAudioTrackPositionAdded(
+            payload.get<CustomAudioTrackPosition>(), getStore());
       } else if(event ==
-                RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_CHANGED) {
-        store_->updateCustomRemoteAudioTrackPosition(payload);
+                RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_CHANGED) {
+        store_->updateCustomAudioTrackPosition(payload);
         const std::string id = payload["_id"];
-        this->customRemoteAudioTrackPositionChanged(id, payload, getStore());
+        this->customAudioTrackPositionChanged(id, payload, getStore());
       } else if(event ==
-                RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_REMOVED) {
+                RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomRemoteAudioTrackPosition(id);
-        this->customRemoteAudioTrackPositionRemoved(id, getStore());
+        store_->removeCustomAudioTrackPosition(id);
+        this->customAudioTrackPositionRemoved(id, getStore());
       } else if(event ==
-                RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_ADDED) {
-        store_->createCustomRemoteAudioTrackVolume(payload);
-        this->customRemoteAudioTrackVolumeAdded(
-            payload.get<custom_remote_audio_track_volume_t>(), getStore());
+                RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_ADDED) {
+        store_->createCustomAudioTrackVolume(payload);
+        this->customAudioTrackVolumeAdded(
+            payload.get<CustomAudioTrackVolume>(), getStore());
       } else if(event ==
-                RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_CHANGED) {
-        store_->updateCustomRemoteAudioTrackVolume(payload);
+                RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_CHANGED) {
+        store_->updateCustomAudioTrackVolume(payload);
         const std::string id = payload["_id"];
-        this->customRemoteAudioTrackVolumeChanged(id, payload, getStore());
+        this->customAudioTrackVolumeChanged(id, payload, getStore());
       } else if(event ==
-                RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_REMOVED) {
+                RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomRemoteAudioTrackVolume(id);
-        this->customRemoteAudioTrackVolumeRemoved(id, getStore());
+        store_->removeCustomAudioTrackVolume(id);
+        this->customAudioTrackVolumeRemoved(id, getStore());
 
         /*
          * USERS
          */
       } else if(event == RetrieveEvents::REMOTE_USER_ADDED) {
         store_->createUser(payload);
-        this->userAdded(payload.get<user_t>(), getStore());
+        this->userAdded(payload.get<User>(), getStore());
       } else if(event == RetrieveEvents::REMOTE_USER_CHANGED) {
         store_->updateUser(payload);
         const std::string id = payload["_id"];
@@ -397,7 +365,7 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         if(payload.count("remoteUsers") > 0) {
           for(const auto& item : payload["remoteUsers"]) {
             store_->createUser(item);
-            this->userAdded(item.get<user_t>(), getStore());
+            this->userAdded(item.get<User>(), getStore());
           }
         }
         if(payload.count("stage") > 0) {
@@ -429,12 +397,12 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         for(const auto& item : payload["customStageMemberVolumes"]) {
           store_->createCustomStageMemberVolume(item);
           this->customStageMemberVolumeAdded(
-              item.get<custom_stage_member_volume_t>(), getStore());
+              item.get<CustomStageMemberVolume>(), getStore());
         }
         for(const auto& item : payload["customStageMemberPositions"]) {
           store_->createCustomStageMemberPosition(item);
           this->customStageMemberPositionAdded(
-              item.get<custom_stage_member_position_t>(), getStore());
+              item.get<CustomStageMemberPosition>(), getStore());
         }
         for(const auto& item : payload["stageDevices"]) {
           store_->createStageDevice(item);
@@ -455,25 +423,25 @@ pplx::task<void> Client::connect(const std::string& apiToken,
           this->customStageDevicePositionAdded(
               item.get<CustomStageDevicePosition>(), getStore());
         }
-        for(const auto& item : payload["remoteAudioTracks"]) {
-          store_->createRemoteAudioTrack(item);
-          this->remoteAudioTrackAdded(item.get<remote_audio_track_t>(),
+        for(const auto& item : payload["audioTracks"]) {
+          store_->createAudioTrack(item);
+          this->audioTrackAdded(item.get<AudioTrack>(),
                                       getStore());
         }
-        for(const auto& item : payload["remoteVideoTracks"]) {
-          store_->createRemoteVideoTrack(item);
-          this->remoteVideoTrackAdded(item.get<remote_video_track_t>(),
+        for(const auto& item : payload["videoTracks"]) {
+          store_->createVideoTrack(item);
+          this->videoTrackAdded(item.get<VideoTrack>(),
                                       getStore());
         }
-        for(const auto& item : payload["customRemoteAudioTrackPositions"]) {
-          store_->createCustomRemoteAudioTrackPosition(item);
-          this->customRemoteAudioTrackPositionAdded(
-              item.get<custom_remote_audio_track_position_t>(), getStore());
+        for(const auto& item : payload["customAudioTrackPositions"]) {
+          store_->createCustomAudioTrackPosition(item);
+          this->customAudioTrackPositionAdded(
+              item.get<CustomAudioTrackPosition>(), getStore());
         }
-        for(const auto& item : payload["customRemoteAudioTrackVolumes"]) {
-          store_->createCustomRemoteAudioTrackVolume(item);
-          this->customRemoteAudioTrackVolumeAdded(
-              item.get<custom_remote_audio_track_volume_t>(), getStore());
+        for(const auto& item : payload["customAudioTrackVolumes"]) {
+          store_->createCustomAudioTrackVolume(item);
+          this->customAudioTrackVolumeAdded(
+              item.get<CustomAudioTrackVolume>(), getStore());
         }
         store_->setStageId(stageId);
         store_->setGroupId(groupId);
@@ -491,10 +459,10 @@ pplx::task<void> Client::connect(const std::string& apiToken,
         store_->removeAllCustomStageMemberVolumes();
         store_->removeAllCustomGroupPositions();
         store_->removeAllCustomGroupVolumes();
-        store_->removeAllRemoteVideoTracks();
-        store_->removeAllRemoteAudioTracks();
-        store_->removeAllCustomRemoteAudioTrackPositions();
-        store_->removeAllCustomRemoteAudioTrackVolumes();
+        store_->removeAllVideoTracks();
+        store_->removeAllAudioTracks();
+        store_->removeAllCustomAudioTrackPositions();
+        store_->removeAllCustomAudioTrackVolumes();
         std::cout << "See me?" << event << std::endl;
         // TODO: Discuss, the store may dispatch all the events instead...
         // TODO: Otherwise we have to dispatch all removals HERE (!)

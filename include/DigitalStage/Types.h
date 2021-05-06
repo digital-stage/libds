@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <string>
 #include <set>
+#include <string>
 
 using nlohmann::json;
 
@@ -42,7 +42,6 @@ namespace DigitalStage::Types {
     bool receiveVideo;
     bool receiveAudio;
 
-    std::set<std::string> availableSoundCardIds;
     std::optional<std::string> soundCardId;
 
     // jammer specific
@@ -164,7 +163,7 @@ namespace DigitalStage::Types {
     double rZ;
   };
 
-  struct custom_stage_member_position_t {
+  struct CustomStageMemberPosition {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
@@ -177,7 +176,7 @@ namespace DigitalStage::Types {
     double rY = std::numeric_limits<double>::lowest();
     double rZ = std::numeric_limits<double>::lowest();
   };
-  struct custom_stage_member_volume_t {
+  struct CustomStageMemberVolume {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
@@ -252,41 +251,29 @@ namespace DigitalStage::Types {
     unsigned int numPeriods;
     std::optional<double> softwareLatency;
 
+    bool online;
+
     std::map<std::string, bool> inputChannels;
     std::map<std::string, bool> outputChannels;
   };
 
-  struct local_video_track_t {
+  struct VideoTrack {
     ID_TYPE _id;
-    ID_TYPE deviceId;
     ID_TYPE userId;
-    std::string type;
-  };
-
-  struct local_audio_track_t {
-    ID_TYPE _id;
     ID_TYPE deviceId;
-    ID_TYPE userId;
-    std::string type;
-    std::optional<std::string> ovSourcePort;
-  };
-
-  struct remote_video_track_t {
-    ID_TYPE _id;
-    ID_TYPE localVideoTrackId;
-    ID_TYPE stageMemberId;
     ID_TYPE stageId;
-    ID_TYPE userId;
+    ID_TYPE stageMemberId;
+    ID_TYPE stageDeviceId;
     std::string type;
   };
 
-  struct remote_audio_track_t {
+  struct AudioTrack {
     ID_TYPE _id;
-    ID_TYPE localAudioTrackId;
-    ID_TYPE deviceId;
-    ID_TYPE stageMemberId;
-    ID_TYPE stageId;
     ID_TYPE userId;
+    ID_TYPE deviceId;
+    ID_TYPE stageId;
+    ID_TYPE stageMemberId;
+    ID_TYPE stageDeviceId;
     std::string type;
     double volume;
     bool muted;
@@ -300,11 +287,12 @@ namespace DigitalStage::Types {
     std::optional<std::string> ovSourcePort;
   };
 
-  struct custom_remote_audio_track_position_t {
+  struct CustomAudioTrackPosition {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
-    ID_TYPE remoteAudioTrackId;
+    ID_TYPE audioTrackId;
+    ID_TYPE stageId;
 
     std::string directivity = "cardoid"; // "omni" or "cardoid"
     double x = std::numeric_limits<double>::lowest();
@@ -315,16 +303,17 @@ namespace DigitalStage::Types {
     double rZ = std::numeric_limits<double>::lowest();
   };
 
-  struct custom_remote_audio_track_volume_t {
+  struct CustomAudioTrackVolume {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
-    ID_TYPE remoteAudioTrackId;
+    ID_TYPE audioTrackId;
+    ID_TYPE stageId;
     double volume = 1;
     bool muted = false;
   };
 
-  struct user_t {
+  struct User {
     ID_TYPE _id;
     std::string uid;
     std::string name;
@@ -336,25 +325,31 @@ namespace DigitalStage::Types {
   };
 
   struct WholeStage {
-    std::map<std::string, user_t> users;
+    std::map<std::string, User> users;
     std::map<std::string, Device> devices;
     std::map<std::string, SoundCard> soundCards;
     std::map<std::string, Stage> stages;
     std::map<std::string, Group> groups;
-    std::map<std::string, std::map<std::string, CustomGroupPosition>> customGroupPositions;
-    std::map<std::string, std::map<std::string, CustomGroupVolume>> customGroupVolumes;
+    std::map<std::string, std::map<std::string, CustomGroupPosition>>
+        customGroupPositions;
+    std::map<std::string, std::map<std::string, CustomGroupVolume>>
+        customGroupVolumes;
     std::map<std::string, StageMember> stageMembers;
-    std::map<std::string, std::map<std::string, custom_stage_member_position_t>> customStageMemberPositions;
-    std::map<std::string, std::map<std::string, custom_stage_member_volume_t>> customStageMemberVolumes;
+    std::map<std::string, std::map<std::string, CustomStageMemberPosition>>
+        customStageMemberPositions;
+    std::map<std::string, std::map<std::string, CustomStageMemberVolume>>
+        customStageMemberVolumes;
     std::map<std::string, StageDevice> stageDevices;
-    std::map<std::string, std::map<std::string, CustomStageDevicePosition>> customStageDevicePositions;
-    std::map<std::string, std::map<std::string, CustomStageDeviceVolume>> customStageDeviceVolumes;
-    std::map<std::string, remote_audio_track_t> remoteAudioTracks;
-    std::map<std::string, std::map<std::string, custom_remote_audio_track_position_t>> customRemoteAudioPositions;
-    std::map<std::string, std::map<std::string, custom_remote_audio_track_volume_t>> customRemoteAudioVolumes;
-    std::map<std::string, remote_video_track_t> remoteVideoTracks;
-    std::map<std::string, local_audio_track_t> localAudioTracks;
-    std::map<std::string, local_video_track_t> localVideoTracks;
+    std::map<std::string, std::map<std::string, CustomStageDevicePosition>>
+        customStageDevicePositions;
+    std::map<std::string, std::map<std::string, CustomStageDeviceVolume>>
+        customStageDeviceVolumes;
+    std::map<std::string, AudioTrack> audioTracks;
+    std::map<std::string, std::map<std::string, CustomAudioTrackPosition>>
+        customAudioPositions;
+    std::map<std::string, std::map<std::string, CustomAudioTrackVolume>>
+        customAudioVolumes;
+    std::map<std::string, VideoTrack> videoTracks;
   };
 
   inline void to_json(json& j, const Device& p)
@@ -369,8 +364,7 @@ namespace DigitalStage::Types {
              {"sendVideo", p.sendVideo},
              {"sendAudio", p.sendAudio},
              {"receiveVideo", p.receiveVideo},
-             {"receiveAudio", p.receiveAudio},
-             {"availableSoundCardIds", p.availableSoundCardIds}};
+             {"receiveAudio", p.receiveAudio}};
 
     optional_to_json(j, "soundCardId", p.soundCardId);
     optional_to_json(j, "ovReceiverType", p.ovReceiverType);
@@ -398,11 +392,6 @@ namespace DigitalStage::Types {
     j.at("receiveVideo").get_to(p.receiveVideo);
     j.at("receiveAudio").get_to(p.receiveAudio);
 
-    if(!j.at("availableSoundCardIds").is_null()) {
-      j.at("availableSoundCardIds").get_to(p.availableSoundCardIds);
-    } else {
-      p.availableSoundCardIds = std::set<std::string>();
-    }
     optional_from_json(j, "soundCardId", p.soundCardId);
 
     // ov specific
@@ -612,7 +601,7 @@ namespace DigitalStage::Types {
     j.at("rZ").get_to(p.rZ);
   }
 
-  inline void to_json(json& j, const custom_stage_member_position_t& p)
+  inline void to_json(json& j, const CustomStageMemberPosition& p)
   {
     j = json{{"_id", p._id},       {"deviceId", p.deviceId},
              {"userId", p.userId}, {"stageMemberId", p.stageMemberId},
@@ -621,7 +610,7 @@ namespace DigitalStage::Types {
              {"rY", p.rY},         {"rZ", p.rZ}};
   }
 
-  inline void from_json(const json& j, custom_stage_member_position_t& p)
+  inline void from_json(const json& j, CustomStageMemberPosition& p)
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
@@ -636,14 +625,14 @@ namespace DigitalStage::Types {
     j.at("rZ").get_to(p.rZ);
   }
 
-  inline void to_json(json& j, const custom_stage_member_volume_t& p)
+  inline void to_json(json& j, const CustomStageMemberVolume& p)
   {
     j = json{{"_id", p._id},           {"userId", p.userId},
              {"deviceId", p.deviceId}, {"stageMemberId", p.stageMemberId},
              {"volume", p.volume},     {"muted", p.muted}};
   }
 
-  inline void from_json(const json& j, custom_stage_member_volume_t& p)
+  inline void from_json(const json& j, CustomStageMemberVolume& p)
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
@@ -758,7 +747,8 @@ namespace DigitalStage::Types {
              {"periodSize", p.periodSize},
              {"numPeriods", p.numPeriods},
              {"inputChannels", p.inputChannels},
-             {"outputChannels", p.outputChannels}};
+             {"outputChannels", p.outputChannels},
+             {"online", p.online}};
     optional_to_json(j, "driver", p.driver);
     optional_to_json(j, "softwareLatency", p.softwareLatency);
   }
@@ -777,70 +767,40 @@ namespace DigitalStage::Types {
     j.at("numPeriods").get_to(p.numPeriods);
     j.at("inputChannels").get_to(p.inputChannels);
     j.at("outputChannels").get_to(p.outputChannels);
+    j.at("online").get_to(p.online);
     optional_from_json(j, "driver", p.driver);
     optional_from_json(j, "softwareLatency", p.softwareLatency);
   }
 
-  inline void to_json(json& j, const local_video_track_t& p)
+  inline void to_json(json& j, const VideoTrack& p)
   {
     j = json{{"_id", p._id},
-             {"userId", p.userId},
-             {"deviceId", p.deviceId},
-             {"type", p.type}};
-  }
-
-  inline void from_json(const json& j, local_video_track_t& p)
-  {
-    j.at("_id").get_to(p._id);
-    j.at("userId").get_to(p.userId);
-    j.at("deviceId").get_to(p.deviceId);
-    j.at("type").get_to(p.type);
-  }
-
-  inline void to_json(json& j, const local_audio_track_t& p)
-  {
-    j = json{{"_id", p._id},
-             {"userId", p.userId},
-             {"deviceId", p.deviceId},
-             {"type", p.type}};
-    optional_to_json(j, "ovSourcePort", p.ovSourcePort);
-  }
-
-  inline void from_json(const json& j, local_audio_track_t& p)
-  {
-    j.at("_id").get_to(p._id);
-    j.at("userId").get_to(p.userId);
-    j.at("deviceId").get_to(p.deviceId);
-    j.at("type").get_to(p.type);
-    optional_from_json(j, "ovSourcePort", p.ovSourcePort);
-  }
-
-  inline void to_json(json& j, const remote_video_track_t& p)
-  {
-    j = json{{"_id", p._id},
-             {"localVideoTrackId", p.localVideoTrackId},
+             {"stageDeviceId", p.stageDeviceId},
              {"stageMemberId", p.stageMemberId},
              {"stageId", p.stageId},
+             {"deviceId", p.deviceId},
              {"userId", p.userId},
              {"type", p.type}};
   }
 
-  inline void from_json(const json& j, remote_video_track_t& p)
+  inline void from_json(const json& j, VideoTrack& p)
   {
     j.at("_id").get_to(p._id);
-    j.at("localVideoTrackId").get_to(p.localVideoTrackId);
+    j.at("stageDeviceId").get_to(p.stageDeviceId);
     j.at("stageMemberId").get_to(p.stageMemberId);
     j.at("stageId").get_to(p.stageId);
+    j.at("deviceId").get_to(p.deviceId);
     j.at("userId").get_to(p.userId);
     j.at("type").get_to(p.type);
   }
 
-  inline void to_json(json& j, const remote_audio_track_t& p)
+  inline void to_json(json& j, const AudioTrack& p)
   {
     j = json{{"_id", p._id},
-             {"localAudioTrackId", p.localAudioTrackId},
+             {"stageDeviceId", p.stageDeviceId},
              {"stageMemberId", p.stageMemberId},
              {"stageId", p.stageId},
+             {"deviceId", p.deviceId},
              {"userId", p.userId},
              {"type", p.type},
              {"volume", p.volume},
@@ -855,14 +815,15 @@ namespace DigitalStage::Types {
     optional_to_json(j, "ovSourcePort", p.ovSourcePort);
   }
 
-  inline void from_json(const json& j, remote_audio_track_t& p)
+  inline void from_json(const json& j, AudioTrack& p)
   {
     j.at("_id").get_to(p._id);
-    j.at("localAudioTrackId").get_to(p.localAudioTrackId);
+    j.at("stageDeviceId").get_to(p.stageDeviceId);
     j.at("stageMemberId").get_to(p.stageMemberId);
-    j.at("deviceId").get_to(p.deviceId);
     j.at("stageId").get_to(p.stageId);
+    j.at("deviceId").get_to(p.deviceId);
     j.at("userId").get_to(p.userId);
+    j.at("type").get_to(p.type);
     j.at("type").get_to(p.type);
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
@@ -876,12 +837,13 @@ namespace DigitalStage::Types {
     optional_from_json(j, "ovSourcePort", p.ovSourcePort);
   }
 
-  inline void to_json(json& j, const custom_remote_audio_track_position_t& p)
+  inline void to_json(json& j, const CustomAudioTrackPosition& p)
   {
     j = json{{"_id", p._id},
              {"userId", p.userId},
              {"deviceId", p.deviceId},
-             {"remoteAudioTrackId", p.remoteAudioTrackId},
+             {"audioTrackId", p.audioTrackId},
+             {"stageId", p.stageId},
              {"directivity", p.directivity},
              {"x", p.x},
              {"y", p.y},
@@ -891,12 +853,13 @@ namespace DigitalStage::Types {
              {"rZ", p.rZ}};
   }
 
-  inline void from_json(const json& j, custom_remote_audio_track_position_t& p)
+  inline void from_json(const json& j, CustomAudioTrackPosition& p)
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
     j.at("deviceId").get_to(p.deviceId);
-    j.at("remoteAudioTrackId").get_to(p.remoteAudioTrackId);
+    j.at("audioTrackId").get_to(p.audioTrackId);
+    j.at("stageId").get_to(p.stageId);
     j.at("directivity").get_to(p.directivity);
     j.at("y").get_to(p.y);
     j.at("z").get_to(p.z);
@@ -905,25 +868,26 @@ namespace DigitalStage::Types {
     j.at("rZ").get_to(p.rZ);
   }
 
-  inline void to_json(json& j, const custom_remote_audio_track_volume_t& p)
+  inline void to_json(json& j, const CustomAudioTrackVolume& p)
   {
-    j = json{
-        {"_id", p._id},           {"userId", p.userId},
-        {"deviceId", p.deviceId}, {"remoteAudioTrackId", p.remoteAudioTrackId},
-        {"volume", p.volume},     {"muted", p.muted}};
+    j = json{{"_id", p._id},           {"userId", p.userId},
+             {"deviceId", p.deviceId}, {"audioTrackId", p.audioTrackId},
+             {"stageId", p.stageId},   {"volume", p.volume},
+             {"muted", p.muted}};
   }
 
-  inline void from_json(const json& j, custom_remote_audio_track_volume_t& p)
+  inline void from_json(const json& j, CustomAudioTrackVolume& p)
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
     j.at("deviceId").get_to(p.deviceId);
-    j.at("remoteAudioTrackId").get_to(p.remoteAudioTrackId);
+    j.at("audioTrackId").get_to(p.audioTrackId);
+    j.at("stageId").get_to(p.stageId);
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
   }
 
-  inline void to_json(json& j, const user_t& p)
+  inline void to_json(json& j, const User& p)
   {
     j = json{{"_id", p._id},
              {"uid", p.uid},
@@ -935,7 +899,7 @@ namespace DigitalStage::Types {
     optional_to_json(j, "stageMemberId", p.stageMemberId);
   }
 
-  inline void from_json(const json& j, user_t& p)
+  inline void from_json(const json& j, User& p)
   {
     j.at("_id").get_to(p._id);
     j.at("uid").get_to(p.uid);
@@ -949,27 +913,23 @@ namespace DigitalStage::Types {
 
   inline void to_json(json& j, const WholeStage& p)
   {
-    j = json{
-        {"users", p.users},
-        {"devices", p.devices},
-        {"soundCards", p.soundCards},
-        {"stages", p.stages},
-        {"groups", p.groups},
-        {"customGroupVolumes", p.customGroupVolumes},
-        {"customGroupVolumes", p.customGroupPositions},
-        {"stageMembers", p.stageMembers},
-        {"customStageMemberVolumes", p.customStageMemberVolumes},
-        {"customStageMemberPositions", p.customStageMemberPositions},
-        {"stageDevices", p.stageDevices},
-        {"customStageMemberVolumes", p.customStageMemberVolumes},
-        {"customStageMemberPositions", p.customStageMemberPositions},
-        {"remoteAudioTracks", p.remoteAudioTracks},
-        {"customRemoteAudioPositions", p.customRemoteAudioPositions},
-        {"customRemoteAudioVolumes", p.customRemoteAudioVolumes},
-        {"remoteVideoTracks", p.remoteVideoTracks},
-        {"localAudioTracks", p.localAudioTracks},
-        {"localVideoTracks", p.localVideoTracks}
-    };
+    j = json{{"users", p.users},
+             {"devices", p.devices},
+             {"soundCards", p.soundCards},
+             {"stages", p.stages},
+             {"groups", p.groups},
+             {"customGroupVolumes", p.customGroupVolumes},
+             {"customGroupVolumes", p.customGroupPositions},
+             {"stageMembers", p.stageMembers},
+             {"customStageMemberVolumes", p.customStageMemberVolumes},
+             {"customStageMemberPositions", p.customStageMemberPositions},
+             {"stageDevices", p.stageDevices},
+             {"customStageMemberVolumes", p.customStageMemberVolumes},
+             {"customStageMemberPositions", p.customStageMemberPositions},
+             {"audioTracks", p.audioTracks},
+             {"customAudioPositions", p.customAudioPositions},
+             {"customAudioVolumes", p.customAudioVolumes},
+             {"videoTracks", p.videoTracks}};
   }
 
   inline void from_json(const json& j, WholeStage& p)
@@ -987,12 +947,10 @@ namespace DigitalStage::Types {
     j.at("stageDevices").get_to(p.stageDevices);
     j.at("customStageMemberVolumes").get_to(p.customStageMemberVolumes);
     j.at("customStageMemberPositions").get_to(p.customStageMemberPositions);
-    j.at("remoteAudioTracks").get_to(p.remoteAudioTracks);
-    j.at("customRemoteAudioPositions").get_to(p.customRemoteAudioPositions);
-    j.at("customRemoteAudioVolumes").get_to(p.customRemoteAudioVolumes);
-    j.at("remoteVideoTracks").get_to(p.remoteVideoTracks);
-    j.at("localAudioTracks").get_to(p.localAudioTracks);
-    j.at("localVideoTracks").get_to(p.localVideoTracks);
+    j.at("audioTracks").get_to(p.audioTracks);
+    j.at("customAudioPositions").get_to(p.customAudioPositions);
+    j.at("customAudioVolumes").get_to(p.customAudioVolumes);
+    j.at("videoTracks").get_to(p.videoTracks);
   }
 } // namespace DigitalStage::Types
 

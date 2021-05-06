@@ -66,7 +66,7 @@ namespace DigitalStage::Api {
     [[maybe_unused]] std::vector<DigitalStage::Types::StageMember>
     getStageMembersByStage(const std::string& stageId) const;
     std::vector<DigitalStage::Types::StageMember>
-    getStageMembersByGroup(const std::string& remote_audio_trackId) const;
+    getStageMembersByGroup(const std::string& audio_trackId) const;
     void createStageMember(const json& payload);
     STORE_UPDATE(StageMember, StageMember, stageMembers_mutex_, stageMembers_)
     void removeStageMember(const std::string& id);
@@ -84,35 +84,35 @@ namespace DigitalStage::Api {
     STORE_UPDATE(StageDevice, StageDevice, stageDevices_mutex_, stageDevices_)
     void removeStageDevice(const std::string& id);
 
-    // Remote video tracks
-    STORE_GET(DigitalStage::Types::remote_video_track_t, RemoteVideoTrack,
-              remoteVideoTracks_mutex_, remoteVideoTracks_)
-    STORE_GET_ALL(DigitalStage::Types::remote_video_track_t, RemoteVideoTrack,
-                  remoteVideoTracks_mutex_, remoteVideoTracks_)
-    STORE_UPDATE(DigitalStage::Types::remote_video_track_t, RemoteVideoTrack,
-                 remoteVideoTracks_mutex_, remoteVideoTracks_)
-    STORE_REMOVE_ALL(DigitalStage::Types::remote_video_track_t,
-                     RemoteVideoTrack, remoteVideoTracks_mutex_,
-                     remoteVideoTracks_)
-    std::vector<DigitalStage::Types::remote_video_track_t>
-    getRemoteVideoTracksByStageDevice(const std::string& stageDeviceId) const;
-    void createRemoteVideoTrack(const json& payload);
-    void removeRemoteVideoTrack(const std::string& id);
+    // Video tracks
+    STORE_GET(DigitalStage::Types::VideoTrack, VideoTrack,
+              videoTracks_mutex_, videoTracks_)
+    STORE_GET_ALL(DigitalStage::Types::VideoTrack, VideoTrack,
+                  videoTracks_mutex_, videoTracks_)
+    STORE_UPDATE(DigitalStage::Types::VideoTrack, VideoTrack,
+                 videoTracks_mutex_, videoTracks_)
+    STORE_REMOVE_ALL(DigitalStage::Types::VideoTrack,
+                     VideoTrack, videoTracks_mutex_,
+                     videoTracks_)
+    std::vector<DigitalStage::Types::VideoTrack>
+    getVideoTracksByStageDevice(const std::string& stageDeviceId) const;
+    void createVideoTrack(const json& payload);
+    void removeVideoTrack(const std::string& id);
 
-    // Remote audio tracks
-    STORE_GET(DigitalStage::Types::remote_audio_track_t, RemoteAudioTrack,
-              remoteAudioTracks_mutex_, remoteAudioTracks_)
-    STORE_GET_ALL(DigitalStage::Types::remote_audio_track_t, RemoteAudioTrack,
-                  remoteAudioTracks_mutex_, remoteAudioTracks_)
-    STORE_UPDATE(DigitalStage::Types::remote_audio_track_t, RemoteAudioTrack,
-                 remoteAudioTracks_mutex_, remoteAudioTracks_)
-    STORE_REMOVE_ALL(DigitalStage::Types::remote_audio_track_t,
-                     RemoteAudioTrack, remoteAudioTracks_mutex_,
-                     remoteAudioTracks_)
-    std::vector<remote_audio_track_t>
-    getRemoteAudioTracksByStageDevice(const std::string& stageDeviceId) const;
-    void createRemoteAudioTrack(const json& payload);
-    void removeRemoteAudioTrack(const std::string& id);
+    // Audio tracks
+    STORE_GET(DigitalStage::Types::AudioTrack, AudioTrack,
+              audioTracks_mutex_, audioTracks_)
+    STORE_GET_ALL(DigitalStage::Types::AudioTrack, AudioTrack,
+                  audioTracks_mutex_, audioTracks_)
+    STORE_UPDATE(DigitalStage::Types::AudioTrack, AudioTrack,
+                 audioTracks_mutex_, audioTracks_)
+    STORE_REMOVE_ALL(DigitalStage::Types::AudioTrack,
+                     AudioTrack, audioTracks_mutex_,
+                     audioTracks_)
+    std::vector<AudioTrack>
+    getAudioTracksByStageDevice(const std::string& stageDeviceId) const;
+    void createAudioTrack(const json& payload);
+    void removeAudioTrack(const std::string& id);
 
     // Custom group positions
     STORE_GET(DigitalStage::Types::CustomGroupPosition, CustomGroupPosition,
@@ -146,15 +146,15 @@ namespace DigitalStage::Api {
     void removeCustomGroupVolume(const std::string& id);
 
     // Custom stage member positions
-    STORE_GET(custom_stage_member_position_t, CustomStageMemberPosition,
+    STORE_GET(CustomStageMemberPosition, CustomStageMemberPosition,
               customStageMemberPositions_mutex_, customStageMemberPositions_)
-    STORE_GET_ALL(custom_stage_member_position_t, CustomStageMemberPosition,
+    STORE_GET_ALL(CustomStageMemberPosition, CustomStageMemberPosition,
                   customStageMemberPositions_mutex_,
                   customStageMemberPositions_)
     STORE_REMOVE_ALL(custom_stage_member_position_t, CustomStageMemberPosition,
                      customStageMemberPositions_mutex_,
                      customStageMemberPositions_)
-    [[maybe_unused]] std::optional<const custom_stage_member_position_t>
+    [[maybe_unused]] std::optional<const CustomStageMemberPosition>
     getCustomStageMemberPositionByStageMemberAndDevice(
         const std::string& stageMemberId, const std::string& deviceId) const;
     void createCustomStageMemberPosition(const json& payload);
@@ -163,15 +163,15 @@ namespace DigitalStage::Api {
     void removeCustomStageMemberPosition(const std::string& id);
 
     // Custom stage member volumes
-    STORE_GET(custom_stage_member_volume_t, CustomStageMemberVolume,
+    STORE_GET(CustomStageMemberVolume, CustomStageMemberVolume,
               customStageMemberVolumes_mutex_, customStageMemberVolumes_)
-    STORE_GET_ALL(custom_stage_member_volume_t, CustomStageMemberVolume,
+    STORE_GET_ALL(CustomStageMemberVolume, CustomStageMemberVolume,
                   customStageMemberVolumes_mutex_, customStageMemberVolumes_)
     STORE_UPDATE(custom_stage_member_volume_t, CustomStageMemberVolume,
                  customStageMemberVolumes_mutex_, customStageMemberVolumes_)
     STORE_REMOVE_ALL(custom_stage_member_volume_t, CustomStageMemberVolume,
                      customStageMemberVolumes_mutex_, customStageMemberVolumes_)
-    [[maybe_unused]] std::optional<const custom_stage_member_volume_t>
+    [[maybe_unused]] std::optional<const CustomStageMemberVolume>
     getCustomStageMemberVolumeByStageMemberAndDevice(
         const std::string& stageMemberId, const std::string& deviceId) const;
     void createCustomStageMemberVolume(const json& payload);
@@ -209,52 +209,52 @@ namespace DigitalStage::Api {
     void createCustomStageDeviceVolume(const json& payload);
     void removeCustomStageDeviceVolume(const std::string& id);
 
-    // Custom remote audio track positions
-    STORE_GET(custom_remote_audio_track_position_t,
-              CustomRemoteAudioTrackPosition,
-              customRemoteAudioTrackPositions_mutex_,
-              customRemoteAudioTrackPositions_)
-    STORE_GET_ALL(custom_remote_audio_track_position_t,
-                  CustomRemoteAudioTrackPosition,
-                  customRemoteAudioTrackPositions_mutex_,
-                  customRemoteAudioTrackPositions_)
-    STORE_REMOVE_ALL(custom_remote_audio_track_position_t,
-                     CustomRemoteAudioTrackPosition,
-                     customRemoteAudioTrackPositions_mutex_,
-                     customRemoteAudioTrackPositions_)
-    [[maybe_unused]] std::optional<const custom_remote_audio_track_position_t>
-    getCustomRemoteAudioTrackPositionByRemoteAudioTrackAndDevice(
-        const std::string& remote_audio_trackId,
+    // Custom audio track positions
+    STORE_GET(CustomAudioTrackPosition,
+              CustomAudioTrackPosition,
+              customAudioTrackPositions_mutex_,
+              customAudioTrackPositions_)
+    STORE_GET_ALL(CustomAudioTrackPosition,
+                  CustomAudioTrackPosition,
+                  customAudioTrackPositions_mutex_,
+                  customAudioTrackPositions_)
+    STORE_REMOVE_ALL(custom_audio_track_position_t,
+                     CustomAudioTrackPosition,
+                     customAudioTrackPositions_mutex_,
+                     customAudioTrackPositions_)
+    [[maybe_unused]] std::optional<const CustomAudioTrackPosition>
+    getCustomAudioTrackPositionByAudioTrackAndDevice(
+        const std::string& audio_trackId,
         const std::string& deviceId) const;
-    void createCustomRemoteAudioTrackPosition(const json& payload);
-    STORE_UPDATE(custom_remote_audio_track_position_t,
-                 CustomRemoteAudioTrackPosition,
-                 customRemoteAudioTrackPositions_mutex_,
-                 customRemoteAudioTrackPositions_)
-    void removeCustomRemoteAudioTrackPosition(const std::string& id);
+    void createCustomAudioTrackPosition(const json& payload);
+    STORE_UPDATE(custom_audio_track_position_t,
+                 CustomAudioTrackPosition,
+                 customAudioTrackPositions_mutex_,
+                 customAudioTrackPositions_)
+    void removeCustomAudioTrackPosition(const std::string& id);
 
-    // Custom remote audio volumes
-    STORE_GET(custom_remote_audio_track_volume_t, CustomRemoteAudioTrackVolume,
-              customRemoteAudioTrackVolumes_mutex_,
-              customRemoteAudioTrackVolumes_)
-    STORE_GET_ALL(custom_remote_audio_track_volume_t,
-                  CustomRemoteAudioTrackVolume,
-                  customRemoteAudioTrackVolumes_mutex_,
-                  customRemoteAudioTrackVolumes_)
-    STORE_UPDATE(custom_remote_audio_track_volume_t,
-                 CustomRemoteAudioTrackVolume,
-                 customRemoteAudioTrackVolumes_mutex_,
-                 customRemoteAudioTrackVolumes_)
-    STORE_REMOVE_ALL(custom_remote_audio_track_volume_t,
-                     CustomRemoteAudioTrackVolume,
-                     customRemoteAudioTrackVolumes_mutex_,
-                     customRemoteAudioTrackVolumes_)
-    [[maybe_unused]] std::optional<const custom_remote_audio_track_volume_t>
-    getCustomRemoteAudioTrackVolumeByRemoteAudioTrackAndDevice(
-        const std::string& remote_audio_trackId,
+    // Custom audio track volumes
+    STORE_GET(CustomAudioTrackVolume, CustomAudioTrackVolume,
+              customAudioTrackVolumes_mutex_,
+              customAudioTrackVolumes_)
+    STORE_GET_ALL(CustomAudioTrackVolume,
+                  CustomAudioTrackVolume,
+                  customAudioTrackVolumes_mutex_,
+                  customAudioTrackVolumes_)
+    STORE_UPDATE(custom_audio_track_volume_t,
+                 CustomAudioTrackVolume,
+                 customAudioTrackVolumes_mutex_,
+                 customAudioTrackVolumes_)
+    STORE_REMOVE_ALL(custom_audio_track_volume_t,
+                     CustomAudioTrackVolume,
+                     customAudioTrackVolumes_mutex_,
+                     customAudioTrackVolumes_)
+    [[maybe_unused]] std::optional<const CustomAudioTrackVolume>
+    getCustomAudioTrackVolumeByAudioTrackAndDevice(
+        const std::string& audio_trackId,
         const std::string& deviceId) const;
-    void createCustomRemoteAudioTrackVolume(const json& payload);
-    void removeCustomRemoteAudioTrackVolume(const std::string& id);
+    void createCustomAudioTrackVolume(const json& payload);
+    void removeCustomAudioTrackVolume(const std::string& id);
 
     // Sound cards
     std::optional<DigitalStage::Types::SoundCard>
@@ -270,15 +270,7 @@ namespace DigitalStage::Api {
     ADD_STORE_ENTRY(DigitalStage::Types::Stage, Stage, stages_)
 
     // Users
-    ADD_STORE_ENTRY(DigitalStage::Types::user_t, User, users_)
-
-    // Local video tracks
-    ADD_STORE_ENTRY(DigitalStage::Types::local_video_track_t, LocalVideoTrack,
-                    localVideoTracks_)
-
-    // Local audio tracks
-    ADD_STORE_ENTRY(DigitalStage::Types::local_audio_track_t, LocalAudioTrack,
-                    localAudioTracks_)
+    ADD_STORE_ENTRY(DigitalStage::Types::User, User, users_)
 
   protected:
     mutable std::recursive_mutex ready_mutex_;
@@ -343,25 +335,25 @@ namespace DigitalStage::Api {
     std::map<std::string, std::map<std::string, std::string>>
         customStageDeviceVolumeIds_by_StageDevice_and_Device_;
 
-    mutable std::recursive_mutex remoteVideoTracks_mutex_;
-    std::map<std::string, json> remoteVideoTracks_;
+    mutable std::recursive_mutex videoTracks_mutex_;
+    std::map<std::string, json> videoTracks_;
     std::map<std::string, std::set<std::string>>
-        remoteVideoTrackIds_by_StageDevice_;
+        videoTrackIds_by_StageDevice_;
 
-    mutable std::recursive_mutex remoteAudioTracks_mutex_;
-    std::map<std::string, json> remoteAudioTracks_;
+    mutable std::recursive_mutex audioTracks_mutex_;
+    std::map<std::string, json> audioTracks_;
     std::map<std::string, std::set<std::string>>
-        remoteAudioTrackIds_by_StageDevice_;
+        audioTrackIds_by_StageDevice_;
 
-    mutable std::recursive_mutex customRemoteAudioTrackVolumes_mutex_;
-    std::map<std::string, json> customRemoteAudioTrackVolumes_;
+    mutable std::recursive_mutex customAudioTrackVolumes_mutex_;
+    std::map<std::string, json> customAudioTrackVolumes_;
     std::map<std::string, std::map<std::string, std::string>>
-        customRemoteAudioTrackVolumeIds_by_RemoteAudioTrack_and_Device_;
+        customAudioTrackVolumeIds_by_AudioTrack_and_Device_;
 
-    mutable std::recursive_mutex customRemoteAudioTrackPositions_mutex_;
-    std::map<std::string, json> customRemoteAudioTrackPositions_;
+    mutable std::recursive_mutex customAudioTrackPositions_mutex_;
+    std::map<std::string, json> customAudioTrackPositions_;
     std::map<std::string, std::map<std::string, std::string>>
-        customRemoteAudioTrackPositionIds_by_RemoteAudioTrack_and_Device_;
+        customAudioTrackPositionIds_by_AudioTrack_and_Device_;
   };
 } // namespace DigitalStage::Api
 

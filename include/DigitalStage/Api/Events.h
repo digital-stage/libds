@@ -8,10 +8,6 @@
 using namespace DigitalStage::Types;
 
 namespace DigitalStage::Api {
-    enum class SendEventType {
-
-    };
-
     enum class EventType {
       READY,
       LOCAL_DEVICE_READY,
@@ -54,24 +50,18 @@ namespace DigitalStage::Api {
       CUSTOM_STAGE_DEVICE_VOLUME_ADDED,
       CUSTOM_STAGE_DEVICE_VOLUME_CHANGED,
       CUSTOM_STAGE_DEVICE_VOLUME_REMOVED,
-      LOCAL_VIDEO_TRACK_ADDED,
-      LOCAL_VIDEO_TRACK_CHANGED,
-      LOCAL_VIDEO_TRACK_REMOVED,
-      LOCAL_AUDIO_TRACK_ADDED,
-      LOCAL_AUDIO_TRACK_CHANGED,
-      LOCAL_AUDIO_TRACK_REMOVED,
-      REMOTE_VIDEO_TRACK_ADDED,
-      REMOTE_VIDEO_TRACK_CHANGED,
-      REMOTE_VIDEO_TRACK_REMOVED,
-      REMOTE_AUDIO_TRACK_ADDED,
-      REMOTE_AUDIO_TRACK_CHANGED,
-      REMOTE_AUDIO_TRACK_REMOVED,
-      CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_ADDED,
-      CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_CHANGED,
-      CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_REMOVED,
-      CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED,
-      CUSTOM_REMOTE_AUDIO_TRACK_POSITION_CHANGED,
-      CUSTOM_REMOTE_AUDIO_TRACK_POSITION_REMOVED,
+      VIDEO_TRACK_ADDED,
+      VIDEO_TRACK_CHANGED,
+      VIDEO_TRACK_REMOVED,
+      AUDIO_TRACK_ADDED,
+      AUDIO_TRACK_CHANGED,
+      AUDIO_TRACK_REMOVED,
+      CUSTOM_AUDIO_TRACK_VOLUME_ADDED,
+      CUSTOM_AUDIO_TRACK_VOLUME_CHANGED,
+      CUSTOM_AUDIO_TRACK_VOLUME_REMOVED,
+      CUSTOM_AUDIO_TRACK_POSITION_ADDED,
+      CUSTOM_AUDIO_TRACK_POSITION_CHANGED,
+      CUSTOM_AUDIO_TRACK_POSITION_REMOVED,
       SOUND_CARD_ADDED,
       SOUND_CARD_CHANGED,
       SOUND_CARD_REMOVED
@@ -80,6 +70,7 @@ namespace DigitalStage::Api {
     namespace SendEvents {
       [[maybe_unused]] extern const std::string CHANGE_DEVICE;
       extern const std::string SET_SOUND_CARD;
+      extern const std::string CHANGE_SOUND_CARD;
       extern const std::string CREATE_LOCAL_AUDIO_TRACK;
       [[maybe_unused]] extern const std::string CHANGE_LOCAL_AUDIO_TRACK;
       extern const std::string REMOVE_LOCAL_AUDIO_TRACK;
@@ -127,24 +118,18 @@ namespace DigitalStage::Api {
       extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_ADDED;
       extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_CHANGED;
       extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_REMOVED;
-      extern const std::string LOCAL_VIDEO_TRACK_ADDED;
-      extern const std::string LOCAL_VIDEO_TRACK_CHANGED;
-      extern const std::string LOCAL_VIDEO_TRACK_REMOVED;
-      extern const std::string LOCAL_AUDIO_TRACK_ADDED;
-      extern const std::string LOCAL_AUDIO_TRACK_CHANGED;
-      extern const std::string LOCAL_AUDIO_TRACK_REMOVED;
-      extern const std::string REMOTE_VIDEO_TRACK_ADDED;
-      extern const std::string REMOTE_VIDEO_TRACK_CHANGED;
-      extern const std::string REMOTE_VIDEO_TRACK_REMOVED;
-      extern const std::string REMOTE_AUDIO_TRACK_ADDED;
-      extern const std::string REMOTE_AUDIO_TRACK_CHANGED;
-      extern const std::string REMOTE_AUDIO_TRACK_REMOVED;
-      extern const std::string CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_ADDED;
-      extern const std::string CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_CHANGED;
-      extern const std::string CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_REMOVED;
-      extern const std::string CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED;
-      extern const std::string CUSTOM_REMOTE_AUDIO_TRACK_POSITION_CHANGED;
-      extern const std::string CUSTOM_REMOTE_AUDIO_TRACK_POSITION_REMOVED;
+      extern const std::string VIDEO_TRACK_ADDED;
+      extern const std::string VIDEO_TRACK_CHANGED;
+      extern const std::string VIDEO_TRACK_REMOVED;
+      extern const std::string AUDIO_TRACK_ADDED;
+      extern const std::string AUDIO_TRACK_CHANGED;
+      extern const std::string AUDIO_TRACK_REMOVED;
+      extern const std::string CUSTOM_AUDIO_TRACK_VOLUME_ADDED;
+      extern const std::string CUSTOM_AUDIO_TRACK_VOLUME_CHANGED;
+      extern const std::string CUSTOM_AUDIO_TRACK_VOLUME_REMOVED;
+      extern const std::string CUSTOM_AUDIO_TRACK_POSITION_ADDED;
+      extern const std::string CUSTOM_AUDIO_TRACK_POSITION_CHANGED;
+      extern const std::string CUSTOM_AUDIO_TRACK_POSITION_REMOVED;
       extern const std::string SOUND_CARD_ADDED;
       extern const std::string SOUND_CARD_CHANGED;
       extern const std::string SOUND_CARD_REMOVED;

@@ -4,6 +4,7 @@ using namespace DigitalStage::Api;
 
 const std::string SendEvents::CHANGE_DEVICE = "change-device";
 const std::string SendEvents::SET_SOUND_CARD = "set-sound-card";
+const std::string SendEvents::CHANGE_SOUND_CARD = "change-sound-card";
 const std::string SendEvents::CREATE_LOCAL_AUDIO_TRACK =
     "create-local-audio-track";
 const std::string SendEvents::CHANGE_LOCAL_AUDIO_TRACK =
@@ -62,29 +63,23 @@ const std::string RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_CHANGED =
     "c-sd-p-c";
 const std::string RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_REMOVED =
     "c-sd-p-r";
-const std::string RetrieveEvents::LOCAL_VIDEO_TRACK_ADDED = "lv-a";
-const std::string RetrieveEvents::LOCAL_VIDEO_TRACK_CHANGED = "lv-c";
-const std::string RetrieveEvents::LOCAL_VIDEO_TRACK_REMOVED = "lv-r";
-const std::string RetrieveEvents::LOCAL_AUDIO_TRACK_ADDED = "la-a";
-const std::string RetrieveEvents::LOCAL_AUDIO_TRACK_CHANGED = "la-c";
-const std::string RetrieveEvents::LOCAL_AUDIO_TRACK_REMOVED = "la-r";
-const std::string RetrieveEvents::REMOTE_VIDEO_TRACK_ADDED = "v-a";
-const std::string RetrieveEvents::REMOTE_VIDEO_TRACK_CHANGED = "v-c";
-const std::string RetrieveEvents::REMOTE_VIDEO_TRACK_REMOVED = "v-r";
-const std::string RetrieveEvents::REMOTE_AUDIO_TRACK_ADDED = "a-a";
-const std::string RetrieveEvents::REMOTE_AUDIO_TRACK_CHANGED = "a-c";
-const std::string RetrieveEvents::REMOTE_AUDIO_TRACK_REMOVED = "a-r";
-const std::string RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_ADDED =
+const std::string RetrieveEvents::VIDEO_TRACK_ADDED = "v-a";
+const std::string RetrieveEvents::VIDEO_TRACK_CHANGED = "v-c";
+const std::string RetrieveEvents::VIDEO_TRACK_REMOVED = "v-r";
+const std::string RetrieveEvents::AUDIO_TRACK_ADDED = "a-a";
+const std::string RetrieveEvents::AUDIO_TRACK_CHANGED = "a-c";
+const std::string RetrieveEvents::AUDIO_TRACK_REMOVED = "a-r";
+const std::string RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_ADDED =
     "c-a-v-a";
-const std::string RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_CHANGED =
+const std::string RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_CHANGED =
     "c-a-v-a";
-const std::string RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_VOLUME_REMOVED =
+const std::string RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_REMOVED =
     "c-a-v-r";
-const std::string RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_ADDED =
+const std::string RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_ADDED =
     "c-a-p-a";
-const std::string RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_CHANGED =
+const std::string RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_CHANGED =
     "c-a-p-c";
-const std::string RetrieveEvents::CUSTOM_REMOTE_AUDIO_TRACK_POSITION_REMOVED =
+const std::string RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_REMOVED =
     "c-a-p-r";
 const std::string RetrieveEvents::SOUND_CARD_ADDED = "sc-a";
 const std::string RetrieveEvents::SOUND_CARD_CHANGED = "sc-c";

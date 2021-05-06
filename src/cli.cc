@@ -23,16 +23,16 @@ void printStage(const Store* s)
                   << (user ? user->name : "") << "]" << std::endl;
         auto stageDevices = s->getStageDevicesByStageMember(stageMember._id);
         for(const auto& stageDevice : stageDevices) {
-          auto remoteVideoTracks =
-              s->getRemoteVideoTracksByStageDevice(stageDevice._id);
-          for(const auto& remoteVideoTrack : remoteVideoTracks) {
-            std::cout << "      [Video Track " << remoteVideoTrack._id << "]"
+          auto videoTracks =
+              s->getVideoTracksByStageDevice(stageDevice._id);
+          for(const auto& videoTrack : videoTracks) {
+            std::cout << "      [Video Track " << videoTrack._id << "]"
                       << std::endl;
           }
-          auto remoteAudioTracks =
-              s->getRemoteAudioTracksByStageDevice(stageDevice._id);
-          for(const auto& remoteAudioTrack : remoteAudioTracks) {
-            std::cout << "      [Audio Track " << remoteAudioTrack._id << "]"
+          auto audioTracks =
+              s->getAudioTracksByStageDevice(stageDevice._id);
+          for(const auto& audioTrack : audioTracks) {
+            std::cout << "      [Audio Track " << audioTrack._id << "]"
                       << std::endl;
           }
         }

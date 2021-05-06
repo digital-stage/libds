@@ -36,7 +36,7 @@ namespace DigitalStage::Api {
     sigslot::signal<const DigitalStage::Api::Store*> ready;
     sigslot::signal<const Device, const DigitalStage::Api::Store*>
         localDeviceReady;
-    sigslot::signal<const user_t, const DigitalStage::Api::Store*>
+    sigslot::signal<const User, const DigitalStage::Api::Store*>
         localUserReady;
 
     sigslot::signal<const ID_TYPE&, const ID_TYPE&,
@@ -89,7 +89,7 @@ namespace DigitalStage::Api {
     sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
         stageMemberRemoved;
 
-    sigslot::signal<const custom_stage_member_position_t,
+    sigslot::signal<const CustomStageMemberPosition,
                     const DigitalStage::Api::Store*>
         customStageMemberPositionAdded;
     sigslot::signal<const std::string&, nlohmann::json,
@@ -98,7 +98,7 @@ namespace DigitalStage::Api {
     sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
         customStageMemberPositionRemoved;
 
-    sigslot::signal<const custom_stage_member_volume_t,
+    sigslot::signal<const CustomStageMemberVolume,
                     const DigitalStage::Api::Store*>
         customStageMemberVolumeAdded;
     sigslot::signal<const std::string&, nlohmann::json,
@@ -140,58 +140,42 @@ namespace DigitalStage::Api {
         soundCardChanged;
     sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
         soundCardRemoved;
-
-    sigslot::signal<const local_video_track_t, const DigitalStage::Api::Store*>
-        localVideoTrackAdded;
+    
+    sigslot::signal<const VideoTrack, const DigitalStage::Api::Store*>
+        videoTrackAdded;
     sigslot::signal<const std::string&, nlohmann::json,
                     const DigitalStage::Api::Store*>
-        localVideoTrackChanged;
+        videoTrackChanged;
+    sigslot::signal<const VideoTrack, const DigitalStage::Api::Store*>
+        videoTrackRemoved;
+
+    sigslot::signal<const AudioTrack, const DigitalStage::Api::Store*>
+        audioTrackAdded;
+    sigslot::signal<const std::string&, nlohmann::json,
+                    const DigitalStage::Api::Store*>
+        audioTrackChanged;
+    sigslot::signal<const AudioTrack, const DigitalStage::Api::Store*>
+        audioTrackRemoved;
+
+    sigslot::signal<const CustomAudioTrackPosition,
+                    const DigitalStage::Api::Store*>
+        customAudioTrackPositionAdded;
+    sigslot::signal<const std::string&, nlohmann::json,
+                    const DigitalStage::Api::Store*>
+        customAudioTrackPositionChanged;
     sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
-        localVideoTrackRemoved;
+        customAudioTrackPositionRemoved;
 
-    sigslot::signal<const local_audio_track_t, const DigitalStage::Api::Store*>
-        localAudioTrackAdded;
+    sigslot::signal<const CustomAudioTrackVolume,
+                    const DigitalStage::Api::Store*>
+        customAudioTrackVolumeAdded;
     sigslot::signal<const std::string&, nlohmann::json,
                     const DigitalStage::Api::Store*>
-        localAudioTrackChanged;
+        customAudioTrackVolumeChanged;
     sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
-        localAudioTrackRemoved;
+        customAudioTrackVolumeRemoved;
 
-    sigslot::signal<const remote_video_track_t, const DigitalStage::Api::Store*>
-        remoteVideoTrackAdded;
-    sigslot::signal<const std::string&, nlohmann::json,
-                    const DigitalStage::Api::Store*>
-        remoteVideoTrackChanged;
-    sigslot::signal<const remote_video_track_t, const DigitalStage::Api::Store*>
-        remoteVideoTrackRemoved;
-
-    sigslot::signal<const remote_audio_track_t, const DigitalStage::Api::Store*>
-        remoteAudioTrackAdded;
-    sigslot::signal<const std::string&, nlohmann::json,
-                    const DigitalStage::Api::Store*>
-        remoteAudioTrackChanged;
-    sigslot::signal<const remote_audio_track_t, const DigitalStage::Api::Store*>
-        remoteAudioTrackRemoved;
-
-    sigslot::signal<const custom_remote_audio_track_position_t,
-                    const DigitalStage::Api::Store*>
-        customRemoteAudioTrackPositionAdded;
-    sigslot::signal<const std::string&, nlohmann::json,
-                    const DigitalStage::Api::Store*>
-        customRemoteAudioTrackPositionChanged;
-    sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
-        customRemoteAudioTrackPositionRemoved;
-
-    sigslot::signal<const custom_remote_audio_track_volume_t,
-                    const DigitalStage::Api::Store*>
-        customRemoteAudioTrackVolumeAdded;
-    sigslot::signal<const std::string&, nlohmann::json,
-                    const DigitalStage::Api::Store*>
-        customRemoteAudioTrackVolumeChanged;
-    sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
-        customRemoteAudioTrackVolumeRemoved;
-
-    sigslot::signal<const user_t, const DigitalStage::Api::Store*> userAdded;
+    sigslot::signal<const User, const DigitalStage::Api::Store*> userAdded;
     sigslot::signal<const std::string&, nlohmann::json,
                     const DigitalStage::Api::Store*>
         userChanged;
