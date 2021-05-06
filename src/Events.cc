@@ -5,12 +5,12 @@ using namespace DigitalStage::Api;
 const std::string SendEvents::CHANGE_DEVICE = "change-device";
 const std::string SendEvents::SET_SOUND_CARD = "set-sound-card";
 const std::string SendEvents::CHANGE_SOUND_CARD = "change-sound-card";
-const std::string SendEvents::CREATE_LOCAL_AUDIO_TRACK =
-    "create-local-audio-track";
-const std::string SendEvents::CHANGE_LOCAL_AUDIO_TRACK =
-    "create-local-audio-track";
-const std::string SendEvents::REMOVE_LOCAL_AUDIO_TRACK =
-    "remove-local-audio-track";
+const std::string SendEvents::CREATE_AUDIO_TRACK =
+    "create-audio-track";
+const std::string SendEvents::CHANGE_AUDIO_TRACK =
+    "create-audio-track";
+const std::string SendEvents::REMOVE_AUDIO_TRACK =
+    "remove-audio-track";
 
 const std::string RetrieveEvents::READY = "ok";
 const std::string RetrieveEvents::LOCAL_DEVICE_READY = "ldr";

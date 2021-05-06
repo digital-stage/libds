@@ -71,9 +71,9 @@ namespace DigitalStage::Api {
       [[maybe_unused]] extern const std::string CHANGE_DEVICE;
       extern const std::string SET_SOUND_CARD;
       extern const std::string CHANGE_SOUND_CARD;
-      extern const std::string CREATE_LOCAL_AUDIO_TRACK;
-      [[maybe_unused]] extern const std::string CHANGE_LOCAL_AUDIO_TRACK;
-      extern const std::string REMOVE_LOCAL_AUDIO_TRACK;
+      extern const std::string CREATE_AUDIO_TRACK;
+      [[maybe_unused]] extern const std::string CHANGE_AUDIO_TRACK;
+      extern const std::string REMOVE_AUDIO_TRACK;
     } // namespace SendEvents
 
     namespace RetrieveEvents {
