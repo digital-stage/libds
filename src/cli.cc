@@ -96,7 +96,6 @@ int main(int, char const*[])
     initialDevice["type"] = "ov";
     initialDevice["canAudio"] = true;
     initialDevice["canVideo"] = false;
-    initialDevice["availableSoundCardIds"] = {};
     auto* client = new Client("ws://localhost:4000");
 
     client->ready.connect([](const Store*) {

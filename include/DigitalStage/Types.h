@@ -237,6 +237,7 @@ namespace DigitalStage::Types {
   struct SoundCard {
     ID_TYPE _id;
     ID_TYPE userId;
+    ID_TYPE deviceId;
     std::string uuid;
 
     bool isDefault;
@@ -738,6 +739,7 @@ namespace DigitalStage::Types {
   {
     j = json{{"_id", p._id},
              {"userId", p.userId},
+             {"deviceId", p.deviceId},
              {"uuid", p.uuid},
              {"isDefault", p.isDefault},
              {"label", p.label},
@@ -757,6 +759,7 @@ namespace DigitalStage::Types {
   {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
+    j.at("deviceId").get_to(p.deviceId);
     j.at("uuid").get_to(p.uuid);
     j.at("isDefault").get_to(p.isDefault);
     j.at("label").get_to(p.label);

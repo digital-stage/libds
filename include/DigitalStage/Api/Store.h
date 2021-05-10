@@ -258,7 +258,7 @@ namespace DigitalStage::Api {
 
     // Sound cards
     std::optional<DigitalStage::Types::SoundCard>
-    getSoundCardByUUID(const std::string& uuid) const;
+    getSoundCardByDeviceAndUUID(const std::string& deviceId, const std::string& uuid) const;
 
     // Devices
     ADD_STORE_ENTRY(DigitalStage::Types::Device, Device, devices_)

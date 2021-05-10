@@ -590,11 +590,11 @@ bool Store::isReady() const
 }
 
 std::optional<DigitalStage::Types::SoundCard>
-Store::getSoundCardByUUID(const std::string& uuid) const
+Store::getSoundCardByDeviceAndUUID(const std::string& deviceId, const std::string& uuid) const
 {
   std::lock_guard<std::recursive_mutex> lock(this->mutex_soundCards_);
   for(auto& pair : this->soundCards_) {
-    if(pair.second["uuid"] == uuid)
+    if(pair.second["deviceId"] == deviceId && pair.second["uuid"] == uuid)
       return pair.second;
   }
   return std::nullopt;
