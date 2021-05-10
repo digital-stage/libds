@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+# REQUIREMENTS
+find_package(teckos REQUIRED)
+
+set_and_check(DIGITALSTAGE_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+check_required_components("@PROJECT_NAME@")
