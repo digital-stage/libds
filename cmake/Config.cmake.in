@@ -2,6 +2,8 @@
 
 # REQUIREMENTS
 find_package(teckos REQUIRED)
+find_package(cpprestsdk REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 set_and_check(DIGITALSTAGE_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
 

@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 3.16.0)
 project(DigitalStage
         LANGUAGES CXX
         VERSION 0.1
-        DESCRIPTION "Library for interacting with the digital stage universe"
-        )
+        DESCRIPTION "Library for interacting with the digital stage universe")
 
 
 ##
@@ -18,10 +17,9 @@ add_compile_definitions(DEBUG_PAYLOADS)
 
 set(TARGET_NAME ${PROJECT_NAME})
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
-set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/)
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "Install path for include files")
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "Install path for library files")
-
 
 ##
 ## DEPENDENCIES
@@ -34,11 +32,8 @@ if (APPLE)
 endif (APPLE)
 add_subdirectory(libteckos EXCLUDE_FROM_ALL)
 add_subdirectory(sigslot EXCLUDE_FROM_ALL)
-find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(Boost REQUIRED)
-
 
 ##
 ## TARGET
@@ -64,8 +59,7 @@ target_include_directories(DigitalStageApi PUBLIC
 target_compile_options(DigitalStageApi PRIVATE -Wall -Wextra -pedantic -Werror)
 target_link_libraries(DigitalStageApi
         PUBLIC
-        nlohmann_json::nlohmann_json
-        teckos
+        teckos::teckos
         Pal::Sigslot
         )
 add_library(DigitalStageAuth ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc)
@@ -78,7 +72,6 @@ target_link_libraries(DigitalStageAuth
         PUBLIC
         cpprestsdk::cpprest
         OpenSSL::Crypto
-        Boost::boost
         )
 
 add_executable(libds-example
@@ -90,11 +83,22 @@ target_link_libraries(libds-example
         DigitalStageAuth
         DigitalStageApi)
 
-
 ##
 ## INSTALL
 ## install header files, generate and install cmake config files for find_package()
 ##
+include(CMakePackageConfigHelpers)
+configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        INSTALL_DESTINATION ${LIB_INSTALL_DIR}/${PROJECT_NAME}/cmake
+        PATH_VARS INCLUDE_INSTALL_DIR)
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME})
 install(
         DIRECTORY ${INCLUDE_DIR}
         DESTINATION ${INCLUDE_INSTALL_DIR}
@@ -110,4 +114,4 @@ install(
 install(
         EXPORT ${TARGETS_EXPORT_NAME}
         NAMESPACE ${PROJECT_NAME}::
-        DESTINATION ${INCLUDE_INSTALL_DIR})
+        DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME})
