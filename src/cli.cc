@@ -83,7 +83,7 @@ void handleStageLeft(const Store*)
 
 int main(int, char const*[])
 {
-  auto authService = AuthService(U("https://single.dstage.org/api/auth"));
+  auto authService = AuthService(U("https://auth.dstage.org/"));
 
   std::cout << "Signing in..." << std::endl;
   try {
@@ -138,7 +138,8 @@ int main(int, char const*[])
     std::cout << "Started client" << std::endl;
   }
   catch(std::exception& err) {
-    std::cerr << err.what() << std::endl;
+    std::cerr << "Got exception: " << err.what() << std::endl;
+    return -1;
   }
 
   while(true) {
