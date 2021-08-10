@@ -37,7 +37,7 @@ bool Client::isConnected()
 pplx::task<void> Client::connect(const teckos::string_t& apiToken,
                                  const nlohmann::json& initialDevice)
 {
-  std::cout << U("Connecting to ") << apiUrl_ << std::endl;
+  std::cout << "Connecting to " << apiUrl_ << std::endl;
 
   // Set handler
   wsclient_->setMessageHandler([&](const nlohmann::json& j) {
