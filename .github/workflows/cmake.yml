@@ -43,11 +43,11 @@ jobs:
            pip3 install conan
            conan --version
       - name: Install Dependencies with Conan 
-        if: ${{ matrix.config.os != "ubuntu-latest" }}
+        if: ${{ matrix.config.os != 'ubuntu-latest' }}
         run: |
           conan install -if build .          
       - name: Install Dependencies with Conan (Ubuntu gcc)
-        if: ${{ matrix.config.os == "ubuntu-latest" }}
+        if: ${{ matrix.config.os == 'ubuntu-latest' }}
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
