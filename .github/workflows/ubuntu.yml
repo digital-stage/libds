@@ -8,19 +8,43 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-20.04
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Windows Latest MSVC 2019"
+            os: windows-latest,
+            build_type: "Release",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+          - {
+            name: "Ubuntu Latest"
+            os: ubuntu-latest
+            build_type: "Release"
+          }
+          - {
+            name: "macOS Latest Clang"
+            os: macos-latest,
+            build_type: "Release"
+          }
 
     steps:
       - uses: actions/checkout@v2
-      - name: fetchtags
-        run: git fetch --unshallow --tags
-      - name: submodules
+      #- name: fetchtags
+      #  run: git fetch --unshallow --tags
+      - name: Checkout Submodules
         run: git submodule init && git submodule update
-      - name: dependencies
-        run: sudo apt update &&
-          sudo apt install --assume-yes git libcpprest-dev nlohmann-json3-dev
-      - name: cmake
-        run: cmake .
-      - name: make
-        run: make
+      - name: Download Conan package manager
+        run: |
+           pip3 install wheel setuptools
+           pip3 install conan
+           conan --version
+      - name: Install Dependencies with Conan
+        run: conan install -if build .          
+      - name: Configure CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+      - name: Build with CMake
+        run: cmake --build build --config ${{ matrix.config.build_type }}
