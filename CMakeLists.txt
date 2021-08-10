@@ -55,7 +55,7 @@ set(API_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Events.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Store.cc
         )
-add_library(DigitalStageApi ${API_SOURCES})
+add_library(DigitalStageApi ${API_SOURCES} ${API_HEADERS})
 add_library(${PROJECT_NAME}::Api ALIAS DigitalStageApi)
 target_include_directories(DigitalStageApi PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
