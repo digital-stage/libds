@@ -93,7 +93,7 @@ target_link_libraries(DigitalStageApi
         teckos::teckos
         Pal::Sigslot
         )
-add_library(DigitalStageAuth ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc)
+add_library(DigitalStageAuth src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
 add_library(${PROJECT_NAME}::Auth ALIAS DigitalStageAuth)
 target_include_directories(DigitalStageAuth PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
