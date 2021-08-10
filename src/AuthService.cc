@@ -4,7 +4,6 @@
 #include "DigitalStage/Auth/AuthService.h"
 #include <cpprest/http_client.h>
 #include <cpprest/json.h>
-#include <cpprest/uri.h>
 #include <iostream>
 #include <stdexcept>
 
@@ -14,9 +13,9 @@ using namespace web::http::client;
 
 using namespace DigitalStage::Auth;
 
-pplx::task<bool> AuthService::verifyToken(const std::string& token)
+pplx::task<bool> AuthService::verifyToken(const string_t& token)
 {
-  const std::string url = this->url_;
+  auto url = this->url_;
   return pplx::create_task([url, token]() {
            http_client client(url);
            http_request request(methods::POST);
@@ -43,7 +42,7 @@ pplx::task<bool> AuthService::verifyToken(const std::string& token)
       });
 }
 
-[[maybe_unused]] bool AuthService::verifyTokenSync(const std::string& token)
+[[maybe_unused]] bool AuthService::verifyTokenSync(const string_t& token)
 {
   auto postJson = this->verifyToken(token);
   try {
@@ -56,21 +55,21 @@ pplx::task<bool> AuthService::verifyToken(const std::string& token)
   }
 }
 
-AuthService::AuthService(const std::string& authUrl)
+AuthService::AuthService(const string_t& authUrl)
 {
   this->url_ = authUrl;
 }
 
-pplx::task<std::string> AuthService::signIn(const std::string& email,
-                                            const std::string& password)
+pplx::task<string_t> AuthService::signIn(const string_t& email,
+                                            const string_t& password)
 {
-  const std::string url = this->url_;
+  auto url = this->url_;
   return pplx::create_task([url, email, password]() {
            json::value jsonObject;
-           jsonObject[U("email")] = json::value::string(U(email));
-           jsonObject[U("password")] = json::value::string(U(password));
+           jsonObject[U("email")] = json::value::string(email);
+           jsonObject[U("password")] = json::value::string(password);
 
-           return http_client(U(url)).request(
+           return http_client(url).request(
                methods::POST, uri_builder(U("login")).to_string(),
                jsonObject.serialize(), U("application/json"));
          })
@@ -87,8 +86,8 @@ pplx::task<std::string> AuthService::signIn(const std::string& email,
       .then([](const json::value& jsonObject) { return jsonObject.as_string(); });
 }
 
-std::string AuthService::signInSync(const std::string& email,
-                                    const std::string& password)
+string_t AuthService::signInSync(const string_t& email,
+                                    const string_t& password)
 {
   auto postJson = this->signIn(email, password);
   try {
@@ -97,15 +96,15 @@ std::string AuthService::signInSync(const std::string& email,
   }
   catch(const std::exception& e) {
     std::cerr << e.what() << std::endl;
-    return "";
+    return U("");
   }
 }
 
-pplx::task<bool> AuthService::signOut(const std::string& token)
+pplx::task<bool> AuthService::signOut(const string_t& token)
 {
-  const std::string url = this->url_;
+  const string_t url = this->url_;
   return pplx::create_task([url, token]() {
-           http_client client(U(url + "/logout"));
+           http_client client(url + U("/logout"));
            http_request request(methods::POST);
            request.headers().add(U("Content-Type"), U("application/json"));
            request.headers().add(U("Authorization"), U("Bearer " + token));
@@ -121,7 +120,7 @@ pplx::task<bool> AuthService::signOut(const std::string& token)
       });
 }
 
-[[maybe_unused]] bool AuthService::signOutSync(const std::string& token)
+[[maybe_unused]] bool AuthService::signOutSync(const string_t& token)
 {
   auto postJson = this->signOut(token);
   try {

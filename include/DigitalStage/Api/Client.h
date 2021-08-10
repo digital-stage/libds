@@ -13,10 +13,10 @@ using namespace web::websockets::client;
 namespace DigitalStage::Api {
   class Client {
   public:
-    explicit Client(std::string apiUrl);
+    explicit Client(const std::string& apiUrl);
 
     pplx::task<void>
-    connect(const std::string& apiToken,
+    connect(const teckos::string_t& apiToken,
             const nlohmann::json& initialDevicePayload = nullptr);
 
     void disconnect();

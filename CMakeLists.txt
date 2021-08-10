@@ -30,6 +30,10 @@ if (APPLE)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
 endif (APPLE)
+if (WIN32)
+	# Conan installs find files into the top level projects binary path, make sure to add this to our CMAKE_MODULE_PATH
+	list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+endif (WIN32)
 add_subdirectory(libteckos EXCLUDE_FROM_ALL)
 add_subdirectory(sigslot EXCLUDE_FROM_ALL)
 find_package(cpprestsdk REQUIRED)
@@ -56,7 +60,9 @@ add_library(${PROJECT_NAME}::Api ALIAS DigitalStageApi)
 target_include_directories(DigitalStageApi PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
+if(CMAKE_COMPILER_IS_GNUCC)
 target_compile_options(DigitalStageApi PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
 target_link_libraries(DigitalStageApi
         PUBLIC
         teckos::teckos
@@ -67,7 +73,9 @@ add_library(${PROJECT_NAME}::Auth ALIAS DigitalStageAuth)
 target_include_directories(DigitalStageAuth PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
+if(CMAKE_COMPILER_IS_GNUCC)
 target_compile_options(DigitalStageAuth PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
 target_link_libraries(DigitalStageAuth
         PUBLIC
         cpprestsdk::cpprest

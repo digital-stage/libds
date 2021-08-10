@@ -83,13 +83,17 @@ void handleStageLeft(const Store*)
 
 int main(int, char const*[])
 {
-  auto authService = AuthService("https://single.dstage.org/api/auth");
+  auto authService = AuthService(U("https://single.dstage.org/api/auth"));
 
   std::cout << "Signing in..." << std::endl;
   try {
     auto apiToken =
-        authService.signIn("tobias.hegemann@me.com", "Testtesttest123!").get();
+        authService.signIn(U("tobias.hegemann@me.com"), U("Testtesttest123!")).get();
+#ifdef WIN32
+    std::wcout << "Token: " << apiToken << std::endl;
+#else
     std::cout << "Token: " << apiToken << std::endl;
+#endif
 
     nlohmann::json initialDevice;
     initialDevice["uuid"] = "123456";
