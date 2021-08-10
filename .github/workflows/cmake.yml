@@ -43,7 +43,9 @@ jobs:
            pip3 install conan
            conan --version
       - name: Install Dependencies with Conan
-        run: conan install -if build .          
+        run: |
+          conan profile update settings.compiler.libcxx=libstdc++11 default
+          conan install -if build .          
       - name: Configure CMake
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
       - name: Build with CMake
