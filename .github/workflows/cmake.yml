@@ -44,6 +44,8 @@ jobs:
            conan --version
       - name: Install Dependencies with Conan
         run: |
+      # We need to create a default conan profile first in order to override the libstdc++ setting for gcc
+          conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
           conan install -if build .          
       - name: Configure CMake
