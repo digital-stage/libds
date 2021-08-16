@@ -8,7 +8,7 @@
 
 using namespace DigitalStage::Api;
 
-Client::Client(std::string apiUrl) : apiUrl_(std::move(apiUrl))
+Client::Client(const std::string& apiUrl) : apiUrl_(apiUrl)
 {
   store_ = std::make_unique<Store>();
   wsclient_ = std::make_unique<teckos::client>();
@@ -34,7 +34,7 @@ bool Client::isConnected()
   return false;
 }
 
-pplx::task<void> Client::connect(const std::string& apiToken,
+pplx::task<void> Client::connect(const teckos::string_t& apiToken,
                                  const nlohmann::json& initialDevice)
 {
   std::cout << "Connecting to " << apiUrl_ << std::endl;
@@ -481,7 +481,8 @@ pplx::task<void> Client::connect(const std::string& apiToken,
     }
   });
 
-  return wsclient_->connect(U(this->apiUrl_), apiToken,
+  teckos::string_t apiUrl(this->apiUrl_.begin(), this->apiUrl_.end());
+  return wsclient_->connect(apiUrl, apiToken,
                             {{"device", initialDevice}});
 }
 

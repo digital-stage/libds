@@ -3,4 +3,4 @@
 	url = https://github.com/palacaze/sigslot.git
 [submodule "libteckos"]
 	path = libteckos
-	url = https://github.com/delude88/libteckos.git
+	url = https://github.com/christofmuc/libteckos.git
