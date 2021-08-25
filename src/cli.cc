@@ -53,7 +53,7 @@ void handleDeviceAdded(const Device& d, const Store*)
 void handleDeviceChanged(const ID_TYPE& id, const nlohmann::json& update,
                          const Store* s)
 {
-  auto device = s->getDevice(id);
+  auto device = s->devices.get(id);
   if(device) {
     std::cout << device->type << " device has been updated: " << update.dump()
               << std::endl;

@@ -15,6 +15,66 @@ using namespace nlohmann;
 using namespace DigitalStage::Types;
 
 namespace DigitalStage::Api {
+
+  // Devices
+  template <typename TYPE>
+  class StoreEntry {
+  public:
+    std::optional<const TYPE> get(const std::string& id) const
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      if(storeEntry_.count(id) > 0) {
+        return storeEntry_.at(id).get<const TYPE>();
+      }
+      return std::nullopt;
+    }
+
+    const std::vector<TYPE> getAll() const
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      std::vector<TYPE> items = std::vector<TYPE>();
+      for(const auto& item : storeEntry_) {
+        items.push_back(item.second.get<TYPE>());
+      }
+      return items;
+    }
+
+    void create(const json& payload)
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      const std::string _id = payload.at("_id").get<std::string>();
+      storeEntry_[_id] = payload;
+    }
+
+    void update(const json& payload)
+    {
+      const std::string& id = payload.at("_id").get<std::string>();
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      storeEntry_[id].merge_patch(payload);
+    }
+
+    void remove(const std::string& id)
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      storeEntry_.erase(id);
+    }
+
+    void removeAll()
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      storeEntry_.clear();
+    }
+
+  private:
+    mutable std::recursive_mutex mutex_store_;
+    std::map<std::string, json> storeEntry_;
+  };
+
+  template <class T>
+  class StoryEntryIndexed : public StoreEntry<T> {
+  public:
+  };
+
   class Store {
   public:
     Store();
@@ -261,7 +321,8 @@ namespace DigitalStage::Api {
     getSoundCardByDeviceAndUUID(const std::string& deviceId, const std::string& uuid) const;
 
     // Devices
-    ADD_STORE_ENTRY(DigitalStage::Types::Device, Device, devices_)
+    //ADD_STORE_ENTRY(DigitalStage::Types::Device, Device, devices_)
+    StoreEntry<DigitalStage::Types::Device> devices;
 
     // Sound cards
     ADD_STORE_ENTRY(DigitalStage::Types::SoundCard, SoundCard, soundCards_)

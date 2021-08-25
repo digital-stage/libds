@@ -67,7 +67,7 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
          */
       } else if(event == RetrieveEvents::LOCAL_DEVICE_READY) {
         const auto device = payload.get<Device>();
-        store_->createDevice(payload);
+        store_->devices.create(payload);
         store_->setLocalDeviceId(device._id);
         this->deviceAdded(device, getStore());
         this->localDeviceReady(device, getStore());
@@ -86,15 +86,15 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
          * DEVICES
          */
       } else if(event == RetrieveEvents::DEVICE_ADDED) {
-        store_->createDevice(payload);
+        store_->devices.create(payload);
         this->deviceAdded(payload.get<Device>(), getStore());
       } else if(event == RetrieveEvents::DEVICE_CHANGED) {
-        store_->updateDevice(payload);
+        store_->devices.update(payload);
         const std::string id = payload["_id"];
         this->deviceChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::DEVICE_REMOVED) {
         const std::string id = payload;
-        store_->removeDevice(id);
+        store_->devices.remove(id);
         this->deviceRemoved(id, getStore());
 
         /*
