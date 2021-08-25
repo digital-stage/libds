@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="teckos"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\opt\;CMake Files\..\..\..\..\..\opt\homebrew\;CMake Files\..\..\..\..\..\opt\homebrew\lib\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\cpprestsdk\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\Boost-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_headers-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_random-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_system-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_thread-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_filesystem-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_chrono-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_atomic-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_date_time-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_regex-1.76.0\;CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\nlohmann_json\;CMake Files\libteckos\;CMake Files\libteckos\cmake\;CMake Files\sigslot\;CMake Files\sigslot\cmake\;CMake Files\sigslot\example\;CMake Files\sigslot\test\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="teckos-example">
+				<Option output="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/cli" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DJSON_USE_IMPLICIT_CONVERSIONS=1"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/Users/tobias/Developer/digitalstage/libds/libteckos/include"/>
+					<Add directory="/opt/homebrew/include"/>
+					<Add directory="/opt/homebrew/opt/openssl@1.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.5/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 teckos-example"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="teckos-example/fast">
+				<Option output="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/cli" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DJSON_USE_IMPLICIT_CONVERSIONS=1"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/Users/tobias/Developer/digitalstage/libds/libteckos/include"/>
+					<Add directory="/opt/homebrew/include"/>
+					<Add directory="/opt/homebrew/opt/openssl@1.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.5/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 teckos-example/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="teckos">
+				<Option output="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/libteckos.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DJSON_USE_IMPLICIT_CONVERSIONS=1"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/Users/tobias/Developer/digitalstage/libds/libteckos/include"/>
+					<Add directory="/opt/homebrew/include"/>
+					<Add directory="/opt/homebrew/opt/openssl@1.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.5/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 teckos"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="teckos/fast">
+				<Option output="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/libteckos.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DJSON_USE_IMPLICIT_CONVERSIONS=1"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/Users/tobias/Developer/digitalstage/libds/libteckos/include"/>
+					<Add directory="/opt/homebrew/include"/>
+					<Add directory="/opt/homebrew/opt/openssl@1.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.5/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 teckos/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/tobias/Developer/digitalstage/libds/cmake-build-debug/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/libteckos/src/cli.cc">
+			<Option target="teckos-example"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/libteckos/src/teckos/client.cc">
+			<Option target="teckos"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/cmake/BrewResolver.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/cmake/Config.cmake.in">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/cmake/FixAppleArchitecture.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/BoostDetectToolset-1.76.0.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/cpprestsdk/cpprestsdk-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\cpprestsdk\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/cpprestsdk/cpprestsdk-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\cpprestsdk\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/cpprestsdk/cpprestsdk-targets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\cpprestsdk\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/cpprestsdk/cpprestsdk-targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\cpprestsdk\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/Boost-1.76.0/BoostConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\Boost-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/Boost-1.76.0/BoostConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\Boost-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_headers-1.76.0/boost_headers-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_headers-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_headers-1.76.0/boost_headers-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_headers-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_random-1.76.0/boost_random-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_random-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_random-1.76.0/boost_random-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_random-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_random-1.76.0/libboost_random-variant-mt-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_random-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_random-1.76.0/libboost_random-variant-mt-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_random-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_random-1.76.0/libboost_random-variant-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_random-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_random-1.76.0/libboost_random-variant-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_random-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_system-1.76.0/boost_system-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_system-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_system-1.76.0/boost_system-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_system-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_system-1.76.0/libboost_system-variant-mt-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_system-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_system-1.76.0/libboost_system-variant-mt-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_system-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_system-1.76.0/libboost_system-variant-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_system-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_system-1.76.0/libboost_system-variant-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_system-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_thread-1.76.0/boost_thread-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_thread-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_thread-1.76.0/boost_thread-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_thread-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_thread-1.76.0/libboost_thread-variant-mt-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_thread-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_thread-1.76.0/libboost_thread-variant-mt-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_thread-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_filesystem-1.76.0/boost_filesystem-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_filesystem-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_filesystem-1.76.0/boost_filesystem-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_filesystem-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_filesystem-1.76.0/libboost_filesystem-variant-mt-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_filesystem-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_filesystem-1.76.0/libboost_filesystem-variant-mt-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_filesystem-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_filesystem-1.76.0/libboost_filesystem-variant-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_filesystem-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_filesystem-1.76.0/libboost_filesystem-variant-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_filesystem-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_chrono-1.76.0/boost_chrono-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_chrono-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_chrono-1.76.0/boost_chrono-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_chrono-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_chrono-1.76.0/libboost_chrono-variant-mt-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_chrono-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_chrono-1.76.0/libboost_chrono-variant-mt-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_chrono-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_chrono-1.76.0/libboost_chrono-variant-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_chrono-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_chrono-1.76.0/libboost_chrono-variant-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_chrono-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_atomic-1.76.0/boost_atomic-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_atomic-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_atomic-1.76.0/boost_atomic-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_atomic-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_atomic-1.76.0/libboost_atomic-variant-mt-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_atomic-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_atomic-1.76.0/libboost_atomic-variant-mt-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_atomic-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_date_time-1.76.0/boost_date_time-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_date_time-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_date_time-1.76.0/boost_date_time-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_date_time-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_date_time-1.76.0/libboost_date_time-variant-mt-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_date_time-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_date_time-1.76.0/libboost_date_time-variant-mt-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_date_time-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_date_time-1.76.0/libboost_date_time-variant-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_date_time-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_date_time-1.76.0/libboost_date_time-variant-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_date_time-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_regex-1.76.0/boost_regex-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_regex-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_regex-1.76.0/boost_regex-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_regex-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_regex-1.76.0/libboost_regex-variant-mt-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_regex-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_regex-1.76.0/libboost_regex-variant-mt-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_regex-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_regex-1.76.0/libboost_regex-variant-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_regex-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/boost_regex-1.76.0/libboost_regex-variant-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\boost_regex-1.76.0\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/nlohmann_json/nlohmann_jsonConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/../../../../../opt/homebrew/lib/cmake/nlohmann_json/nlohmann_jsonTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\opt\homebrew\lib\cmake\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/libteckos/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libteckos\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/libteckos/cmake/BrewResolver.cmake">
+			<Option virtualFolder="CMake Files\libteckos\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/libteckos/cmake/Config.cmake.in">
+			<Option virtualFolder="CMake Files\libteckos\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/libteckos/cmake/FixAppleArchitecture.cmake">
+			<Option virtualFolder="CMake Files\libteckos\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/sigslot/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sigslot\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/sigslot/cmake/PalSigslotConfig.cmake.in">
+			<Option virtualFolder="CMake Files\sigslot\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/sigslot/cmake/SigslotUtils.cmake">
+			<Option virtualFolder="CMake Files\sigslot\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/sigslot/example/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sigslot\example\"/>
+		</Unit>
+		<Unit filename="/Users/tobias/Developer/digitalstage/libds/sigslot/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sigslot\test\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

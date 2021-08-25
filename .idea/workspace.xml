@@ -1,13 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="DigitalStage" targetName="basic" />
+      <config projectName="DigitalStage" targetName="connection" />
+      <config projectName="DigitalStage" targetName="boost-tracking" />
+      <config projectName="DigitalStage" targetName="signal-threaded" />
+      <config projectName="DigitalStage" targetName="libds-example" />
+      <config projectName="DigitalStage" targetName="disconnection" />
+      <config projectName="DigitalStage" targetName="signal-performance" />
+      <config projectName="DigitalStage" targetName="observer" />
+      <config projectName="DigitalStage" targetName="examples" />
+      <config projectName="DigitalStage" targetName="arguments" />
+      <config projectName="DigitalStage" targetName="pmf-disconnection" />
+      <config projectName="DigitalStage" targetName="function-traits" />
+      <config projectName="DigitalStage" targetName="overloads" />
+      <config projectName="DigitalStage" targetName="bench-slots" />
+      <config projectName="DigitalStage" targetName="signal-pmf" />
+      <config projectName="DigitalStage" targetName="signal" />
+      <config projectName="DigitalStage" targetName="lambdas" />
+      <config projectName="DigitalStage" targetName="slots-groups" />
+      <config projectName="DigitalStage" targetName="teckos" />
+      <config projectName="DigitalStage" targetName="tests" />
+      <config projectName="DigitalStage" targetName="teckos-example" />
+      <config projectName="DigitalStage" targetName="signal-extended" />
+      <config projectName="DigitalStage" targetName="default-arguments" />
+      <config projectName="DigitalStage" targetName="slot-group" />
+      <config projectName="DigitalStage" targetName="signal-tracking" />
+      <config projectName="DigitalStage" targetName="DigitalStageApi" />
+      <config projectName="DigitalStage" targetName="DigitalStageAuth" />
+      <config projectName="DigitalStage" targetName="recursive" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="7f2d34f1-c465-44fb-9da6-04c123e7bd2c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/api-client.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../auth-server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-server/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/DigitalStage/Api/Store.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DigitalStage/Api/Store.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libteckos" beforeDir="false" afterPath="$PROJECT_DIR$/libteckos" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Store.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Store.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cli.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/cli.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,8 +55,9 @@
   <component name="ComposerSettings">
     <execution />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../web-client" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -39,6 +78,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="cf.advertisement.text.overridden" value="true" />
+    <property name="cmake.loaded.for.project" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../api-client-react/src/hooks" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
@@ -50,7 +91,7 @@
     <property name="node.js.selected.package.standard" value="" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="settings.javascript.linters.eslint" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
     <property name="ts.external.directory.path" value="$PROJECT_DIR$/../web-client/node_modules/typescript/lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -69,6 +110,188 @@
       <recent name="$PROJECT_DIR$/../api-server/src/socket" />
       <recent name="$PROJECT_DIR$/../api-server/src/socket/handle" />
     </key>
+  </component>
+  <component name="RunManager" selected="CMake Application.libds-example">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DigitalStageApi" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="DigitalStageApi" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DigitalStageAuth" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="DigitalStageAuth" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="arguments" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="arguments" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="arguments">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="basic" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="basic" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="basic">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="bench-slots" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="bench-slots" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="bench-slots">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="boost-tracking" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="boost-tracking" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="boost-tracking">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="connection" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="connection" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="connection">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="default-arguments" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="default-arguments" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="default-arguments">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="disconnection" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="disconnection" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="disconnection">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="examples" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="examples" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="function-traits" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="function-traits" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="function-traits">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="lambdas" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="lambdas" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="lambdas">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="libds-example" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="libds-example" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="libds-example">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="observer" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="observer" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="observer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="overloads" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="overloads" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="overloads">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="pmf-disconnection" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="pmf-disconnection" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="pmf-disconnection">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="recursive" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="recursive" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="recursive">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="signal-extended" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="signal-extended" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="signal-extended">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="signal-performance" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="signal-performance" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="signal-performance">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="signal-pmf" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="signal-pmf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="signal-pmf">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="signal-threaded" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="signal-threaded" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="signal-threaded">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="signal-tracking" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="signal-tracking" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="signal-tracking">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="signal" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="signal" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="signal">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="slot-group" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="slot-group" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="slot-group">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="slots-groups" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="slots-groups" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="slots-groups">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="teckos-example" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="teckos-example" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="DigitalStage" RUN_TARGET_NAME="teckos-example">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="teckos" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="teckos" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="tests" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="DigitalStage" TARGET_NAME="tests" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.DigitalStageApi" />
+      <item itemvalue="CMake Application.DigitalStageAuth" />
+      <item itemvalue="CMake Application.libds-example" />
+      <item itemvalue="CMake Application.teckos" />
+      <item itemvalue="CMake Application.teckos-example" />
+      <item itemvalue="CMake Application.arguments" />
+      <item itemvalue="CMake Application.basic" />
+      <item itemvalue="CMake Application.connection" />
+      <item itemvalue="CMake Application.default-arguments" />
+      <item itemvalue="CMake Application.disconnection" />
+      <item itemvalue="CMake Application.examples" />
+      <item itemvalue="CMake Application.lambdas" />
+      <item itemvalue="CMake Application.overloads" />
+      <item itemvalue="CMake Application.slot-group" />
+      <item itemvalue="CMake Application.bench-slots" />
+      <item itemvalue="CMake Application.boost-tracking" />
+      <item itemvalue="CMake Application.function-traits" />
+      <item itemvalue="CMake Application.observer" />
+      <item itemvalue="CMake Application.pmf-disconnection" />
+      <item itemvalue="CMake Application.recursive" />
+      <item itemvalue="CMake Application.signal" />
+      <item itemvalue="CMake Application.signal-extended" />
+      <item itemvalue="CMake Application.signal-performance" />
+      <item itemvalue="CMake Application.signal-pmf" />
+      <item itemvalue="CMake Application.signal-threaded" />
+      <item itemvalue="CMake Application.signal-tracking" />
+      <item itemvalue="CMake Application.slots-groups" />
+      <item itemvalue="CMake Application.tests" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

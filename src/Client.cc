@@ -8,7 +8,8 @@
 
 using namespace DigitalStage::Api;
 
-Client::Client(const std::string& apiUrl) : apiUrl_(apiUrl)
+Client::Client(const std::string& apiUrl)
+    : apiUrl_(apiUrl)
 {
   store_ = std::make_unique<Store>();
   wsclient_ = std::make_unique<teckos::client>();
@@ -77,7 +78,7 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
          */
       } else if(event == RetrieveEvents::USER_READY) {
         const auto user = payload.get<User>();
-        store_->createUser(payload);
+        store_->users.create(payload);
         store_->setUserId(user._id);
         this->userAdded(user, getStore());
         this->localUserReady(user, getStore());
@@ -101,108 +102,108 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
          * STAGE
          */
       } else if(event == RetrieveEvents::STAGE_ADDED) {
-        store_->createStage(payload);
+        store_->stages.create(payload);
         this->stageAdded(payload.get<Stage>(), getStore());
       } else if(event == RetrieveEvents::STAGE_CHANGED) {
-        store_->updateStage(payload);
+        store_->stages.update(payload);
         const std::string id = payload["_id"];
         this->stageChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::STAGE_REMOVED) {
         const std::string id = payload;
-        store_->removeStage(id);
+        store_->stages.remove(id);
         this->stageRemoved(id, getStore());
 
         /*
          * GROUPS
          */
       } else if(event == RetrieveEvents::GROUP_ADDED) {
-        store_->createGroup(payload);
+        store_->groups.create(payload);
         this->groupAdded(payload.get<Group>(), getStore());
       } else if(event == RetrieveEvents::GROUP_CHANGED) {
-        store_->updateGroup(payload);
+        store_->groups.update(payload);
         const std::string id = payload["_id"];
         this->groupChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::GROUP_REMOVED) {
         const std::string id = payload;
-        store_->removeGroup(id);
+        store_->groups.remove(id);
         this->groupRemoved(id, getStore());
 
         /*
          * CUSTOM GROUP VOLUME AND POSITIONS
          */
       } else if(event == RetrieveEvents::CUSTOM_GROUP_POSITION_ADDED) {
-        store_->createCustomGroupPosition(payload);
+        store_->customGroupPositions.create(payload);
         this->customGroupPositionAdded(payload.get<CustomGroupPosition>(),
                                        getStore());
       } else if(event == RetrieveEvents::CUSTOM_GROUP_POSITION_CHANGED) {
-        store_->updateCustomGroupPosition(payload);
+        store_->customGroupPositions.update(payload);
         const std::string id = payload["_id"];
         this->customGroupPositionChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::CUSTOM_GROUP_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomGroupPosition(id);
+        store_->customGroupPositions.remove(id);
         this->customGroupPositionRemoved(id, getStore());
       } else if(event == RetrieveEvents::CUSTOM_GROUP_VOLUME_ADDED) {
-        store_->createCustomGroupVolume(payload);
+        store_->customGroupVolumes.create(payload);
         this->customGroupVolumeAdded(payload.get<CustomGroupVolume>(),
                                      getStore());
       } else if(event == RetrieveEvents::CUSTOM_GROUP_VOLUME_CHANGED) {
-        store_->updateCustomGroupVolume(payload);
+        store_->customGroupVolumes.update(payload);
         const std::string id = payload["_id"];
         this->customGroupVolumeChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::CUSTOM_GROUP_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomGroupVolume(id);
+        store_->customGroupVolumes.remove(id);
         this->customGroupVolumeRemoved(id, getStore());
 
         /*
          * STAGE MEMBERS
          */
       } else if(event == RetrieveEvents::STAGE_MEMBER_ADDED) {
-        store_->createStageMember(payload);
+        store_->stageMembers.create(payload);
         this->stageMemberAdded(payload.get<StageMember>(), getStore());
       } else if(event == RetrieveEvents::STAGE_MEMBER_CHANGED) {
-        store_->updateStageMember(payload);
+        store_->stageMembers.update(payload);
         const std::string id = payload["_id"];
         this->stageMemberChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::STAGE_MEMBER_REMOVED) {
         const std::string id = payload;
-        store_->removeStageMember(id);
+        store_->stageMembers.remove(id);
         this->stageMemberRemoved(id, getStore());
 
         /*
          * CUSTOM STAGE MEMBERS VOLUME AND POSITIONS
          */
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_ADDED) {
-        store_->createCustomStageMemberPosition(payload);
+        store_->customStageMemberPositions.create(payload);
         this->customStageMemberPositionAdded(
             payload.get<CustomStageMemberPosition>(), getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_CHANGED) {
-        store_->updateCustomStageMemberPosition(payload);
+        store_->customStageMemberPositions.update(payload);
         const std::string id = payload["_id"];
         this->customStageMemberPositionChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomStageMemberPosition(id);
+        store_->customStageMemberPositions.remove(id);
         this->customStageMemberPositionRemoved(id, getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_ADDED) {
-        store_->createCustomStageMemberVolume(payload);
+        store_->customStageMemberVolumes.create(payload);
         this->customStageMemberVolumeAdded(
             payload.get<CustomStageMemberVolume>(), getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_CHANGED) {
-        store_->updateCustomStageMemberVolume(payload);
+        store_->customStageMemberVolumes.update(payload);
         const std::string id = payload["_id"];
         this->customStageMemberVolumeChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomStageMemberVolume(id);
+        store_->customStageMemberVolumes.remove(id);
         this->customStageMemberVolumeRemoved(id, getStore());
 
         /*
          * STAGE DEVICES
          */
       } else if(event == RetrieveEvents::STAGE_DEVICE_ADDED) {
-        store_->createStageDevice(payload);
+        store_->stageDevices.create(payload);
         auto stageDevice = payload.get<StageDevice>();
         auto localDeviceId = store_->getLocalDeviceId();
         auto stageId = store_->getStageId();
@@ -212,14 +213,14 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
         }
         this->stageDeviceAdded(stageDevice, getStore());
       } else if(event == RetrieveEvents::STAGE_DEVICE_CHANGED) {
-        store_->updateStageDevice(payload);
+        store_->stageDevices.update(payload);
         const std::string id = payload["_id"];
         this->stageDeviceChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::STAGE_DEVICE_REMOVED) {
         const std::string id = payload;
-        auto stageDevice = store_->getStageDevice(id);
+        auto stageDevice = store_->stageDevices.get(id);
         if(stageDevice) {
-          store_->removeStageDevice(id);
+          store_->stageDevices.remove(id);
           auto stageId = store_->getStageId();
           auto localDeviceId = store_->getLocalDeviceId();
           if(localDeviceId && stageId && *stageId == stageDevice->stageId &&
@@ -233,62 +234,62 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
          * CUSTOM STAGE DEVICES VOLUME AND POSITIONS
          */
       } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_ADDED) {
-        store_->createCustomStageDevicePosition(payload);
+        store_->customStageDevicePositions.create(payload);
         this->customStageDevicePositionAdded(
             payload.get<CustomStageDevicePosition>(), getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_CHANGED) {
-        store_->updateCustomStageDevicePosition(payload);
+        store_->customStageDevicePositions.update(payload);
         const std::string id = payload["_id"];
         this->customStageDevicePositionChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomStageDevicePosition(id);
+        store_->customStageDevicePositions.remove(id);
         this->customStageDevicePositionRemoved(id, getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_ADDED) {
-        store_->createCustomStageDeviceVolume(payload);
+        store_->customStageDeviceVolumes.create(payload);
         this->customStageDeviceVolumeAdded(
             payload.get<CustomStageDeviceVolume>(), getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_CHANGED) {
-        store_->updateCustomStageDeviceVolume(payload);
+        store_->customStageDeviceVolumes.update(payload);
         const std::string id = payload["_id"];
         this->customStageDeviceVolumeChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomStageDeviceVolume(id);
+        store_->customStageDeviceVolumes.remove(id);
         this->customStageDeviceVolumeRemoved(id, getStore());
 
         /*
          * VIDEO TRACKS
          */
       } else if(event == RetrieveEvents::VIDEO_TRACK_ADDED) {
-        store_->createVideoTrack(payload);
+        store_->videoTracks.create(payload);
         this->videoTrackAdded(payload.get<VideoTrack>(),
-                                    getStore());
+                              getStore());
       } else if(event == RetrieveEvents::VIDEO_TRACK_CHANGED) {
-        store_->updateVideoTrack(payload);
+        store_->videoTracks.update(payload);
         const std::string id = payload["_id"];
         this->videoTrackChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::VIDEO_TRACK_REMOVED) {
         const std::string id = payload;
-        auto track = store_->getVideoTrack(id);
-        store_->removeVideoTrack(id);
+        auto track = store_->videoTracks.get(id);
+        store_->videoTracks.remove(id);
         this->videoTrackRemoved(*track, getStore());
 
         /*
          * AUDIO TRACKS
          */
       } else if(event == RetrieveEvents::AUDIO_TRACK_ADDED) {
-        store_->createAudioTrack(payload);
+        store_->audioTracks.create(payload);
         this->audioTrackAdded(payload.get<AudioTrack>(),
-                                    getStore());
+                              getStore());
       } else if(event == RetrieveEvents::AUDIO_TRACK_CHANGED) {
-        store_->updateAudioTrack(payload);
+        store_->audioTracks.update(payload);
         const std::string id = payload["_id"];
         this->audioTrackChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::AUDIO_TRACK_REMOVED) {
         const std::string id = payload;
-        auto track = store_->getAudioTrack(id);
-        store_->removeAudioTrack(id);
+        auto track = store_->audioTracks.get(id);
+        store_->audioTracks.remove(id);
         this->audioTrackRemoved(*track, getStore());
 
         /*
@@ -296,63 +297,63 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
          */
       } else if(event ==
                 RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_ADDED) {
-        store_->createCustomAudioTrackPosition(payload);
+        store_->customAudioTrackPositions.create(payload);
         this->customAudioTrackPositionAdded(
             payload.get<CustomAudioTrackPosition>(), getStore());
       } else if(event ==
                 RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_CHANGED) {
-        store_->updateCustomAudioTrackPosition(payload);
+        store_->customAudioTrackPositions.update(payload);
         const std::string id = payload["_id"];
         this->customAudioTrackPositionChanged(id, payload, getStore());
       } else if(event ==
                 RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomAudioTrackPosition(id);
+        store_->customAudioTrackPositions.remove(id);
         this->customAudioTrackPositionRemoved(id, getStore());
       } else if(event ==
                 RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_ADDED) {
-        store_->createCustomAudioTrackVolume(payload);
+        store_->customAudioTrackVolumes.create(payload);
         this->customAudioTrackVolumeAdded(
             payload.get<CustomAudioTrackVolume>(), getStore());
       } else if(event ==
                 RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_CHANGED) {
-        store_->updateCustomAudioTrackVolume(payload);
+        store_->customAudioTrackVolumes.update(payload);
         const std::string id = payload["_id"];
         this->customAudioTrackVolumeChanged(id, payload, getStore());
       } else if(event ==
                 RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->removeCustomAudioTrackVolume(id);
+        store_->customAudioTrackVolumes.remove(id);
         this->customAudioTrackVolumeRemoved(id, getStore());
 
         /*
          * USERS
          */
       } else if(event == RetrieveEvents::REMOTE_USER_ADDED) {
-        store_->createUser(payload);
+        store_->users.create(payload);
         this->userAdded(payload.get<User>(), getStore());
       } else if(event == RetrieveEvents::REMOTE_USER_CHANGED) {
-        store_->updateUser(payload);
+        store_->users.update(payload);
         const std::string id = payload["_id"];
         this->userChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::REMOTE_USER_REMOVED) {
         const std::string id = payload;
-        store_->removeUser(id);
+        store_->users.remove(id);
         this->userRemoved(id, getStore());
 
         /*
          * SOUND CARD
          */
       } else if(event == RetrieveEvents::SOUND_CARD_ADDED) {
-        store_->createSoundCard(payload);
+        store_->soundCards.create(payload);
         this->soundCardAdded(payload.get<SoundCard>(), getStore());
       } else if(event == RetrieveEvents::SOUND_CARD_CHANGED) {
-        store_->updateSoundCard(payload);
+        store_->soundCards.update(payload);
         const std::string id = payload["_id"];
         this->soundCardChanged(id, payload, getStore());
       } else if(event == RetrieveEvents::SOUND_CARD_REMOVED) {
         const std::string id = payload;
-        store_->removeSoundCard(id);
+        store_->soundCards.remove(id);
         this->soundCardRemoved(id, getStore());
 
         /*
@@ -364,48 +365,48 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
         auto localDeviceId = store_->getLocalDeviceId();
         if(payload.count("remoteUsers") > 0) {
           for(const auto& item : payload["remoteUsers"]) {
-            store_->createUser(item);
+            store_->users.create(item);
             this->userAdded(item.get<User>(), getStore());
           }
         }
         if(payload.count("stage") > 0) {
           for(const auto& item : payload["stage"]) {
-            store_->createStage(item);
+            store_->stages.create(item);
             this->stageAdded(item.get<Stage>(), getStore());
           }
         }
         if(payload.count("groups") > 0) {
           for(const auto& item : payload["groups"]) {
-            store_->createGroup(item);
+            store_->groups.create(item);
             this->groupAdded(item.get<Group>(), getStore());
           }
         }
         for(const auto& item : payload["customGroupVolumes"]) {
-          store_->createCustomGroupVolume(item);
+          store_->customGroupVolumes.create(item);
           this->customGroupVolumeAdded(item.get<CustomGroupVolume>(),
                                        getStore());
         }
         for(const auto& item : payload["customGroupPositions"]) {
-          store_->createCustomGroupPosition(item);
+          store_->customGroupPositions.create(item);
           this->customGroupPositionAdded(item.get<CustomGroupPosition>(),
                                          getStore());
         }
         for(const auto& item : payload["stageMembers"]) {
-          store_->createStageMember(item);
+          store_->stageMembers.create(item);
           this->stageMemberAdded(item.get<StageMember>(), getStore());
         }
         for(const auto& item : payload["customStageMemberVolumes"]) {
-          store_->createCustomStageMemberVolume(item);
+          store_->customStageMemberVolumes.create(item);
           this->customStageMemberVolumeAdded(
               item.get<CustomStageMemberVolume>(), getStore());
         }
         for(const auto& item : payload["customStageMemberPositions"]) {
-          store_->createCustomStageMemberPosition(item);
+          store_->customStageMemberPositions.create(item);
           this->customStageMemberPositionAdded(
               item.get<CustomStageMemberPosition>(), getStore());
         }
         for(const auto& item : payload["stageDevices"]) {
-          store_->createStageDevice(item);
+          store_->stageDevices.create(item);
           auto stageDevice = item.get<StageDevice>();
           if(localDeviceId && stageId == stageDevice.stageId &&
              *localDeviceId == stageDevice.deviceId) {
@@ -414,32 +415,32 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
           this->stageDeviceAdded(stageDevice, getStore());
         }
         for(const auto& item : payload["customStageDeviceVolumes"]) {
-          store_->createCustomStageDeviceVolume(item);
+          store_->customStageDeviceVolumes.create(item);
           this->customStageDeviceVolumeAdded(
               item.get<CustomStageDeviceVolume>(), getStore());
         }
         for(const auto& item : payload["customStageDevicePositions"]) {
-          store_->createCustomStageDevicePosition(item);
+          store_->customStageDevicePositions.create(item);
           this->customStageDevicePositionAdded(
               item.get<CustomStageDevicePosition>(), getStore());
         }
         for(const auto& item : payload["audioTracks"]) {
-          store_->createAudioTrack(item);
+          store_->audioTracks.create(item);
           this->audioTrackAdded(item.get<AudioTrack>(),
-                                      getStore());
+                                getStore());
         }
         for(const auto& item : payload["videoTracks"]) {
-          store_->createVideoTrack(item);
+          store_->videoTracks.create(item);
           this->videoTrackAdded(item.get<VideoTrack>(),
-                                      getStore());
+                                getStore());
         }
         for(const auto& item : payload["customAudioTrackPositions"]) {
-          store_->createCustomAudioTrackPosition(item);
+          store_->customAudioTrackPositions.create(item);
           this->customAudioTrackPositionAdded(
               item.get<CustomAudioTrackPosition>(), getStore());
         }
         for(const auto& item : payload["customAudioTrackVolumes"]) {
-          store_->createCustomAudioTrackVolume(item);
+          store_->customAudioTrackVolumes.create(item);
           this->customAudioTrackVolumeAdded(
               item.get<CustomAudioTrackVolume>(), getStore());
         }
@@ -454,15 +455,18 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
         store_->resetStageId();
         store_->resetGroupId();
         store_->resetStageDeviceId();
-        store_->removeAllStageMembers();
-        store_->removeAllCustomStageMemberPositions();
-        store_->removeAllCustomStageMemberVolumes();
-        store_->removeAllCustomGroupPositions();
-        store_->removeAllCustomGroupVolumes();
-        store_->removeAllVideoTracks();
-        store_->removeAllAudioTracks();
-        store_->removeAllCustomAudioTrackPositions();
-        store_->removeAllCustomAudioTrackVolumes();
+        store_->stageMembers.removeAll();
+        store_->customStageMemberPositions.removeAll();
+        store_->customStageMemberVolumes.removeAll();
+        store_->customGroupPositions.removeAll();
+        store_->customGroupVolumes.removeAll();
+        store_->stageMembers.removeAll();
+        store_->customStageMemberPositions.removeAll();
+        store_->customStageMemberVolumes.removeAll();
+        store_->videoTracks.removeAll();
+        store_->audioTracks.removeAll();
+        store_->customAudioTrackPositions.removeAll();
+        store_->customAudioTrackVolumes.removeAll();
         std::cout << "See me?" << event << std::endl;
         // TODO: Discuss, the store may dispatch all the events instead...
         // TODO: Otherwise we have to dispatch all removals HERE (!)

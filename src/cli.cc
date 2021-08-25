@@ -10,7 +10,7 @@ using namespace DigitalStage::Auth;
 
 void printStage(const Store* s)
 {
-  auto stages = s->getStages();
+  auto stages = s->stages.getAll();
   for(const auto& stage : stages) {
     std::cout << "[" << stage.name << "] " << std::endl;
     auto groups = s->getGroupsByStage(stage._id);
@@ -18,7 +18,7 @@ void printStage(const Store* s)
       std::cout << "  [" << group.name << "]" << std::endl;
       auto stageMembers = s->getStageMembersByGroup(group._id);
       for(const auto& stageMember : stageMembers) {
-        auto user = s->getUser(stageMember.userId);
+        auto user = s->users.get(stageMember.userId);
         std::cout << "    [" << stageMember._id << ": "
                   << (user ? user->name : "") << "]" << std::endl;
         auto stageDevices = s->getStageDevicesByStageMember(stageMember._id);
@@ -70,8 +70,8 @@ void handleReady(const Store*)
 void handleStageJoined(const ID_TYPE& stageId, const ID_TYPE& groupId,
                        const Store* s)
 {
-  auto stage = s->getStage(stageId);
-  auto group = s->getGroup(groupId);
+  auto stage = s->stages.get(stageId);
+  auto group = s->groups.get(groupId);
   std::cout << "JOINED STAGE " << stage->name << " AND GROUP " << group->name
             << std::endl;
 }
