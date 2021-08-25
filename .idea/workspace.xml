@@ -39,13 +39,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7f2d34f1-c465-44fb-9da6-04c123e7bd2c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/DigitalStage/Api/Store.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DigitalStage/Api/Store.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libteckos" beforeDir="false" afterPath="$PROJECT_DIR$/libteckos" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Store.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Store.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cli.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/cli.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
