@@ -72,7 +72,6 @@ set(API_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Client.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Events.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Store.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Macros.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Types.h
         )
 set(API_SOURCES

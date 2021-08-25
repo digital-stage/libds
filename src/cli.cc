@@ -81,14 +81,20 @@ void handleStageLeft(const Store*)
   std::cout << "STAGE LEFT" << std::endl;
 }
 
-int main(int, char const*[])
+int main(int argc, char *argv[])
 {
+  if(argc != 3) {
+    std::wcout << "Call this with email and password as parameters" << std::endl;
+    return -1;
+  }
+  auto email = argv[1];
+  auto password = argv[2];
   auto authService = AuthService(U("https://auth.dstage.org/"));
 
   std::cout << "Signing in..." << std::endl;
   try {
     auto apiToken =
-        authService.signIn(U("tobias.hegemann@me.com"), U("Testtesttest123!")).get();
+        authService.signIn(U(email), U(password)).get();
 #ifdef WIN32
     std::wcout << "Token: " << apiToken << std::endl;
 #else
@@ -100,7 +106,7 @@ int main(int, char const*[])
     initialDevice["type"] = "ov";
     initialDevice["canAudio"] = true;
     initialDevice["canVideo"] = false;
-    auto* client = new Client("ws://localhost:4000");
+    auto* client = new Client("wss://api.dstage.org");
 
     client->ready.connect([](const Store*) {
       std::cout << "Ready - this type inside an anonymous callback function"
