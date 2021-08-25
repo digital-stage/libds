@@ -48,10 +48,8 @@
 #define STORE_REMOVE_ALL(TYPE, NAME, MUTEX, VAR)                               \
   void removeAll##NAME##s()                                                    \
   {                                                                            \
-    std::lock_guard<std::recursive_mutex> lock(this->MUTEX);                   \
-    for(const auto& item : VAR) {                                              \
-      remove##NAME(item.first);                                                \
-    }                                                                          \
+    std::lock_guard<std::recursive_mutex> lock(this->MUTEX); \
+    VAR.clear(); \
   }
 
 #define ADD_STORE_ENTRY(TYPE, NAME, VAR)                                       \
