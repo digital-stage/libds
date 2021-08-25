@@ -174,8 +174,16 @@ void Store::removeStageMember(const std::string& id)
   const auto stageId = this->stageMembers_.at(id)["stageId"].get<std::string>();
   const auto groupId = this->stageMembers_.at(id)["groupId"].get<std::string>();
   this->stageMembers_.erase(id);
-  stageMemberIds_by_stages_[stageId].erase(id);
-  stageMemberIds_by_groups_[groupId].erase(id);
+  if(stageMemberIds_by_stages_.find(groupId) != stageMemberIds_by_stages_.end()) {
+    if(stageMemberIds_by_stages_[groupId].find(id) != stageMemberIds_by_stages_[groupId].end()) {
+      stageMemberIds_by_stages_[stageId].erase(id);
+    }
+  }
+  if(stageMemberIds_by_groups_.find(groupId) != stageMemberIds_by_groups_.end()) {
+    if(stageMemberIds_by_groups_[groupId].find(id) != stageMemberIds_by_groups_[groupId].end()) {
+      stageMemberIds_by_groups_[groupId].erase(id);
+    }
+  }
 }
 
 [[maybe_unused]] std::vector<StageMember>

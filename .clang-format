@@ -2,6 +2,7 @@ BasedOnStyle: LLVM
 IndentWidth: 2
 Language: Cpp
 PointerAlignment: Left
+ColumnLimit: 0
 BraceWrapping:
   AfterFunction: true
   BeforeCatch: true
