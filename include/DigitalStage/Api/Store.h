@@ -235,7 +235,7 @@ namespace DigitalStage::Api {
     // Sound cards
     StoreEntry<DigitalStage::Types::SoundCard> soundCards;
     std::optional<DigitalStage::Types::SoundCard>
-    getSoundCardByDeviceAndUUID(const std::string& deviceId, const std::string& uuid) const;
+    getSoundCardByDeviceAndDriverAndTypeAndLabel(const std::string& deviceId, const std::string& audioDriver, const std::string& type, const std::string& label) const;
 
   protected:
     mutable std::recursive_mutex ready_mutex_;

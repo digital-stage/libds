@@ -48,7 +48,7 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
         return;
       }
       const std::string& event = j[0];
-      const nlohmann::json payload = j[1];
+      const nlohmann::json payload = (j.size() > 1) ? j[1] : nlohmann::json::object();
 
 #ifdef DEBUG_EVENTS
 #ifdef DEBUG_PAYLOADS
