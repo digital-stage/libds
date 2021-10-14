@@ -3,7 +3,6 @@
 #define DS_STORE
 
 #include "DigitalStage/Types.h"
-#include "Macros.h"
 #include <map>
 #include <mutex>
 #include <nlohmann/json.hpp>
@@ -12,265 +11,231 @@
 
 using namespace nlohmann;
 
-using namespace DigitalStage::Types;
-
 namespace DigitalStage::Api {
+
+  // Devices
+  template <typename TYPE>
+  class StoreEntry {
+  public:
+    std::optional<const TYPE> get(const std::string& id) const
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      if(storeEntry_.count(id) > 0) {
+        return storeEntry_.at(id).template get<const TYPE>();
+      }
+      return std::nullopt;
+    }
+
+    const std::vector<TYPE> getAll() const
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      std::vector<TYPE> items = std::vector<TYPE>();
+      for(const auto& item : storeEntry_) {
+        items.push_back(item.second.template get<TYPE>());
+      }
+      return items;
+    }
+
+    void create(const json& payload)
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      const std::string _id = payload.at("_id").get<std::string>();
+      storeEntry_[_id] = payload;
+    }
+
+    void update(const json& payload)
+    {
+      const std::string& id = payload.at("_id").get<std::string>();
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      storeEntry_[id].merge_patch(payload);
+    }
+
+    void remove(const std::string& id)
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      storeEntry_.erase(id);
+    }
+
+    void removeAll()
+    {
+      std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+      storeEntry_.clear();
+    }
+
+  public:
+    // TODO: @christofmuc to discuss if we should hide this mutex and use special mutex inside the helper functions (e.g. getGroupsByStage)
+    mutable std::recursive_mutex mutex_store_;
+
+  private:
+    std::map<std::string, json> storeEntry_;
+  };
+
   class Store {
   public:
     Store();
 
     void setReady(bool ready);
+    /**
+     * Signals, if the initial state has been fetched and the store is ready to use.
+     * @return true if the store can be used, otherwise false
+     */
     bool isReady() const;
 
     // Local device
-    std::optional<const Device> getLocalDevice() const;
+    /**
+     * Get this (local) device
+     * @return this device
+     */
+    std::optional<const DigitalStage::Types::Device> getLocalDevice() const;
     void setLocalDeviceId(const std::string& id);
+    /**
+     * Returns the ID of this (local) device
+     * @return
+     */
     std::optional<std::string> getLocalDeviceId() const;
+
+    // Devices
+    StoreEntry<DigitalStage::Types::Device> devices;
 
     // Local user
     void setUserId(const std::string& id);
+    /**
+     * Returns the ID of the current user
+     * @return ID of the current user
+     */
     std::optional<std::string> getUserId() const;
     void setStageMemberId(const std::string& id);
+    /**
+     * Returns the ID of the current stage member
+     * This will be null if the user is currently not inside any stage
+     * @return ID of the current stage member or null
+     */
     [[maybe_unused]] std::optional<std::string> getStageMemberId() const;
 
-    // Stage management
+    // Users
+    StoreEntry<DigitalStage::Types::User> users;
+
+    /*
+     * Stage management
+     */
     void setStageId(const std::string& id);
     void resetStageId();
+    /**
+     * Returns the ID of the current stage.
+     * This will return null if the user is currently not inside any stage.
+     * Use this variable to obtain, if the user is currently inside a stage.
+     * @return ID of the current stage or null
+     */
     std::optional<std::string> getStageId() const;
 
     void setGroupId(const std::string& id);
     void resetGroupId();
+    /**
+     * Returns the ID of the current group.
+     * This will return null if the user is currently not inside any stage.
+     * @return ID of the current group or null
+     */
     [[maybe_unused]] std::optional<std::string> getGroupId() const;
 
     void setStageDeviceId(const std::string& id);
     void resetStageDeviceId();
+    /**
+     * Returns the ID of this (local) stage device.
+     * A stage device is an abstraction of this device for all stage members.
+     * This will return null if the user is currently not inside any stage.
+     * @return ID of this stage device or null
+     */
     std::optional<std::string> getStageDeviceId() const;
+    /**
+     * Returns the this (local) stage device.
+     * This will return null if the user is currently not inside any stage.
+     * @return this stage device or null
+     */
     std::optional<DigitalStage::Types::StageDevice> getStageDevice() const;
 
+    // Stages
+    StoreEntry<DigitalStage::Types::Stage> stages;
+
     // Groups
-    STORE_GET(DigitalStage::Types::Group, Group, groups_mutex_, groups_)
-    STORE_GET_ALL(DigitalStage::Types::Group, Group, groups_mutex_, groups_)
-    STORE_REMOVE_ALL(DigitalStage::Types::Group, Group, groups_mutex_, groups_)
-    std::vector<Group> getGroupsByStage(const std::string& stageId) const;
-    void createGroup(const json& payload);
-    STORE_UPDATE(DigitalStage::Types::Group, Group, groups_mutex_, groups_)
-    void removeGroup(const std::string& id);
+    StoreEntry<DigitalStage::Types::Group> groups;
+    std::vector<DigitalStage::Types::Group> getGroupsByStage(const std::string& stageId) const;
 
     // Stage members
-    STORE_GET(DigitalStage::Types::StageMember, StageMember,
-              stageMembers_mutex_, stageMembers_)
-    STORE_GET_ALL(DigitalStage::Types::StageMember, StageMember,
-                  stageMembers_mutex_, stageMembers_)
-    STORE_REMOVE_ALL(DigitalStage::Types::StageMember, StageMember,
-                     stageMembers_mutex_, stageMembers_)
+    StoreEntry<DigitalStage::Types::StageMember> stageMembers;
     [[maybe_unused]] std::vector<DigitalStage::Types::StageMember>
     getStageMembersByStage(const std::string& stageId) const;
     std::vector<DigitalStage::Types::StageMember>
     getStageMembersByGroup(const std::string& audio_trackId) const;
-    void createStageMember(const json& payload);
-    STORE_UPDATE(StageMember, StageMember, stageMembers_mutex_, stageMembers_)
-    void removeStageMember(const std::string& id);
 
     // Stage devices
-    STORE_GET(DigitalStage::Types::StageDevice, StageDevice,
-              stageDevices_mutex_, stageDevices_)
-    STORE_GET_ALL(DigitalStage::Types::StageDevice, StageDevice,
-                  stageDevices_mutex_, stageDevices_)
-    STORE_REMOVE_ALL(DigitalStage::Types::StageDevice, StageDevice,
-                     stageDevices_mutex_, stageDevices_)
+    StoreEntry<DigitalStage::Types::StageDevice> stageDevices;
     std::vector<DigitalStage::Types::StageDevice>
     getStageDevicesByStageMember(const std::string& stageMemberId) const;
-    void createStageDevice(const json& payload);
-    STORE_UPDATE(StageDevice, StageDevice, stageDevices_mutex_, stageDevices_)
-    void removeStageDevice(const std::string& id);
 
     // Video tracks
-    STORE_GET(DigitalStage::Types::VideoTrack, VideoTrack,
-              videoTracks_mutex_, videoTracks_)
-    STORE_GET_ALL(DigitalStage::Types::VideoTrack, VideoTrack,
-                  videoTracks_mutex_, videoTracks_)
-    STORE_UPDATE(DigitalStage::Types::VideoTrack, VideoTrack,
-                 videoTracks_mutex_, videoTracks_)
-    STORE_REMOVE_ALL(DigitalStage::Types::VideoTrack,
-                     VideoTrack, videoTracks_mutex_,
-                     videoTracks_)
+    StoreEntry<DigitalStage::Types::VideoTrack> videoTracks;
     std::vector<DigitalStage::Types::VideoTrack>
     getVideoTracksByStageDevice(const std::string& stageDeviceId) const;
-    void createVideoTrack(const json& payload);
-    void removeVideoTrack(const std::string& id);
 
     // Audio tracks
-    STORE_GET(DigitalStage::Types::AudioTrack, AudioTrack,
-              audioTracks_mutex_, audioTracks_)
-    STORE_GET_ALL(DigitalStage::Types::AudioTrack, AudioTrack,
-                  audioTracks_mutex_, audioTracks_)
-    STORE_UPDATE(DigitalStage::Types::AudioTrack, AudioTrack,
-                 audioTracks_mutex_, audioTracks_)
-    STORE_REMOVE_ALL(DigitalStage::Types::AudioTrack,
-                     AudioTrack, audioTracks_mutex_,
-                     audioTracks_)
-    std::vector<AudioTrack>
+    StoreEntry<DigitalStage::Types::AudioTrack> audioTracks;
+    std::vector<DigitalStage::Types::AudioTrack>
     getAudioTracksByStageDevice(const std::string& stageDeviceId) const;
-    void createAudioTrack(const json& payload);
-    void removeAudioTrack(const std::string& id);
 
     // Custom group positions
-    STORE_GET(DigitalStage::Types::CustomGroupPosition, CustomGroupPosition,
-              customGroupPositions_mutex_, customGroupPositions_)
-    STORE_GET_ALL(DigitalStage::Types::CustomGroupPosition, CustomGroupPosition,
-                  customGroupPositions_mutex_, customGroupPositions_)
-    STORE_REMOVE_ALL(DigitalStage::Types::CustomGroupPosition,
-                     CustomGroupPosition, customGroupPositions_mutex_,
-                     customGroupPositions_)
-    std::optional<const CustomGroupPosition>
+    StoreEntry<DigitalStage::Types::CustomGroupPosition> customGroupPositions;
+    std::optional<const DigitalStage::Types::CustomGroupPosition>
     getCustomGroupPositionByGroupAndDevice(const std::string& groupId,
                                            const std::string& deviceId) const;
-    void createCustomGroupPosition(const json& payload);
-    STORE_UPDATE(CustomGroupPosition, CustomGroupPosition,
-                 customGroupPositions_mutex_, customGroupPositions_)
-    void removeCustomGroupPosition(const std::string& id);
 
     // Custom group volumes
-    STORE_GET(DigitalStage::Types::CustomGroupVolume, CustomGroupVolume,
-              customGroupVolumes_mutex_, customGroupVolumes_)
-    STORE_GET_ALL(DigitalStage::Types::CustomGroupVolume, CustomGroupVolume,
-                  customGroupVolumes_mutex_, customGroupVolumes_)
-    STORE_UPDATE(DigitalStage::Types::CustomGroupVolume, CustomGroupVolume,
-                 customGroupVolumes_mutex_, customGroupVolumes_)
-    STORE_REMOVE_ALL(CustomGroupVolume, CustomGroupVolume,
-                     customGroupVolumes_mutex_, customGroupVolumes_)
-    std::optional<const CustomGroupVolume>
+    StoreEntry<DigitalStage::Types::CustomGroupVolume> customGroupVolumes;
+    std::optional<const DigitalStage::Types::CustomGroupVolume>
     getCustomGroupVolumeByGroupAndDevice(const std::string& groupId,
                                          const std::string& deviceId) const;
-    void createCustomGroupVolume(const json& payload);
-    void removeCustomGroupVolume(const std::string& id);
 
     // Custom stage member positions
-    STORE_GET(CustomStageMemberPosition, CustomStageMemberPosition,
-              customStageMemberPositions_mutex_, customStageMemberPositions_)
-    STORE_GET_ALL(CustomStageMemberPosition, CustomStageMemberPosition,
-                  customStageMemberPositions_mutex_,
-                  customStageMemberPositions_)
-    STORE_REMOVE_ALL(custom_stage_member_position_t, CustomStageMemberPosition,
-                     customStageMemberPositions_mutex_,
-                     customStageMemberPositions_)
-    [[maybe_unused]] std::optional<const CustomStageMemberPosition>
+    StoreEntry<DigitalStage::Types::CustomStageMemberPosition> customStageMemberPositions;
+    [[maybe_unused]] std::optional<const DigitalStage::Types::CustomStageMemberPosition>
     getCustomStageMemberPositionByStageMemberAndDevice(
         const std::string& stageMemberId, const std::string& deviceId) const;
-    void createCustomStageMemberPosition(const json& payload);
-    STORE_UPDATE(custom_stage_member_position_t, CustomStageMemberPosition,
-                 customStageMemberPositions_mutex_, customStageMemberPositions_)
-    void removeCustomStageMemberPosition(const std::string& id);
 
     // Custom stage member volumes
-    STORE_GET(CustomStageMemberVolume, CustomStageMemberVolume,
-              customStageMemberVolumes_mutex_, customStageMemberVolumes_)
-    STORE_GET_ALL(CustomStageMemberVolume, CustomStageMemberVolume,
-                  customStageMemberVolumes_mutex_, customStageMemberVolumes_)
-    STORE_UPDATE(custom_stage_member_volume_t, CustomStageMemberVolume,
-                 customStageMemberVolumes_mutex_, customStageMemberVolumes_)
-    STORE_REMOVE_ALL(custom_stage_member_volume_t, CustomStageMemberVolume,
-                     customStageMemberVolumes_mutex_, customStageMemberVolumes_)
-    [[maybe_unused]] std::optional<const CustomStageMemberVolume>
+    StoreEntry<DigitalStage::Types::CustomStageMemberVolume> customStageMemberVolumes;
+    [[maybe_unused]] std::optional<const DigitalStage::Types::CustomStageMemberVolume>
     getCustomStageMemberVolumeByStageMemberAndDevice(
         const std::string& stageMemberId, const std::string& deviceId) const;
-    void createCustomStageMemberVolume(const json& payload);
-    void removeCustomStageMemberVolume(const std::string& id);
 
     // Custom stage device positions
-    STORE_GET(CustomStageDevicePosition, CustomStageDevicePosition,
-              customStageDevicePositions_mutex_, customStageDevicePositions_)
-    STORE_GET_ALL(CustomStageDevicePosition, CustomStageDevicePosition,
-                  customStageDevicePositions_mutex_,
-                  customStageDevicePositions_)
-    STORE_REMOVE_ALL(CustomStageDevicePosition, CustomStageDevicePosition,
-                     customStageDevicePositions_mutex_,
-                     customStageDevicePositions_)
-    [[maybe_unused]] std::optional<const CustomStageDevicePosition>
+    StoreEntry<DigitalStage::Types::CustomStageDevicePosition> customStageDevicePositions;
+    [[maybe_unused]] std::optional<const DigitalStage::Types::CustomStageDevicePosition>
     getCustomStageDevicePositionByStageDeviceAndDevice(
         const std::string& stageDeviceId, const std::string& deviceId) const;
-    void createCustomStageDevicePosition(const json& payload);
-    STORE_UPDATE(CustomStageDevicePosition, CustomStageDevicePosition,
-                 customStageDevicePositions_mutex_, customStageDevicePositions_)
-    void removeCustomStageDevicePosition(const std::string& id);
 
     // Custom stage device volumes
-    STORE_GET(CustomStageDeviceVolume, CustomStageDeviceVolume,
-              customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
-    STORE_GET_ALL(CustomStageDeviceVolume, CustomStageDeviceVolume,
-                  customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
-    STORE_UPDATE(CustomStageDeviceVolume, CustomStageDeviceVolume,
-                 customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
-    STORE_REMOVE_ALL(CustomStageDeviceVolume, CustomStageDeviceVolume,
-                     customStageDeviceVolumes_mutex_, customStageDeviceVolumes_)
-    [[maybe_unused]] std::optional<const CustomStageDeviceVolume>
+    StoreEntry<DigitalStage::Types::CustomStageDeviceVolume> customStageDeviceVolumes;
+    [[maybe_unused]] std::optional<const DigitalStage::Types::CustomStageDeviceVolume>
     getCustomStageDeviceVolumeByStageDeviceAndDevice(
         const std::string& stageDeviceId, const std::string& deviceId) const;
-    void createCustomStageDeviceVolume(const json& payload);
-    void removeCustomStageDeviceVolume(const std::string& id);
 
     // Custom audio track positions
-    STORE_GET(CustomAudioTrackPosition,
-              CustomAudioTrackPosition,
-              customAudioTrackPositions_mutex_,
-              customAudioTrackPositions_)
-    STORE_GET_ALL(CustomAudioTrackPosition,
-                  CustomAudioTrackPosition,
-                  customAudioTrackPositions_mutex_,
-                  customAudioTrackPositions_)
-    STORE_REMOVE_ALL(custom_audio_track_position_t,
-                     CustomAudioTrackPosition,
-                     customAudioTrackPositions_mutex_,
-                     customAudioTrackPositions_)
-    [[maybe_unused]] std::optional<const CustomAudioTrackPosition>
+    StoreEntry<DigitalStage::Types::CustomAudioTrackPosition> customAudioTrackPositions;
+    [[maybe_unused]] std::optional<const DigitalStage::Types::CustomAudioTrackPosition>
     getCustomAudioTrackPositionByAudioTrackAndDevice(
         const std::string& audio_trackId,
         const std::string& deviceId) const;
-    void createCustomAudioTrackPosition(const json& payload);
-    STORE_UPDATE(custom_audio_track_position_t,
-                 CustomAudioTrackPosition,
-                 customAudioTrackPositions_mutex_,
-                 customAudioTrackPositions_)
-    void removeCustomAudioTrackPosition(const std::string& id);
 
     // Custom audio track volumes
-    STORE_GET(CustomAudioTrackVolume, CustomAudioTrackVolume,
-              customAudioTrackVolumes_mutex_,
-              customAudioTrackVolumes_)
-    STORE_GET_ALL(CustomAudioTrackVolume,
-                  CustomAudioTrackVolume,
-                  customAudioTrackVolumes_mutex_,
-                  customAudioTrackVolumes_)
-    STORE_UPDATE(custom_audio_track_volume_t,
-                 CustomAudioTrackVolume,
-                 customAudioTrackVolumes_mutex_,
-                 customAudioTrackVolumes_)
-    STORE_REMOVE_ALL(custom_audio_track_volume_t,
-                     CustomAudioTrackVolume,
-                     customAudioTrackVolumes_mutex_,
-                     customAudioTrackVolumes_)
-    [[maybe_unused]] std::optional<const CustomAudioTrackVolume>
+    StoreEntry<DigitalStage::Types::CustomAudioTrackVolume> customAudioTrackVolumes;
+    [[maybe_unused]] std::optional<const DigitalStage::Types::CustomAudioTrackVolume>
     getCustomAudioTrackVolumeByAudioTrackAndDevice(
         const std::string& audio_trackId,
         const std::string& deviceId) const;
-    void createCustomAudioTrackVolume(const json& payload);
-    void removeCustomAudioTrackVolume(const std::string& id);
 
     // Sound cards
+    StoreEntry<DigitalStage::Types::SoundCard> soundCards;
     std::optional<DigitalStage::Types::SoundCard>
     getSoundCardByDeviceAndUUID(const std::string& deviceId, const std::string& uuid) const;
-
-    // Devices
-    ADD_STORE_ENTRY(DigitalStage::Types::Device, Device, devices_)
-
-    // Sound cards
-    ADD_STORE_ENTRY(DigitalStage::Types::SoundCard, SoundCard, soundCards_)
-
-    // Stages
-    ADD_STORE_ENTRY(DigitalStage::Types::Stage, Stage, stages_)
-
-    // Users
-    ADD_STORE_ENTRY(DigitalStage::Types::User, User, users_)
 
   protected:
     mutable std::recursive_mutex ready_mutex_;
@@ -281,8 +246,10 @@ namespace DigitalStage::Api {
 
     mutable std::recursive_mutex stageId_mutex_;
     std::optional<std::string> stageId_;
+
     mutable std::recursive_mutex stageMemberId_mutex_;
     std::optional<std::string> stageMemberId_;
+
     mutable std::recursive_mutex groupId_mutex_;
     std::optional<std::string> groupId_;
 
@@ -291,69 +258,6 @@ namespace DigitalStage::Api {
 
     mutable std::recursive_mutex stage_device_id_mutex_;
     std::optional<std::string> stageDeviceId_;
-
-    mutable std::recursive_mutex groups_mutex_;
-    std::map<std::string, json> groups_;
-    std::map<std::string, std::set<std::string>> groupIds_by_stages_;
-
-    mutable std::recursive_mutex stageMembers_mutex_;
-    std::map<std::string, json> stageMembers_;
-    std::map<std::string, std::set<std::string>> stageMemberIds_by_stages_;
-    std::map<std::string, std::set<std::string>> stageMemberIds_by_groups_;
-
-    mutable std::recursive_mutex stageDevices_mutex_;
-    std::map<std::string, json> stageDevices_;
-    std::map<std::string, std::set<std::string>> stageDeviceIds_by_stageMember_;
-
-    mutable std::recursive_mutex customGroupVolumes_mutex_;
-    std::map<std::string, json> customGroupVolumes_;
-    std::map<std::string, std::map<std::string, std::string>>
-        customGroupVolumeIds_by_Group_and_Device_;
-
-    mutable std::recursive_mutex customGroupPositions_mutex_;
-    std::map<std::string, json> customGroupPositions_;
-    std::map<std::string, std::map<std::string, std::string>>
-        customGroupPositionIds_by_Group_and_Device_;
-
-    mutable std::recursive_mutex customStageMemberPositions_mutex_;
-    std::map<std::string, json> customStageMemberPositions_;
-    std::map<std::string, std::map<std::string, std::string>>
-        customStageMemberPositionIds_by_StageMember_and_Device_;
-
-    mutable std::recursive_mutex customStageMemberVolumes_mutex_;
-    std::map<std::string, json> customStageMemberVolumes_;
-    std::map<std::string, std::map<std::string, std::string>>
-        customStageMemberVolumeIds_by_StageMember_and_Device_;
-
-    mutable std::recursive_mutex customStageDevicePositions_mutex_;
-    std::map<std::string, json> customStageDevicePositions_;
-    std::map<std::string, std::map<std::string, std::string>>
-        customStageDevicePositionIds_by_StageDevice_and_Device_;
-
-    mutable std::recursive_mutex customStageDeviceVolumes_mutex_;
-    std::map<std::string, json> customStageDeviceVolumes_;
-    std::map<std::string, std::map<std::string, std::string>>
-        customStageDeviceVolumeIds_by_StageDevice_and_Device_;
-
-    mutable std::recursive_mutex videoTracks_mutex_;
-    std::map<std::string, json> videoTracks_;
-    std::map<std::string, std::set<std::string>>
-        videoTrackIds_by_StageDevice_;
-
-    mutable std::recursive_mutex audioTracks_mutex_;
-    std::map<std::string, json> audioTracks_;
-    std::map<std::string, std::set<std::string>>
-        audioTrackIds_by_StageDevice_;
-
-    mutable std::recursive_mutex customAudioTrackVolumes_mutex_;
-    std::map<std::string, json> customAudioTrackVolumes_;
-    std::map<std::string, std::map<std::string, std::string>>
-        customAudioTrackVolumeIds_by_AudioTrack_and_Device_;
-
-    mutable std::recursive_mutex customAudioTrackPositions_mutex_;
-    std::map<std::string, json> customAudioTrackPositions_;
-    std::map<std::string, std::map<std::string, std::string>>
-        customAudioTrackPositionIds_by_AudioTrack_and_Device_;
   };
 } // namespace DigitalStage::Api
 

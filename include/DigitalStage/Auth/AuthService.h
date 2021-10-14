@@ -6,9 +6,12 @@
 #define DS_AUTH_SERVICE_H
 
 #include <pplx/pplxtasks.h>
-#include <string>
+#include <cpprest/uri.h>
 
 namespace DigitalStage::Auth {
+
+    typedef utility::string_t string_t;
+
     class AuthService {
     public:
       /**
@@ -16,7 +19,7 @@ namespace DigitalStage::Auth {
        * service
        * @param authUrl
        */
-      explicit AuthService(const std::string& authUrl);
+      explicit AuthService(const string_t& authUrl);
 
       /**
        * Verify the given token
@@ -24,14 +27,14 @@ namespace DigitalStage::Auth {
        * @return task object, use wait() and get() on it to receive the bool
        * value
        */
-      pplx::task<bool> verifyToken(const std::string& token);
+      pplx::task<bool> verifyToken(const string_t& token);
 
       /**
        * Verify the given token
        * @param token
        * @return true if token is valid, otherwise false
        */
-      [[maybe_unused]] bool verifyTokenSync(const std::string& token);
+      [[maybe_unused]] bool verifyTokenSync(const string_t& token);
 
       /**
        * Sign into the auth service with given email and password
@@ -39,8 +42,8 @@ namespace DigitalStage::Auth {
        * @param password
        * @return task object, use wait() and get() on it to receive the value
        */
-      pplx::task<std::string> signIn(const std::string& email,
-                                     const std::string& password);
+      pplx::task<string_t> signIn(const string_t& email,
+                                     const string_t& password);
 
       /**
        * Sign into the auth service with given email and password
@@ -48,8 +51,8 @@ namespace DigitalStage::Auth {
        * @param password
        * @return valid token when successful, otherwise empty string
        */
-      std::string signInSync(const std::string& email,
-                             const std::string& password);
+      string_t signInSync(const string_t& email,
+                             const string_t& password);
 
       /**
        * Sign out of the auth service and invalidate the given token
@@ -57,17 +60,17 @@ namespace DigitalStage::Auth {
        * @return task object, use wait() and get() on it to receive the bool
        * value
        */
-      pplx::task<bool> signOut(const std::string& token);
+      pplx::task<bool> signOut(const string_t& token);
 
       /**
        * Sign out of the auth service and invalidate the given token
        * @param token
        * @return true if successful, otherwise false
        */
-      [[maybe_unused]] bool signOutSync(const std::string& token);
+      [[maybe_unused]] bool signOutSync(const string_t& token);
 
     private:
-      std::string url_;
+      string_t url_;
     };
   } // namespace DigitalStage
 
