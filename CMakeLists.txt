@@ -10,7 +10,7 @@ project(DigitalStage
 ## CONFIGURATION
 ##
 include(GNUInstallDirs)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_definitions(DEBUG_EVENTS)
 add_compile_definitions(DEBUG_PAYLOADS)
@@ -104,11 +104,11 @@ install(
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 export(
-        TARGETS DigitalStageApi DigitalStageAuth
+        TARGETS DigitalStageApi DigitalStageAuth sigslot
         NAMESPACE ${PROJECT_NAME}::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
-        TARGETS DigitalStageApi DigitalStageAuth
+        TARGETS DigitalStageApi DigitalStageAuth sigslot
         EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
 install(
