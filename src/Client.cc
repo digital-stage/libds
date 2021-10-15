@@ -73,11 +73,12 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
          * LOCAL DEVICE
          */
       } else {
-          if (!recievedPaylod.has_value()) {
+          if (!receivedPayload.has_value()) {
               std::cerr << "Expected payload but got none" << std::endl;
               return;
           }
 
+          auto const payload = receivedPayload.value();
           if (event == RetrieveEvents::LOCAL_DEVICE_READY) {
               const auto device = payload.get<Device>();
               store_->devices.create(payload);
