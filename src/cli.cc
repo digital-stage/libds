@@ -76,12 +76,30 @@ void handleStageJoined(const ID_TYPE& stageId, const ID_TYPE& groupId,
             << std::endl;
 }
 
+void handleStageDeviceChanged(const std::string& id, nlohmann::json, const Store* s)
+{
+  auto d = s->stageDevices.get(id);
+  std::cout << "Stage device " << id << " changed" << std::endl;
+}
+
+void handleCustomStageDevicePositionChanged(const std::string& id, nlohmann::json, const Store* s)
+{
+  auto d = s->customStageDevicePositions.get(id);
+  std::cout << "Custom stage device position " << id << " changed to (" << d->x << "|" << d->y << "|" << d->z << ") with angle " << d->rZ << "deg" << std::endl;
+}
+
+void handleCustomStageMemberVolumeChanged(const std::string& id, nlohmann::json, const Store* s)
+{
+  auto d = s->customStageMemberVolumes.get(id);
+  std::cout << "Custom stage member volume " << id << " changed to " << d->volume << " and is " << (d->muted ? "muted" : "unmuted") << std::endl;
+}
+
 void handleStageLeft(const Store*)
 {
   std::cout << "STAGE LEFT" << std::endl;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   if(argc != 3) {
     std::wcout << "Call this with email and password as parameters" << std::endl;
@@ -89,7 +107,7 @@ int main(int argc, char *argv[])
   }
   auto email = argv[1];
   auto password = argv[2];
-  auto authService = AuthService(U("https://auth.dstage.org/"));
+  auto authService = AuthService(U("https://digitalstage-auth.germanywestcentral.cloudapp.azure.com"));
 
   std::cout << "Signing in..." << std::endl;
   try {
@@ -106,7 +124,7 @@ int main(int argc, char *argv[])
     initialDevice["type"] = "ov";
     initialDevice["canAudio"] = true;
     initialDevice["canVideo"] = false;
-    auto* client = new Client("wss://api.dstage.org");
+    auto* client = new Client("wss://digitalstage-api.germanywestcentral.cloudapp.azure.com");
 
     client->ready.connect([](const Store*) {
       std::cout << "Ready - this type inside an anonymous callback function"
@@ -121,6 +139,9 @@ int main(int argc, char *argv[])
     client->localDeviceReady.connect(handleLocalDeviceReady);
     client->stageJoined.connect(handleStageJoined);
     client->stageLeft.connect(handleStageLeft);
+    client->stageDeviceChanged.connect(handleStageDeviceChanged);
+    client->customStageDevicePositionChanged.connect(handleCustomStageDevicePositionChanged);
+    client->customStageMemberVolumeChanged.connect(handleCustomStageMemberVolumeChanged);
 
     // Always print on stage changes
     client->stageJoined.connect(

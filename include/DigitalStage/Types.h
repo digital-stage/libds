@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <set>
 #include <string>
-#include <optional>
 
 using nlohmann::json;
 
@@ -33,6 +33,9 @@ namespace DigitalStage::Types {
   struct Device {
     ID_TYPE _id;
     ID_TYPE userId;
+    /**
+     * Use this to identify existing devices on connect, on native clients you might use the mac address, on browser a cookie _id
+     */
     std::string uuid;
     std::string type;
     bool online;
@@ -43,7 +46,23 @@ namespace DigitalStage::Types {
     bool receiveVideo;
     bool receiveAudio;
 
-    std::optional<std::string> soundCardId;
+    /**
+     * The currently selected input sound card or null if none selected
+     */
+    std::optional<ID_TYPE> inputSoundCardId;
+    /**
+     * The currently selected output sound card or null if none selected
+     */
+    std::optional<ID_TYPE> outputSoundCardId;
+
+    /**
+     * The output volume
+     */
+    double volume;
+    /**
+     * The balance between the monitor and the session mixer aka Ego balance
+     */
+    double balance;
 
     // jammer specific
 
@@ -104,89 +123,68 @@ namespace DigitalStage::Types {
     std::optional<double> ovJitter;
   };
 
-  struct Group {
+  struct ThreeDimensionalProperties {
+    std::string directivity = "cardoid"; // "omni" or "cardoid"
+    double x = 0;
+    double y = -1;
+    double z = 0;
+    double rX = 0;
+    double rY = 0;
+    double rZ = -180;
+  };
+
+  struct VolumeProperties {
+    double volume = 1;
+    bool muted = false;
+  };
+
+  struct Group : VolumeProperties, ThreeDimensionalProperties {
     ID_TYPE _id;
     ID_TYPE stageId;
     std::string name;
     std::string description;
     std::optional<std::string> iconUrl;
     std::string color;
-    double volume = 1;
-    bool muted = false;
-    std::string directivity = "cardoid"; // "omni" or "cardoid"
-    double x;
-    double y;
-    double z;
-    double rX;
-    double rY;
-    double rZ;
   };
 
-  struct CustomGroupPosition {
+  struct CustomGroupPosition : ThreeDimensionalProperties {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
     std::string groupId;
-    std::string directivity = "cardoid"; // "omni" or "cardoid"
-    double x = std::numeric_limits<double>::lowest();
-    double y = std::numeric_limits<double>::lowest();
-    double z = std::numeric_limits<double>::lowest();
-    double rX = std::numeric_limits<double>::lowest();
-    double rY = std::numeric_limits<double>::lowest();
-    double rZ = std::numeric_limits<double>::lowest();
   };
 
-  struct CustomGroupVolume {
+  struct CustomGroupVolume : VolumeProperties {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
     std::string groupId;
-    double volume = 1;
-    bool muted = false;
   };
 
-  struct StageMember {
+  struct StageMember : VolumeProperties, ThreeDimensionalProperties {
     ID_TYPE _id;
     ID_TYPE stageId;
     std::string groupId;
     ID_TYPE userId;
     bool active;
     bool isDirector;
-
-    double volume;
-    bool muted;
-    std::string directivity = "cardoid"; // "omni" or "cardoid"
-    double x;
-    double y;
-    double z;
-    double rX;
-    double rY;
-    double rZ;
   };
 
-  struct CustomStageMemberPosition {
+  struct CustomStageMemberPosition : ThreeDimensionalProperties {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
     ID_TYPE stageMemberId;
-    std::string directivity = "cardoid"; // "omni" or "cardoid"
-    double x = std::numeric_limits<double>::lowest();
-    double y = std::numeric_limits<double>::lowest();
-    double z = std::numeric_limits<double>::lowest();
-    double rX = std::numeric_limits<double>::lowest();
-    double rY = std::numeric_limits<double>::lowest();
-    double rZ = std::numeric_limits<double>::lowest();
   };
-  struct CustomStageMemberVolume {
+
+  struct CustomStageMemberVolume : VolumeProperties {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
     ID_TYPE stageMemberId;
-    double volume = 1;
-    bool muted = false;
   };
 
-  struct StageDevice {
+  struct StageDevice : VolumeProperties, ThreeDimensionalProperties {
     std::string _id;
     std::string userId;
     std::string deviceId;
@@ -198,65 +196,72 @@ namespace DigitalStage::Types {
     uint8_t order;
 
     bool sendLocal;
-
-    double volume;
-    bool muted;
-    std::string directivity = "cardoid"; // "omni" or "cardoid"
-    double x;
-    double y;
-    double z;
-    double rX;
-    double rY;
-    double rZ;
   };
 
-  struct CustomStageDevicePosition {
+  struct CustomStageDevicePosition : ThreeDimensionalProperties {
     std::string _id;
     std::string userId;
     std::string deviceId;
     std::string stageId;
     std::string stageDeviceId;
-    std::string directivity = "cardoid"; // "omni" or "cardoid"
-    double x = std::numeric_limits<double>::lowest();
-    double y = std::numeric_limits<double>::lowest();
-    double z = std::numeric_limits<double>::lowest();
-    double rX = std::numeric_limits<double>::lowest();
-    double rY = std::numeric_limits<double>::lowest();
-    double rZ = std::numeric_limits<double>::lowest();
   };
 
-  struct CustomStageDeviceVolume {
+  struct CustomStageDeviceVolume : VolumeProperties {
     std::string _id;
     std::string userId;
     std::string deviceId;
     std::string stageId;
     std::string stageDeviceId;
-    double volume = 1;
-    bool muted = false;
   };
 
+  /**
+   * A soundcard is unique by the combination of
+   *  - audioDriver
+   *  - label
+   *  - deviceId
+   *  - type
+   * and unique of course by its single _id
+   *
+   *
+   */
   struct SoundCard {
     ID_TYPE _id;
-    ID_TYPE userId;
     ID_TYPE deviceId;
-    std::string uuid;
 
-    bool isDefault;
+    /**
+     * Audio driver
+     */
+    std::string audioDriver;
 
+    /**
+     * Direction or type of this soundcard, valid values are 'input' or 'output'
+     */
+    std::string type;
+    /**
+     * Label of this sound card, usually unique per client device in combination with the audioDriver
+     */
     std::string label;
-    std::set<std::string> drivers;
-    std::optional<std::string> driver; //'jack' | 'alsa' | 'asio' | 'webrtc'
+
+    std::optional<bool> isDefault;
 
     double sampleRate;
     std::set<double> sampleRates;
     unsigned int periodSize;
-    unsigned int numPeriods;
+    unsigned int numPeriods = 2;
     std::optional<double> softwareLatency;
 
+    /**
+     * Indicate if the given sound card is connected and online
+     */
     bool online;
 
-    std::map<std::string, bool> inputChannels;
-    std::map<std::string, bool> outputChannels;
+    /**
+     * List of channels, if a channel is active the value will be true, otherwise false
+     */
+    std::map<std::string, bool> channels;
+
+    // helper entry
+    ID_TYPE userId;
   };
 
   struct VideoTrack {
@@ -269,7 +274,7 @@ namespace DigitalStage::Types {
     std::string type;
   };
 
-  struct AudioTrack {
+  struct AudioTrack : VolumeProperties, ThreeDimensionalProperties {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
@@ -277,35 +282,18 @@ namespace DigitalStage::Types {
     ID_TYPE stageMemberId;
     ID_TYPE stageDeviceId;
     std::string type;
-    double volume;
-    bool muted;
-    std::string directivity = "cardoid"; // "omni" or "cardoid"
-    double x;
-    double y;
-    double z;
-    double rX;
-    double rY;
-    double rZ;
     std::optional<std::string> ovSourcePort;
   };
 
-  struct CustomAudioTrackPosition {
+  struct CustomAudioTrackPosition : ThreeDimensionalProperties {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
     ID_TYPE audioTrackId;
     ID_TYPE stageId;
-
-    std::string directivity = "cardoid"; // "omni" or "cardoid"
-    double x = std::numeric_limits<double>::lowest();
-    double y = std::numeric_limits<double>::lowest();
-    double z = std::numeric_limits<double>::lowest();
-    double rX = std::numeric_limits<double>::lowest();
-    double rY = std::numeric_limits<double>::lowest();
-    double rZ = std::numeric_limits<double>::lowest();
   };
 
-  struct CustomAudioTrackVolume {
+  struct CustomAudioTrackVolume : VolumeProperties {
     ID_TYPE _id;
     ID_TYPE userId;
     ID_TYPE deviceId;
@@ -354,6 +342,56 @@ namespace DigitalStage::Types {
     std::map<std::string, VideoTrack> videoTracks;
   };
 
+  inline void to_json(json& j, const ThreeDimensionalProperties& p)
+  {
+    j = json{{"x", p.x},
+             {"y", p.y},
+             {"z", p.z},
+             {"rX", p.rX},
+             {"rY", p.rY},
+             {"rZ", p.rZ},
+             {"directivity", p.directivity}};
+  }
+
+  inline void from_json(const json& j, ThreeDimensionalProperties& p)
+  {
+    if(j.contains("x") && j.at("x").is_number()) {
+      j.at("x").get_to(p.x);
+    }
+    if(j.contains("y") && j.at("y").is_number()) {
+      j.at("y").get_to(p.y);
+    }
+    if(j.contains("z") && j.at("z").is_number()) {
+      j.at("z").get_to(p.z);
+    }
+    if(j.contains("rX") && j.at("rX").is_number()) {
+      j.at("rX").get_to(p.rX);
+    }
+    if(j.contains("rY") && j.at("rY").is_number()) {
+      j.at("rY").get_to(p.rY);
+    }
+    if(j.contains("rZ") && j.at("rZ").is_number()) {
+      j.at("rZ").get_to(p.rZ);
+    }
+    if(j.at("directivity").is_string()) {
+      j.at("directivity").get_to(p.directivity);
+    }
+  }
+
+  inline void to_json(json& j, const VolumeProperties& p)
+  {
+    j = json{{"volume", p.volume},
+             {"muted", p.muted}};
+  }
+
+  inline void from_json(const json& j, VolumeProperties& p)
+  {
+    if(j.at("volume").is_number())
+      j.at("volume").get_to(p.volume);
+    if(j.at("muted").is_boolean())
+      j.at("muted").get_to(p.muted);
+  }
+
   inline void to_json(json& j, const Device& p)
   {
     j = json{{"_id", p._id},
@@ -367,8 +405,8 @@ namespace DigitalStage::Types {
              {"sendAudio", p.sendAudio},
              {"receiveVideo", p.receiveVideo},
              {"receiveAudio", p.receiveAudio}};
-
-    optional_to_json(j, "soundCardId", p.soundCardId);
+    optional_to_json(j, "inputSoundCardId", p.inputSoundCardId);
+    optional_to_json(j, "outputSoundCardId", p.outputSoundCardId);
     optional_to_json(j, "ovReceiverType", p.ovReceiverType);
     optional_to_json(j, "ovSenderJitter", p.ovSenderJitter);
     optional_to_json(j, "ovReceiverJitter", p.ovReceiverJitter);
@@ -394,7 +432,8 @@ namespace DigitalStage::Types {
     j.at("receiveVideo").get_to(p.receiveVideo);
     j.at("receiveAudio").get_to(p.receiveAudio);
 
-    optional_from_json(j, "soundCardId", p.soundCardId);
+    optional_from_json(j, "inputSoundCardId", p.inputSoundCardId);
+    optional_from_json(j, "outputSoundCardId", p.outputSoundCardId);
 
     // ov specific
     optional_from_json(j, "ovReceiverType", p.ovReceiverType);
@@ -494,13 +533,7 @@ namespace DigitalStage::Types {
 
   inline void to_json(json& j, const Group& p)
   {
-    j = json{{"_id", p._id},     {"stageId", p.stageId},
-             {"name", p.name},   {"description", p.description},
-             {"color", p.color}, {"volume", p.volume},
-             {"muted", p.muted}, {"x", p.x},
-             {"y", p.y},         {"z", p.z},
-             {"rX", p.rX},       {"rY", p.rY},
-             {"rZ", p.rZ}};
+    j = json{{"_id", p._id}, {"stageId", p.stageId}, {"name", p.name}, {"description", p.description}, {"color", p.color}, {"volume", p.volume}, {"muted", p.muted}, {"x", p.x}, {"y", p.y}, {"z", p.z}, {"rX", p.rX}, {"rY", p.rY}, {"rZ", p.rZ}};
     optional_to_json(j, "iconUrl", p.iconUrl);
   }
 
@@ -511,15 +544,19 @@ namespace DigitalStage::Types {
     j.at("name").get_to(p.name);
     j.at("description").get_to(p.description);
     j.at("color").get_to(p.color);
-    j.at("volume").get_to(p.volume);
-    j.at("muted").get_to(p.muted);
-    j.at("x").get_to(p.x);
-    j.at("y").get_to(p.y);
-    j.at("z").get_to(p.z);
-    j.at("rX").get_to(p.rX);
-    j.at("rY").get_to(p.rY);
-    j.at("rZ").get_to(p.rZ);
     optional_from_json(j, "iconUrl", p.iconUrl);
+    from_json(j, static_cast<VolumeProperties&>(p));
+    from_json(j, static_cast<ThreeDimensionalProperties&>(p));
+    /*
+     j.at("volume").get_to(p.volume);
+     j.at("muted").get_to(p.muted);
+    j.value("x", 0);
+    j.value("y", -1);
+    j.value("z", 0);
+    j.value("rX", 0);
+    j.value("rY", 0);
+    j.value("rZ", -180);
+    j.value("directivity", "cardoid");*/
   }
 
   inline void to_json(json& j, const CustomGroupPosition& p)
@@ -542,19 +579,19 @@ namespace DigitalStage::Types {
     j.at("userId").get_to(p.userId);
     j.at("deviceId").get_to(p.deviceId);
     j.at("groupId").get_to(p.groupId);
+    from_json(j, static_cast<ThreeDimensionalProperties&>(p));
+    /*
     j.at("x").get_to(p.x);
     j.at("y").get_to(p.y);
     j.at("z").get_to(p.z);
     j.at("rX").get_to(p.rX);
     j.at("rY").get_to(p.rY);
-    j.at("rZ").get_to(p.rZ);
+    j.at("rZ").get_to(p.rZ);*/
   }
 
   inline void to_json(json& j, const CustomGroupVolume& p)
   {
-    j = json{{"_id", p._id},           {"userId", p.userId},
-             {"deviceId", p.deviceId}, {"groupId", p.groupId},
-             {"volume", p.volume},     {"muted", p.muted}};
+    j = json{{"_id", p._id}, {"userId", p.userId}, {"deviceId", p.deviceId}, {"groupId", p.groupId}, {"volume", p.volume}, {"muted", p.muted}};
   }
 
   inline void from_json(const json& j, CustomGroupVolume& p)
@@ -563,8 +600,10 @@ namespace DigitalStage::Types {
     j.at("userId").get_to(p.userId);
     j.at("deviceId").get_to(p.deviceId);
     j.at("groupId").get_to(p.groupId);
+    /*
     j.at("volume").get_to(p.volume);
-    j.at("muted").get_to(p.muted);
+    j.at("muted").get_to(p.muted);*/
+    from_json(j, static_cast<VolumeProperties&>(p));
   }
 
   inline void to_json(json& j, const StageMember& p)
@@ -593,6 +632,9 @@ namespace DigitalStage::Types {
     j.at("userId").get_to(p.userId);
     j.at("active").get_to(p.active);
     j.at("isDirector").get_to(p.isDirector);
+    from_json(j, static_cast<VolumeProperties&>(p));
+    from_json(j, static_cast<ThreeDimensionalProperties&>(p));
+    /*
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
     j.at("x").get_to(p.x);
@@ -601,15 +643,12 @@ namespace DigitalStage::Types {
     j.at("rX").get_to(p.rX);
     j.at("rY").get_to(p.rY);
     j.at("rZ").get_to(p.rZ);
+     */
   }
 
   inline void to_json(json& j, const CustomStageMemberPosition& p)
   {
-    j = json{{"_id", p._id},       {"deviceId", p.deviceId},
-             {"userId", p.userId}, {"stageMemberId", p.stageMemberId},
-             {"x", p.x},           {"y", p.y},
-             {"z", p.z},           {"rX", p.rX},
-             {"rY", p.rY},         {"rZ", p.rZ}};
+    j = json{{"_id", p._id}, {"deviceId", p.deviceId}, {"userId", p.userId}, {"stageMemberId", p.stageMemberId}, {"x", p.x}, {"y", p.y}, {"z", p.z}, {"rX", p.rX}, {"rY", p.rY}, {"rZ", p.rZ}};
   }
 
   inline void from_json(const json& j, CustomStageMemberPosition& p)
@@ -619,19 +658,20 @@ namespace DigitalStage::Types {
     j.at("deviceId").get_to(p.deviceId);
     j.at("stageId").get_to(p.deviceId);
     j.at("stageMemberId").get_to(p.stageMemberId);
+    from_json(j, static_cast<ThreeDimensionalProperties&>(p));
+    /*
     j.at("x").get_to(p.x);
     j.at("y").get_to(p.y);
     j.at("z").get_to(p.z);
     j.at("rX").get_to(p.rX);
     j.at("rY").get_to(p.rY);
     j.at("rZ").get_to(p.rZ);
+     */
   }
 
   inline void to_json(json& j, const CustomStageMemberVolume& p)
   {
-    j = json{{"_id", p._id},           {"userId", p.userId},
-             {"deviceId", p.deviceId}, {"stageMemberId", p.stageMemberId},
-             {"volume", p.volume},     {"muted", p.muted}};
+    j = json{{"_id", p._id}, {"userId", p.userId}, {"deviceId", p.deviceId}, {"stageMemberId", p.stageMemberId}, {"volume", p.volume}, {"muted", p.muted}};
   }
 
   inline void from_json(const json& j, CustomStageMemberVolume& p)
@@ -639,8 +679,10 @@ namespace DigitalStage::Types {
     j.at("_id").get_to(p._id);
     j.at("userId").get_to(p.userId);
     j.at("stageMemberId").get_to(p.stageMemberId);
+    from_json(j, static_cast<VolumeProperties&>(p));
+    /*
     j.at("volume").get_to(p.volume);
-    j.at("muted").get_to(p.muted);
+    j.at("muted").get_to(p.muted);*/
   }
 
   inline void to_json(json& j, const StageDevice& p)
@@ -675,6 +717,9 @@ namespace DigitalStage::Types {
     j.at("active").get_to(p.active);
     j.at("order").get_to(p.order);
     j.at("sendLocal").get_to(p.sendLocal);
+    from_json(j, static_cast<VolumeProperties&>(p));
+    from_json(j, static_cast<ThreeDimensionalProperties&>(p));
+    /*
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
     j.at("x").get_to(p.x);
@@ -683,6 +728,7 @@ namespace DigitalStage::Types {
     j.at("rX").get_to(p.rX);
     j.at("rY").get_to(p.rY);
     j.at("rZ").get_to(p.rZ);
+     */
   }
 
   inline void to_json(json& j, const CustomStageDevicePosition& p)
@@ -707,12 +753,15 @@ namespace DigitalStage::Types {
     j.at("deviceId").get_to(p.deviceId);
     j.at("stageId").get_to(p.stageId);
     j.at("stageDeviceId").get_to(p.stageDeviceId);
+    from_json(j, static_cast<ThreeDimensionalProperties&>(p));
+    /*
     j.at("x").get_to(p.x);
     j.at("y").get_to(p.y);
     j.at("z").get_to(p.z);
     j.at("rX").get_to(p.rX);
     j.at("rY").get_to(p.rY);
     j.at("rZ").get_to(p.rZ);
+     */
   }
 
   inline void to_json(json& j, const CustomStageDeviceVolume& p)
@@ -732,47 +781,46 @@ namespace DigitalStage::Types {
     j.at("userId").get_to(p.userId);
     j.at("stageId").get_to(p.stageId);
     j.at("stageDeviceId").get_to(p.stageDeviceId);
+    from_json(j, static_cast<VolumeProperties&>(p));
+    /*
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
+     */
   }
 
   inline void to_json(json& j, const SoundCard& p)
   {
     j = json{{"_id", p._id},
-             {"userId", p.userId},
              {"deviceId", p.deviceId},
-             {"uuid", p.uuid},
-             {"isDefault", p.isDefault},
+             {"audioDriver", p.audioDriver},
+             {"type", p.type},
              {"label", p.label},
-             {"drivers", p.drivers},
              {"sampleRate", p.sampleRate},
              {"sampleRates", p.sampleRates},
              {"periodSize", p.periodSize},
              {"numPeriods", p.numPeriods},
-             {"inputChannels", p.inputChannels},
-             {"outputChannels", p.outputChannels},
-             {"online", p.online}};
-    optional_to_json(j, "driver", p.driver);
+             {"channels", p.channels},
+             {"online", p.online},
+             {"userId", p.userId}};
+    optional_to_json(j, "isDefault", p.isDefault);
     optional_to_json(j, "softwareLatency", p.softwareLatency);
   }
 
   inline void from_json(const json& j, SoundCard& p)
   {
     j.at("_id").get_to(p._id);
-    j.at("userId").get_to(p.userId);
     j.at("deviceId").get_to(p.deviceId);
-    j.at("uuid").get_to(p.uuid);
-    j.at("isDefault").get_to(p.isDefault);
+    j.at("audioDriver").get_to(p.audioDriver);
+    j.at("type").get_to(p.type);
     j.at("label").get_to(p.label);
-    j.at("drivers").get_to(p.drivers);
     j.at("sampleRate").get_to(p.sampleRate);
     j.at("sampleRates").get_to(p.sampleRates);
     j.at("periodSize").get_to(p.periodSize);
     j.at("numPeriods").get_to(p.numPeriods);
-    j.at("inputChannels").get_to(p.inputChannels);
-    j.at("outputChannels").get_to(p.outputChannels);
+    j.at("channels").get_to(p.channels);
     j.at("online").get_to(p.online);
-    optional_from_json(j, "driver", p.driver);
+    j.at("userId").get_to(p.userId);
+    optional_from_json(j, "isDefault", p.isDefault);
     optional_from_json(j, "softwareLatency", p.softwareLatency);
   }
 
@@ -829,9 +877,12 @@ namespace DigitalStage::Types {
     j.at("userId").get_to(p.userId);
     j.at("type").get_to(p.type);
     j.at("type").get_to(p.type);
+    from_json(j, static_cast<VolumeProperties&>(p));
+    from_json(j, static_cast<ThreeDimensionalProperties&>(p));
+    /*
+    j.at("directivity").get_to(p.directivity);
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
-    j.at("directivity").get_to(p.directivity);
     j.at("x").get_to(p.x);
     j.at("y").get_to(p.y);
     j.at("z").get_to(p.z);
@@ -839,6 +890,7 @@ namespace DigitalStage::Types {
     j.at("rY").get_to(p.rY);
     j.at("rZ").get_to(p.rZ);
     optional_from_json(j, "ovSourcePort", p.ovSourcePort);
+     */
   }
 
   inline void to_json(json& j, const CustomAudioTrackPosition& p)
@@ -864,20 +916,20 @@ namespace DigitalStage::Types {
     j.at("deviceId").get_to(p.deviceId);
     j.at("audioTrackId").get_to(p.audioTrackId);
     j.at("stageId").get_to(p.stageId);
+    from_json(j, static_cast<ThreeDimensionalProperties&>(p));
+    /*
     j.at("directivity").get_to(p.directivity);
     j.at("y").get_to(p.y);
     j.at("z").get_to(p.z);
     j.at("rX").get_to(p.rX);
     j.at("rY").get_to(p.rY);
     j.at("rZ").get_to(p.rZ);
+     */
   }
 
   inline void to_json(json& j, const CustomAudioTrackVolume& p)
   {
-    j = json{{"_id", p._id},           {"userId", p.userId},
-             {"deviceId", p.deviceId}, {"audioTrackId", p.audioTrackId},
-             {"stageId", p.stageId},   {"volume", p.volume},
-             {"muted", p.muted}};
+    j = json{{"_id", p._id}, {"userId", p.userId}, {"deviceId", p.deviceId}, {"audioTrackId", p.audioTrackId}, {"stageId", p.stageId}, {"volume", p.volume}, {"muted", p.muted}};
   }
 
   inline void from_json(const json& j, CustomAudioTrackVolume& p)
@@ -887,8 +939,11 @@ namespace DigitalStage::Types {
     j.at("deviceId").get_to(p.deviceId);
     j.at("audioTrackId").get_to(p.audioTrackId);
     j.at("stageId").get_to(p.stageId);
+    from_json(j, static_cast<VolumeProperties&>(p));
+    /*
     j.at("volume").get_to(p.volume);
     j.at("muted").get_to(p.muted);
+     */
   }
 
   inline void to_json(json& j, const User& p)

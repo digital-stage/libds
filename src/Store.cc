@@ -270,11 +270,14 @@ bool Store::isReady() const
 }
 
 std::optional<DigitalStage::Types::SoundCard>
-Store::getSoundCardByDeviceAndUUID(const std::string& deviceId, const std::string& uuid) const
+Store::getSoundCardByDeviceAndDriverAndTypeAndLabel(const std::string& deviceId, const std::string& audioDriver, const std::string& type, const std::string& label) const
 {
   std::lock_guard<std::recursive_mutex> lock(this->soundCards.mutex_store_);
   for(const auto& item : this->soundCards.getAll()) {
-    if(item.uuid == uuid && item.deviceId == deviceId) {
+    if(item.deviceId == deviceId &&
+       item.audioDriver == audioDriver &&
+       item.type == type &&
+       item.label == label) {
       return item;
     }
   }
