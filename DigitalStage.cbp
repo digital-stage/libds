@@ -288,6 +288,21 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/include/DigitalStage/Api/Client.h">
+			<Option target="DigitalStageApi"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/include/DigitalStage/Api/Events.h">
+			<Option target="DigitalStageApi"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/include/DigitalStage/Api/Store.h">
+			<Option target="DigitalStageApi"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/include/DigitalStage/Auth/AuthService.h">
+			<Option target="DigitalStageAuth"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/include/DigitalStage/Types.h">
+			<Option target="DigitalStageApi"/>
+		</Unit>
 		<Unit filename="/home/coma/code/ov-client/libov/libds/libteckos/src/cli.cc">
 			<Option target="teckos-example"/>
 		</Unit>
