@@ -5,7 +5,7 @@ Makefile
 install_manifest.txt
 compile_commands.json
 _deps
-<<<<<<< HEAD
+.idea
 
 # binaries
 *.a
@@ -21,10 +21,4 @@ CMakeScripts
 cmake-build-debug
 DigitalStageConfig*
 DigitalStageTargets.cmake
-
-
-
-=======
 cmake-build*
-.idea
->>>>>>> main
