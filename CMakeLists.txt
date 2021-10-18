@@ -10,7 +10,7 @@ project(DigitalStage
 ## CONFIGURATION
 ##
 include(GNUInstallDirs)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_definitions(DEBUG_EVENTS)
 add_compile_definitions(DEBUG_PAYLOADS)
@@ -53,7 +53,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 if (APPLE)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/FixAppleArchitecture.cmake)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
 endif (APPLE)
 
 # Conan installs find files into the top level projects binary path, make sure to add this to our CMAKE_MODULE_PATH
@@ -136,11 +136,11 @@ install(
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 export(
-        TARGETS DigitalStageApi DigitalStageAuth
+        TARGETS DigitalStageApi DigitalStageAuth sigslot
         NAMESPACE ${PROJECT_NAME}::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
-        TARGETS DigitalStageApi DigitalStageAuth
+        TARGETS DigitalStageApi DigitalStageAuth sigslot
         EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
 install(
