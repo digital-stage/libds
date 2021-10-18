@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="DigitalStage"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\libov\;CMake Files\libov\libds\;CMake Files\libov\libds\cmake\;CMake Files\libov\libds\libteckos\;CMake Files\libov\libds\libteckos\cmake\;CMake Files\libov\libds\sigslot\;CMake Files\libov\libds\sigslot\cmake\;CMake Files\libov\cmake\;CMake Files\libov\cmake\modules\;CMake Files\libov\tascar\;CMake Files\libov\tascar\libtascar\;CMake Files\libov\tascar\libtascar\cmake\;CMake Files\libov\tascar\cmake\;CMake Files\libov\tascar\cmake\modules\;CMake Files\libov\tascar\plugins\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\cpprestsdk\;CMake Files\..\..\..\..\usr\lib\cmake\;CMake Files\..\..\..\..\usr\lib\cmake\nlohmann_json\;CMake Files\cmake\;CMake Files\cmake\modules\;CMake Files\zita-njbridge\;CMake Files\zita-njbridge\cmake\;CMake Files\zita-njbridge\zita-resampler\;CMake Files\zita-njbridge\zita-resampler\cmake\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/coma/code/ov-client/libov/libds"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="DigitalStageApi">
+				<Option output="/home/coma/code/ov-client/libov/libds/libDigitalStageApi.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/include"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/libteckos/include"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/sigslot/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 DigitalStageApi"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="DigitalStageApi/fast">
+				<Option output="/home/coma/code/ov-client/libov/libds/libDigitalStageApi.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/include"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/libteckos/include"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/sigslot/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 DigitalStageApi/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="DigitalStageAuth">
+				<Option output="/home/coma/code/ov-client/libov/libds/libDigitalStageAuth.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 DigitalStageAuth"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="DigitalStageAuth/fast">
+				<Option output="/home/coma/code/ov-client/libov/libds/libDigitalStageAuth.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 DigitalStageAuth/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libds-example">
+				<Option output="/home/coma/code/ov-client/libov/libds/cli" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/src"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/include"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/libteckos/include"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/sigslot/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 libds-example"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libds-example/fast">
+				<Option output="/home/coma/code/ov-client/libov/libds/cli" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/src"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/include"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/libteckos/include"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/sigslot/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 libds-example/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="teckos">
+				<Option output="/home/coma/code/ov-client/libov/libds/libteckos/libteckos.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds/libteckos"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/libteckos/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 teckos"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="teckos/fast">
+				<Option output="/home/coma/code/ov-client/libov/libds/libteckos/libteckos.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds/libteckos"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/libteckos/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 teckos/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="teckos-example">
+				<Option output="/home/coma/code/ov-client/libov/libds/libteckos/cli" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds/libteckos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/libteckos/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 teckos-example"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="teckos-example/fast">
+				<Option output="/home/coma/code/ov-client/libov/libds/libteckos/cli" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/coma/code/ov-client/libov/libds/libteckos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DPLUGINPREFIX=&quot;ovclient&quot;"/>
+					<Add option="-DDEBUG_EVENTS"/>
+					<Add option="-DAMD64"/>
+					<Add option="-Dx86_64"/>
+					<Add option="-DOVBOXVERSION=&quot;0.7.33-05a641a-modified&quot;"/>
+					<Add option="-DDEBUG_PAYLOADS"/>
+					<Add option="-DCPPREST_FORCE_HTTP_CLIENT_ASIO"/>
+					<Add option="-DCPPREST_FORCE_HTTP_LISTENER_ASIO"/>
+					<Add option="-DCPPREST_NO_SSL_LEAK_SUPPRESS"/>
+					<Add directory="/home/coma/code/ov-client/libov/libds/libteckos/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 teckos-example/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/coma/code/ov-client/libov/libds/libteckos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/libteckos/src/cli.cc">
+			<Option target="teckos-example"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/libteckos/src/teckos/client.cc">
+			<Option target="teckos"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/src/AuthService.cc">
+			<Option target="DigitalStageAuth"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/src/Client.cc">
+			<Option target="DigitalStageApi"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/src/Events.cc">
+			<Option target="DigitalStageApi"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/src/Store.cc">
+			<Option target="DigitalStageApi"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/src/cli.cc">
+			<Option target="libds-example"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libov\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/version.cmake">
+			<Option virtualFolder="CMake Files\libov\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libov\libds\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/cmake/Config.cmake.in">
+			<Option virtualFolder="CMake Files\libov\libds\cmake\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/libteckos/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libov\libds\libteckos\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/libteckos/cmake/Config.cmake.in">
+			<Option virtualFolder="CMake Files\libov\libds\libteckos\cmake\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/sigslot/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libov\libds\sigslot\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/libds/sigslot/cmake/SigslotUtils.cmake">
+			<Option virtualFolder="CMake Files\libov\libds\sigslot\cmake\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/cmake/Config.cmake.in">
+			<Option virtualFolder="CMake Files\libov\cmake\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/cmake/CppRestHotfix.cmake">
+			<Option virtualFolder="CMake Files\libov\cmake\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/cmake/modules/FindJack.cmake">
+			<Option virtualFolder="CMake Files\libov\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/cmake/modules/FindSoundIo.cmake">
+			<Option virtualFolder="CMake Files\libov\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/plugins.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/version.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/libtascar/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libov\tascar\libtascar\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/libtascar/tascarver.h.in">
+			<Option virtualFolder="CMake Files\libov\tascar\libtascar\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/libtascar/cmake/Config.cmake.in">
+			<Option virtualFolder="CMake Files\libov\tascar\libtascar\cmake\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/cmake/modules/FindEigen3.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/cmake/modules/FindFFTW.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/cmake/modules/FindGTK3.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/cmake/modules/FindJack.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/cmake/modules/FindLibSamplerate.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/cmake/modules/FindLibSndFile.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/cmake/modules/Findliblo.cmake">
+			<Option virtualFolder="CMake Files\libov\tascar\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/libov/tascar/plugins/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libov\tascar\plugins\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/../../../../usr/lib/x86_64-linux-gnu/cmake/cpprestsdk/cpprestsdk-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\cpprestsdk\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/../../../../usr/lib/x86_64-linux-gnu/cmake/cpprestsdk/cpprestsdk-targets-none.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\cpprestsdk\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/../../../../usr/lib/x86_64-linux-gnu/cmake/cpprestsdk/cpprestsdk-targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\cpprestsdk\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/../../../../usr/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/../../../../usr/lib/cmake/nlohmann_json/nlohmann_jsonConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/../../../../usr/lib/cmake/nlohmann_json/nlohmann_jsonTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/cmake/modules/FindEigen3.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/cmake/modules/FindFFTW.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/cmake/modules/FindJack.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/cmake/modules/FindLibSamplerate.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/cmake/modules/FindLibSndFile.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/cmake/modules/FindSoundIo.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/cmake/modules/Findliblo.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/zita-njbridge/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\zita-njbridge\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/zita-njbridge/cmake/FindJack.cmake">
+			<Option virtualFolder="CMake Files\zita-njbridge\cmake\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/zita-njbridge/zita-resampler/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\zita-njbridge\zita-resampler\"/>
+		</Unit>
+		<Unit filename="/home/coma/code/ov-client/zita-njbridge/zita-resampler/cmake/Config.cmake.in">
+			<Option virtualFolder="CMake Files\zita-njbridge\zita-resampler\cmake\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
