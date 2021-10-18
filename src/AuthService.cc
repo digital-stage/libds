@@ -18,18 +18,11 @@ pplx::task<bool> AuthService::verifyToken(const string_t& token)
   auto url = this->url_;
   return pplx::create_task([url, token]() {
            http_client client(url);
-           http_request request(methods::POST);
+           http_request request(methods::GET);
            request.set_request_uri(uri_builder(U("profile")).to_string());
            request.headers().add(U("Content-Type"), U("application/json"));
            request.headers().add(U("Authorization"), U("Bearer " + token));
            return client.request(request);
-           /*json::value jsonObject;
-           jsonObject[U("Authorization")] =
-               json::value::string(U("Bearer " + token));
-            return http_client(U(url)).request(
-               methods::POST, uri_builder(U("profile")).to_string(),
-               jsonObject.serialize(), U("application/json"));
-           */
          })
       .then([](const http_response& response) {
         // Check the status code.
