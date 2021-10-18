@@ -10,7 +10,7 @@ using namespace DigitalStage::Auth;
 
 void printStage(const Store* s)
 {
-  auto stages = s->getStages();
+  auto stages = s->stages.getAll();
   for(const auto& stage : stages) {
     std::cout << "[" << stage.name << "] " << std::endl;
     auto groups = s->getGroupsByStage(stage._id);
@@ -18,7 +18,7 @@ void printStage(const Store* s)
       std::cout << "  [" << group.name << "]" << std::endl;
       auto stageMembers = s->getStageMembersByGroup(group._id);
       for(const auto& stageMember : stageMembers) {
-        auto user = s->getUser(stageMember.userId);
+        auto user = s->users.get(stageMember.userId);
         std::cout << "    [" << stageMember._id << ": "
                   << (user ? user->name : "") << "]" << std::endl;
         auto stageDevices = s->getStageDevicesByStageMember(stageMember._id);
@@ -53,7 +53,7 @@ void handleDeviceAdded(const Device& d, const Store*)
 void handleDeviceChanged(const ID_TYPE& id, const nlohmann::json& update,
                          const Store* s)
 {
-  auto device = s->getDevice(id);
+  auto device = s->devices.get(id);
   if(device) {
     std::cout << device->type << " device has been updated: " << update.dump()
               << std::endl;
@@ -70,10 +70,28 @@ void handleReady(const Store*)
 void handleStageJoined(const ID_TYPE& stageId, const ID_TYPE& groupId,
                        const Store* s)
 {
-  auto stage = s->getStage(stageId);
-  auto group = s->getGroup(groupId);
+  auto stage = s->stages.get(stageId);
+  auto group = s->groups.get(groupId);
   std::cout << "JOINED STAGE " << stage->name << " AND GROUP " << group->name
             << std::endl;
+}
+
+void handleStageDeviceChanged(const std::string& id, nlohmann::json, const Store* s)
+{
+  auto d = s->stageDevices.get(id);
+  std::cout << "Stage device " << id << " changed" << std::endl;
+}
+
+void handleCustomStageDevicePositionChanged(const std::string& id, nlohmann::json, const Store* s)
+{
+  auto d = s->customStageDevicePositions.get(id);
+  std::cout << "Custom stage device position " << id << " changed to (" << d->x << "|" << d->y << "|" << d->z << ") with angle " << d->rZ << "deg" << std::endl;
+}
+
+void handleCustomStageMemberVolumeChanged(const std::string& id, nlohmann::json, const Store* s)
+{
+  auto d = s->customStageMemberVolumes.get(id);
+  std::cout << "Custom stage member volume " << id << " changed to " << d->volume << " and is " << (d->muted ? "muted" : "unmuted") << std::endl;
 }
 
 void handleStageLeft(const Store*)
@@ -81,22 +99,33 @@ void handleStageLeft(const Store*)
   std::cout << "STAGE LEFT" << std::endl;
 }
 
-int main(int, char const*[])
+int main(int argc, char* argv[])
 {
-  auto authService = AuthService("https://single.dstage.org/api/auth");
+  if(argc != 3) {
+    std::wcout << "Call this with email and password as parameters" << std::endl;
+    return -1;
+  }
+  auto email = argv[1];
+  auto password = argv[2];
+  auto authService = AuthService(U("https://digitalstage-auth.germanywestcentral.cloudapp.azure.com"));
 
   std::cout << "Signing in..." << std::endl;
   try {
-    auto apiToken =
-        authService.signIn("tobias.hegemann@me.com", "Testtesttest123!").get();
+    string_t emailStr(email, email + strlen(email));
+    string_t passwordStr(password, password + strlen(password));
+    auto apiToken = authService.signIn(emailStr, passwordStr).get();
+#ifdef WIN32
+    std::wcout << "Token: " << apiToken << std::endl;
+#else
     std::cout << "Token: " << apiToken << std::endl;
+#endif
 
     nlohmann::json initialDevice;
     initialDevice["uuid"] = "123456";
     initialDevice["type"] = "ov";
     initialDevice["canAudio"] = true;
     initialDevice["canVideo"] = false;
-    auto* client = new Client("ws://localhost:4000");
+    auto* client = new Client("wss://digitalstage-api.germanywestcentral.cloudapp.azure.com");
 
     client->ready.connect([](const Store*) {
       std::cout << "Ready - this type inside an anonymous callback function"
@@ -111,6 +140,9 @@ int main(int, char const*[])
     client->localDeviceReady.connect(handleLocalDeviceReady);
     client->stageJoined.connect(handleStageJoined);
     client->stageLeft.connect(handleStageLeft);
+    client->stageDeviceChanged.connect(handleStageDeviceChanged);
+    client->customStageDevicePositionChanged.connect(handleCustomStageDevicePositionChanged);
+    client->customStageMemberVolumeChanged.connect(handleCustomStageMemberVolumeChanged);
 
     // Always print on stage changes
     client->stageJoined.connect(
@@ -134,7 +166,8 @@ int main(int, char const*[])
     std::cout << "Started client" << std::endl;
   }
   catch(std::exception& err) {
-    std::cerr << err.what() << std::endl;
+    std::cerr << "Got exception: " << err.what() << std::endl;
+    return -1;
   }
 
   while(true) {
