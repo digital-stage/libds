@@ -111,8 +111,9 @@ int main(int argc, char* argv[])
 
   std::cout << "Signing in..." << std::endl;
   try {
-    auto apiToken =
-        authService.signIn(U(email), U(password)).get();
+    string_t emailStr(email, email + strlen(email));
+    string_t passwordStr(password, password + strlen(password));
+    auto apiToken = authService.signIn(emailStr, passwordStr).get();
 #ifdef WIN32
     std::wcout << "Token: " << apiToken << std::endl;
 #else
