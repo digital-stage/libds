@@ -57,7 +57,7 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
 
 #ifdef DEBUG_EVENTS
 #ifdef DEBUG_PAYLOADS
-      auto payloadDebug = receivedPayload.has_value() ? receivedPayload.value().dump() : "[EMPTY PAYLOAD]";
+      auto payloadDebug = receivedPayload.has_value() ? (*receivedPayload).dump() : "[EMPTY PAYLOAD]";
       std::cout << "[EVENT] " << event << payloadDebug << std::endl;
 #else
       std::cout << "[EVENT] " << event << std::endl;
@@ -78,7 +78,7 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
               return;
           }
 
-          auto const payload = receivedPayload.value();
+          auto const payload = *receivedPayload;
           if (event == RetrieveEvents::LOCAL_DEVICE_READY) {
               const auto device = payload.get<Device>();
               store_->devices.create(payload);
