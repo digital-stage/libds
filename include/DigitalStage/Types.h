@@ -212,6 +212,18 @@ struct CustomStageDeviceVolume : VolumeProperties {
   std::string stageDeviceId;
 };
 
+struct Channel {
+  /**
+   * Optional label of this channel.
+   * If no label is given, the web client will display the channel index instead
+   */
+  std::optional<std::string> label;
+  /**
+   * Indicates, if this channel is or shall be currently active
+   */
+  bool active;
+};
+
 /**
  * A soundcard is unique by the combination of
  *  - audioDriver
@@ -259,9 +271,9 @@ struct SoundCard {
   bool online;
 
   /**
-   * List of channels, if a channel is active the value will be true, otherwise false
+   * Indexed list of channels
    */
-  std::map<std::string, bool> channels;
+  std::vector<Channel> channels;
 
   // helper entry
   ID_TYPE userId;
@@ -540,16 +552,6 @@ inline void from_json(const json &j, Group &p) {
   optional_from_json(j, "iconUrl", p.iconUrl);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-  /*
-   j.at("volume").get_to(p.volume);
-   j.at("muted").get_to(p.muted);
-  j.value("x", 0);
-  j.value("y", -1);
-  j.value("z", 0);
-  j.value("rX", 0);
-  j.value("rY", 0);
-  j.value("rZ", -180);
-  j.value("directivity", "cardoid");*/
 }
 
 inline void to_json(json &j, const CustomGroupPosition &p) {
@@ -571,13 +573,6 @@ inline void from_json(const json &j, CustomGroupPosition &p) {
   j.at("deviceId").get_to(p.deviceId);
   j.at("groupId").get_to(p.groupId);
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-  /*
-  j.at("x").get_to(p.x);
-  j.at("y").get_to(p.y);
-  j.at("z").get_to(p.z);
-  j.at("rX").get_to(p.rX);
-  j.at("rY").get_to(p.rY);
-  j.at("rZ").get_to(p.rZ);*/
 }
 
 inline void to_json(json &j, const CustomGroupVolume &p) {
@@ -590,9 +585,6 @@ inline void from_json(const json &j, CustomGroupVolume &p) {
   j.at("userId").get_to(p.userId);
   j.at("deviceId").get_to(p.deviceId);
   j.at("groupId").get_to(p.groupId);
-  /*
-  j.at("volume").get_to(p.volume);
-  j.at("muted").get_to(p.muted);*/
   from_json(j, static_cast<VolumeProperties &>(p));
 }
 
@@ -622,16 +614,6 @@ inline void from_json(const json &j, StageMember &p) {
   j.at("isDirector").get_to(p.isDirector);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-  /*
-  j.at("volume").get_to(p.volume);
-  j.at("muted").get_to(p.muted);
-  j.at("x").get_to(p.x);
-  j.at("y").get_to(p.y);
-  j.at("z").get_to(p.z);
-  j.at("rX").get_to(p.rX);
-  j.at("rY").get_to(p.rY);
-  j.at("rZ").get_to(p.rZ);
-   */
 }
 
 inline void to_json(json &j, const CustomStageMemberPosition &p) {
@@ -646,14 +628,6 @@ inline void from_json(const json &j, CustomStageMemberPosition &p) {
   j.at("stageId").get_to(p.deviceId);
   j.at("stageMemberId").get_to(p.stageMemberId);
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-  /*
-  j.at("x").get_to(p.x);
-  j.at("y").get_to(p.y);
-  j.at("z").get_to(p.z);
-  j.at("rX").get_to(p.rX);
-  j.at("rY").get_to(p.rY);
-  j.at("rZ").get_to(p.rZ);
-   */
 }
 
 inline void to_json(json &j, const CustomStageMemberVolume &p) {
@@ -666,9 +640,6 @@ inline void from_json(const json &j, CustomStageMemberVolume &p) {
   j.at("userId").get_to(p.userId);
   j.at("stageMemberId").get_to(p.stageMemberId);
   from_json(j, static_cast<VolumeProperties &>(p));
-  /*
-  j.at("volume").get_to(p.volume);
-  j.at("muted").get_to(p.muted);*/
 }
 
 inline void to_json(json &j, const StageDevice &p) {
@@ -703,16 +674,6 @@ inline void from_json(const json &j, StageDevice &p) {
   j.at("sendLocal").get_to(p.sendLocal);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-  /*
-  j.at("volume").get_to(p.volume);
-  j.at("muted").get_to(p.muted);
-  j.at("x").get_to(p.x);
-  j.at("y").get_to(p.y);
-  j.at("z").get_to(p.z);
-  j.at("rX").get_to(p.rX);
-  j.at("rY").get_to(p.rY);
-  j.at("rZ").get_to(p.rZ);
-   */
 }
 
 inline void to_json(json &j, const CustomStageDevicePosition &p) {
@@ -736,14 +697,6 @@ inline void from_json(const json &j, CustomStageDevicePosition &p) {
   j.at("stageId").get_to(p.stageId);
   j.at("stageDeviceId").get_to(p.stageDeviceId);
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-  /*
-  j.at("x").get_to(p.x);
-  j.at("y").get_to(p.y);
-  j.at("z").get_to(p.z);
-  j.at("rX").get_to(p.rX);
-  j.at("rY").get_to(p.rY);
-  j.at("rZ").get_to(p.rZ);
-   */
 }
 
 inline void to_json(json &j, const CustomStageDeviceVolume &p) {
@@ -762,10 +715,16 @@ inline void from_json(const json &j, CustomStageDeviceVolume &p) {
   j.at("stageId").get_to(p.stageId);
   j.at("stageDeviceId").get_to(p.stageDeviceId);
   from_json(j, static_cast<VolumeProperties &>(p));
-  /*
-  j.at("volume").get_to(p.volume);
-  j.at("muted").get_to(p.muted);
-   */
+}
+
+inline void to_json(json &j, const Channel &p) {
+  j = json{{"active", p.active}};
+  optional_to_json(j, "label", p.label);
+}
+
+inline void from_json(const json &j, Channel &p) {
+  j.at("active").get_to(p.active);
+  optional_from_json(j, "label", p.label);
 }
 
 inline void to_json(json &j, const SoundCard &p) {
@@ -853,18 +812,6 @@ inline void from_json(const json &j, AudioTrack &p) {
   j.at("type").get_to(p.type);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-  /*
-  j.at("directivity").get_to(p.directivity);
-  j.at("volume").get_to(p.volume);
-  j.at("muted").get_to(p.muted);
-  j.at("x").get_to(p.x);
-  j.at("y").get_to(p.y);
-  j.at("z").get_to(p.z);
-  j.at("rX").get_to(p.rX);
-  j.at("rY").get_to(p.rY);
-  j.at("rZ").get_to(p.rZ);
-  optional_from_json(j, "ovSourcePort", p.ovSourcePort);
-   */
 }
 
 inline void to_json(json &j, const CustomAudioTrackPosition &p) {
@@ -889,14 +836,6 @@ inline void from_json(const json &j, CustomAudioTrackPosition &p) {
   j.at("audioTrackId").get_to(p.audioTrackId);
   j.at("stageId").get_to(p.stageId);
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-  /*
-  j.at("directivity").get_to(p.directivity);
-  j.at("y").get_to(p.y);
-  j.at("z").get_to(p.z);
-  j.at("rX").get_to(p.rX);
-  j.at("rY").get_to(p.rY);
-  j.at("rZ").get_to(p.rZ);
-   */
 }
 
 inline void to_json(json &j, const CustomAudioTrackVolume &p) {
@@ -911,10 +850,6 @@ inline void from_json(const json &j, CustomAudioTrackVolume &p) {
   j.at("audioTrackId").get_to(p.audioTrackId);
   j.at("stageId").get_to(p.stageId);
   from_json(j, static_cast<VolumeProperties &>(p));
-  /*
-  j.at("volume").get_to(p.volume);
-  j.at("muted").get_to(p.muted);
-   */
 }
 
 inline void to_json(json &j, const User &p) {
