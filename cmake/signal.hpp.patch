@@ -1,0 +1,43 @@
+commit c284a35c74ae4f04ed218f47a1d2bf289c53b03d
+Author: Tobias Hegemann <tobias.hegemann@googlemail.com>
+Date:   Fri Oct 22 10:49:51 2021 +0200
+
+    Adding Pal namespace
+
+diff --git a/include/sigslot/signal.hpp b/include/sigslot/signal.hpp
+index 3dfd2de..7d83c7c 100644
+--- a/include/sigslot/signal.hpp
++++ b/include/sigslot/signal.hpp
+@@ -18,6 +18,8 @@
+ #include <typeinfo>
+ #endif
+ 
++namespace Pal {
++
+ namespace sigslot {
+ 
+ namespace detail {
+@@ -128,7 +130,7 @@ template <typename T>
+ constexpr bool is_pmf_v = std::is_member_function_pointer<T>::value;
+ 
+ template <typename T>
+-constexpr bool is_observer_v = std::is_base_of<::sigslot::detail::observer_type,
++constexpr bool is_observer_v = std::is_base_of<::Pal::sigslot::detail::observer_type,
+                                                std::remove_pointer_t<T>>::value;
+ 
+ } // namespace trait
+@@ -543,7 +545,7 @@ protected:
+ 
+ private:
+     template <typename, typename...>
+-    friend class ::sigslot::signal_base;
++    friend class ::Pal::sigslot::signal_base;
+ 
+     std::size_t m_index;     // index into the array of slot pointers inside the signal
+     const group_id m_group;  // slot group this slot belongs to
+@@ -1609,3 +1611,5 @@ template <typename... T>
+ using signal = signal_base<std::mutex, T...>;
+ 
+ } // namespace sigslot
++
++} // namespace Pal

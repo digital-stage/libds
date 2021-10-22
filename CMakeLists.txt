@@ -60,7 +60,7 @@ endif (APPLE)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 add_subdirectory(libteckos EXCLUDE_FROM_ALL)
-add_subdirectory(sigslot EXCLUDE_FROM_ALL)
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/FetchAndPatchSigslot.cmake)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 
