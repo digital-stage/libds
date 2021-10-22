@@ -64,7 +64,11 @@ namespace DigitalStage::Api {
       CUSTOM_AUDIO_TRACK_POSITION_REMOVED,
       SOUND_CARD_ADDED,
       SOUND_CARD_CHANGED,
-      SOUND_CARD_REMOVED
+      SOUND_CARD_REMOVED,
+      P2P_RESTART,
+      P2P_OFFER_SENT,
+      P2P_ANSWER_SENT,
+      ICE_CANDIDATE_SENT,
     };
 
     namespace SendEvents {
@@ -74,6 +78,10 @@ namespace DigitalStage::Api {
       extern const std::string CREATE_AUDIO_TRACK;
       [[maybe_unused]] extern const std::string CHANGE_AUDIO_TRACK;
       extern const std::string REMOVE_AUDIO_TRACK;
+      extern const std::string SEND_P2P_RESTART;
+      extern const std::string SEND_P2P_OFFER;
+      extern const std::string SEND_P2P_ANSWER;
+      extern const std::string SEND_ICE_CANDIDATE;
     } // namespace SendEvents
 
     namespace RetrieveEvents {
@@ -133,6 +141,10 @@ namespace DigitalStage::Api {
       extern const std::string SOUND_CARD_ADDED;
       extern const std::string SOUND_CARD_CHANGED;
       extern const std::string SOUND_CARD_REMOVED;
+      extern const std::string P2P_RESTART;
+      extern const std::string P2P_OFFER_SENT;
+      extern const std::string P2P_ANSWER_SENT;
+      extern const std::string ICE_CANDIDATE_SENT;
     } // namespace RetrieveEvents
   } // namespace DigitalStage
 

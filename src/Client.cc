@@ -473,6 +473,17 @@ pplx::task<void> Client::connect(const teckos::string_t& apiToken,
         // Current workaround: assuming, that on left all using
         // components know, that the entities are removed without event
         this->stageLeft(getStore());
+
+        // WebRTC
+      } else if(event == RetrieveEvents::P2P_RESTART) {
+        this->p2pRestart(payload.get<P2PRestart>(), getStore());
+      } else if(event == RetrieveEvents::P2P_OFFER_SENT) {
+        this->p2pOffer(payload.get<P2POffer>(), getStore());
+      } else if(event == RetrieveEvents::P2P_ANSWER_SENT) {
+        this->p2pAnswer(payload.get<P2PAnswer>(), getStore());
+      } else if(event == RetrieveEvents::ICE_CANDIDATE_SENT) {
+        this->iceCandidate(payload.get<IceCandidate>(), getStore());
+
       } else {
         std::cerr << "Unknown event " << event << std::endl;
       }

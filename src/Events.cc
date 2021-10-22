@@ -11,6 +11,14 @@ const std::string SendEvents::CHANGE_AUDIO_TRACK =
     "create-audio-track";
 const std::string SendEvents::REMOVE_AUDIO_TRACK =
     "remove-audio-track";
+const std::string SendEvents::SEND_P2P_RESTART =
+    "send-p2p-restart";
+const std::string SendEvents::SEND_P2P_OFFER =
+    "send-p2p-offer";
+const std::string SendEvents::SEND_P2P_ANSWER =
+    "send-p2p-answer";
+const std::string SendEvents::SEND_ICE_CANDIDATE =
+    "send-ice-candidate";
 
 const std::string RetrieveEvents::READY = "ok";
 const std::string RetrieveEvents::LOCAL_DEVICE_READY = "ldr";
@@ -84,3 +92,8 @@ const std::string RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_REMOVED =
 const std::string RetrieveEvents::SOUND_CARD_ADDED = "sc-a";
 const std::string RetrieveEvents::SOUND_CARD_CHANGED = "sc-c";
 const std::string RetrieveEvents::SOUND_CARD_REMOVED = "sc-r";
+
+const std::string RetrieveEvents::P2P_RESTART = "p2p-r";
+const std::string RetrieveEvents::P2P_OFFER_SENT = "p2p-o";
+const std::string RetrieveEvents::P2P_ANSWER_SENT = "p2p-a";
+const std::string RetrieveEvents::ICE_CANDIDATE_SENT = "ice";

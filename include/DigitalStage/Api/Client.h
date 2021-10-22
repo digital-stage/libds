@@ -182,6 +182,15 @@ namespace DigitalStage::Api {
     Pal::sigslot::signal<const std::string&, const DigitalStage::Api::Store*>
         userRemoved;
 
+    Pal::sigslot::signal<const P2PRestart, const DigitalStage::Api::Store*>
+        p2pRestart;
+    Pal::sigslot::signal<const P2PAnswer, const DigitalStage::Api::Store*>
+        p2pAnswer;
+    Pal::sigslot::signal<const P2POffer, const DigitalStage::Api::Store*>
+        p2pOffer;
+    Pal::sigslot::signal<const IceCandidate, const DigitalStage::Api::Store*>
+        iceCandidate;
+
     /**
      * Not implemented, but could be an alternative to the store
      * @return

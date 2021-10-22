@@ -357,6 +357,41 @@ struct WholeStage {
   std::map<std::string, VideoTrack> videoTracks;
 };
 
+struct SessionDescriptionInit {
+  std::string sdp;
+  std::string type;
+};
+
+struct P2PRestart {
+  ID_TYPE from;
+  ID_TYPE to;
+};
+
+struct P2POffer {
+  ID_TYPE from;
+  ID_TYPE to;
+  SessionDescriptionInit offer;
+};
+
+struct P2PAnswer {
+  ID_TYPE from;
+  ID_TYPE to;
+  SessionDescriptionInit answer;
+};
+
+struct IceCandidateInit {
+  std::string candidate;
+  int sdpMLineIndex;
+  std::string sdpMid;
+  std::optional<std::string> usernameFragment;
+};
+
+struct IceCandidate {
+  std::string from;
+  std::string to;
+  std::optional<IceCandidateInit> iceCandidate;
+};
+
 inline void to_json(json &j, const ThreeDimensionalProperties &p) {
   j = json{{"x", p.x},
            {"y", p.y},
@@ -913,6 +948,78 @@ inline void from_json(const json &j, WholeStage &p) {
   j.at("customAudioVolumes").get_to(p.customAudioVolumes);
   j.at("videoTracks").get_to(p.videoTracks);
 }
+
+inline void to_json(json &j, const P2PRestart &p) {
+  j = json{
+      {"from", p.from},
+      {"to", p.to}
+  };
+}
+inline void from_json(const json &j, P2PRestart &p) {
+  j.at("from").get_to(p.from);
+  j.at("to").get_to(p.to);
+}
+inline void to_json(json &j, const SessionDescriptionInit &p) {
+  j = json{
+      {"sdp", p.sdp},
+      {"type", p.type}
+  };
+}
+inline void from_json(const json &j, SessionDescriptionInit &p) {
+  j.at("sdp").get_to(p.sdp);
+  j.at("type").get_to(p.type);
+}
+inline void to_json(json &j, const P2POffer &p) {
+  j = json{
+      {"from", p.from},
+      {"to", p.to},
+      {"offer", p.offer}
+  };
+}
+inline void from_json(const json &j, P2POffer &p) {
+  j.at("from").get_to(p.from);
+  j.at("to").get_to(p.to);
+  j.at("offer").get_to(p.offer);
+}
+inline void to_json(json &j, const P2PAnswer &p) {
+  j = json{
+      {"from", p.from},
+      {"to", p.to},
+      {"answer", p.answer}
+  };
+}
+inline void from_json(const json &j, P2PAnswer &p) {
+  j.at("from").get_to(p.from);
+  j.at("to").get_to(p.to);
+  j.at("answer").get_to(p.answer);
+}
+inline void to_json(json &j, const IceCandidateInit &p) {
+  j = json{
+      {"candidate", p.candidate},
+      {"sdpMLineIndex", p.sdpMLineIndex},
+      {"sdpMid", p.sdpMid},
+  };
+  optional_to_json(j, "usernameFragment", p.usernameFragment);
+}
+inline void from_json(const json &j, IceCandidateInit &p) {
+  j.at("candidate").get_to(p.candidate);
+  j.at("sdpMLineIndex").get_to(p.sdpMLineIndex);
+  j.at("sdpMid").get_to(p.sdpMid);
+  optional_from_json(j, "usernameFragment", p.usernameFragment);
+}
+inline void to_json(json &j, const IceCandidate &p) {
+  j = json{
+      {"from", p.from},
+      {"to", p.to},
+  };
+  optional_to_json(j, "iceCandidate", p.iceCandidate);
+}
+inline void from_json(const json &j, IceCandidate &p) {
+  j.at("from").get_to(p.from);
+  j.at("to").get_to(p.to);
+  optional_from_json(j, "iceCandidate", p.iceCandidate);
+}
+
 } // namespace DigitalStage::Types
 
 #endif
