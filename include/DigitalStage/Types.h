@@ -383,7 +383,6 @@ struct IceCandidateInit {
   std::string candidate;
   int sdpMLineIndex;
   std::string sdpMid;
-  std::optional<std::string> usernameFragment;
 };
 
 struct IceCandidate {
@@ -999,13 +998,11 @@ inline void to_json(json &j, const IceCandidateInit &p) {
       {"sdpMLineIndex", p.sdpMLineIndex},
       {"sdpMid", p.sdpMid},
   };
-  optional_to_json(j, "usernameFragment", p.usernameFragment);
 }
 inline void from_json(const json &j, IceCandidateInit &p) {
   j.at("candidate").get_to(p.candidate);
   j.at("sdpMLineIndex").get_to(p.sdpMLineIndex);
   j.at("sdpMid").get_to(p.sdpMid);
-  optional_from_json(j, "usernameFragment", p.usernameFragment);
 }
 inline void to_json(json &j, const IceCandidate &p) {
   j = json{
