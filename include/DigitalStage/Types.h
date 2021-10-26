@@ -45,6 +45,10 @@ struct Device {
   bool receiveAudio;
 
   /**
+   * The currently selected audioDriver (only one allowed for input and output sound cards)
+   */
+  std::optional<std::string> audioDriver;
+  /**
    * The currently selected input sound card or null if none selected
    */
   std::optional<ID_TYPE> inputSoundCardId;
@@ -259,8 +263,8 @@ struct SoundCard {
 
   std::optional<bool> isDefault;
 
-  double sampleRate;
-  std::set<double> sampleRates;
+  unsigned int sampleRate;
+  std::set<unsigned int> sampleRates;
   unsigned int periodSize;
   unsigned int numPeriods = 2;
   std::optional<double> softwareLatency;
@@ -297,6 +301,10 @@ struct AudioTrack : VolumeProperties, ThreeDimensionalProperties {
   ID_TYPE stageMemberId;
   ID_TYPE stageDeviceId;
   std::string type;
+  /**
+   * The channel on the source device (see deviceId)
+   */
+  std::optional<unsigned int> sourceChannel;
   std::optional<std::string> ovSourcePort;
 };
 
@@ -449,6 +457,7 @@ inline void to_json(json &j, const Device &p) {
            {"sendAudio", p.sendAudio},
            {"receiveVideo", p.receiveVideo},
            {"receiveAudio", p.receiveAudio}};
+  optional_to_json(j, "audioDriver", p.audioDriver);
   optional_to_json(j, "inputSoundCardId", p.inputSoundCardId);
   optional_to_json(j, "outputSoundCardId", p.outputSoundCardId);
   optional_to_json(j, "ovReceiverType", p.ovReceiverType);
@@ -475,6 +484,7 @@ inline void from_json(const json &j, Device &p) {
   j.at("receiveVideo").get_to(p.receiveVideo);
   j.at("receiveAudio").get_to(p.receiveAudio);
 
+  optional_from_json(j, "audioDriver", p.audioDriver);
   optional_from_json(j, "inputSoundCardId", p.inputSoundCardId);
   optional_from_json(j, "outputSoundCardId", p.outputSoundCardId);
 
@@ -832,6 +842,7 @@ inline void to_json(json &j, const AudioTrack &p) {
            {"rX", p.rX},
            {"rY", p.rY},
            {"rZ", p.rZ}};
+  optional_to_json(j, "sourceChannel", p.sourceChannel);
   optional_to_json(j, "ovSourcePort", p.ovSourcePort);
 }
 
@@ -843,7 +854,8 @@ inline void from_json(const json &j, AudioTrack &p) {
   j.at("deviceId").get_to(p.deviceId);
   j.at("userId").get_to(p.userId);
   j.at("type").get_to(p.type);
-  j.at("type").get_to(p.type);
+  optional_from_json(j, "sourceChannel", p.sourceChannel);
+  optional_from_json(j, "ovSourcePort", p.ovSourcePort);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
 }
