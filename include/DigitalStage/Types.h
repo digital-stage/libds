@@ -773,6 +773,7 @@ inline void from_json(const json &j, Channel &p) {
 
 inline void to_json(json &j, const SoundCard &p) {
   j = json{{"_id", p._id},
+           {"uuid", p.uuid},
            {"deviceId", p.deviceId},
            {"audioDriver", p.audioDriver},
            {"type", p.type},
@@ -790,6 +791,7 @@ inline void to_json(json &j, const SoundCard &p) {
 
 inline void from_json(const json &j, SoundCard &p) {
   j.at("_id").get_to(p._id);
+  j.at("uuid").get_to(p.uuid);
   j.at("deviceId").get_to(p.deviceId);
   j.at("audioDriver").get_to(p.audioDriver);
   j.at("type").get_to(p.type);
