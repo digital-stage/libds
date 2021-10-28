@@ -100,10 +100,10 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
             this->audioDriverSelected(device->audioDriver, getStore());
           }
           if (payload.count("inputSoundCardId") != 0) {
-            this->audioDriverSelected(device->inputSoundCardId, getStore());
+            this->inputSoundCardSelected(device->inputSoundCardId, getStore());
           }
           if (payload.count("outputSoundCardId") != 0) {
-            this->audioDriverSelected(device->outputSoundCardId, getStore());
+            this->outputSoundCardSelected(device->outputSoundCardId, getStore());
           }
         }
       } else if (event == RetrieveEvents::DEVICE_REMOVED) {
