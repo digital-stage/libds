@@ -56,7 +56,15 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
       if (event == RetrieveEvents::READY) {
         std::cout << "READY" << std::endl;
         store_->setReady(true);
+        if (payload.contains("turn")) {
+          store_->setTurnServers(payload["turn"]["urls"]);
+          store_->setTurnUsername(payload["turn"]["username"]);
+          store_->setTurnPassword(payload["turn"]["credential"]);
+        }
         this->ready(getStore());
+
+      } else if (event == RetrieveEvents::TURN_SERVERS_CHANGED) {
+        store_->setTurnServers(payload);
 
         /*
          * LOCAL DEVICE
@@ -154,8 +162,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
         this->customGroupPositionChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_GROUP_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->customGroupPositions.remove(id);
-        this->customGroupPositionRemoved(id, getStore());
+        auto custom_position = store_->customGroupPositions.get(id);
+        if (custom_position) {
+          store_->customGroupPositions.remove(id);
+          this->customGroupPositionRemoved(*custom_position, getStore());
+        }
       } else if (event == RetrieveEvents::CUSTOM_GROUP_VOLUME_ADDED) {
         store_->customGroupVolumes.create(payload);
         this->customGroupVolumeAdded(payload.get<CustomGroupVolume>(),
@@ -166,8 +177,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
         this->customGroupVolumeChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_GROUP_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->customGroupVolumes.remove(id);
-        this->customGroupVolumeRemoved(id, getStore());
+        auto custom_volume = store_->customGroupVolumes.get(id);
+        if (custom_volume) {
+          store_->customGroupVolumes.remove(id);
+          this->customGroupVolumeRemoved(*custom_volume, getStore());
+        }
 
         /*
          * STAGE MEMBERS
@@ -197,8 +211,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
         this->customStageMemberPositionChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->customStageMemberPositions.remove(id);
-        this->customStageMemberPositionRemoved(id, getStore());
+        auto custom_position = store_->customStageMemberPositions.get(id);
+        if (custom_position) {
+          store_->customStageMemberPositions.remove(id);
+          this->customStageMemberPositionRemoved(*custom_position, getStore());
+        }
       } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_ADDED) {
         store_->customStageMemberVolumes.create(payload);
         this->customStageMemberVolumeAdded(
@@ -209,8 +226,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
         this->customStageMemberVolumeChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->customStageMemberVolumes.remove(id);
-        this->customStageMemberVolumeRemoved(id, getStore());
+        auto custom_volume = store_->customStageMemberVolumes.get(id);
+        if (custom_volume) {
+          store_->customStageMemberVolumes.remove(id);
+          this->customStageMemberVolumeRemoved(*custom_volume, getStore());
+        }
 
         /*
          * STAGE DEVICES
@@ -256,8 +276,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
         this->customStageDevicePositionChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->customStageDevicePositions.remove(id);
-        this->customStageDevicePositionRemoved(id, getStore());
+        auto custom_position = store_->customStageDevicePositions.get(id);
+        if (custom_position) {
+          store_->customStageDevicePositions.remove(id);
+          this->customStageDevicePositionRemoved(*custom_position, getStore());
+        }
       } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_ADDED) {
         store_->customStageDeviceVolumes.create(payload);
         this->customStageDeviceVolumeAdded(
@@ -268,8 +291,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
         this->customStageDeviceVolumeChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->customStageDeviceVolumes.remove(id);
-        this->customStageDeviceVolumeRemoved(id, getStore());
+        auto custom_volume = store_->customStageDeviceVolumes.get(id);
+        if (custom_volume) {
+          store_->customStageDeviceVolumes.remove(id);
+          this->customStageDeviceVolumeRemoved(*custom_volume, getStore());
+        }
 
         /*
          * VIDEO TRACKS
@@ -321,8 +347,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
       } else if (event ==
           RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_REMOVED) {
         const std::string id = payload;
-        store_->customAudioTrackPositions.remove(id);
-        this->customAudioTrackPositionRemoved(id, getStore());
+        auto custom_position = store_->customAudioTrackPositions.get(id);
+        if (custom_position) {
+          store_->customAudioTrackPositions.remove(id);
+          this->customAudioTrackPositionRemoved(*custom_position, getStore());
+        }
       } else if (event ==
           RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_ADDED) {
         store_->customAudioTrackVolumes.create(payload);
@@ -336,8 +365,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
       } else if (event ==
           RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_REMOVED) {
         const std::string id = payload;
-        store_->customAudioTrackVolumes.remove(id);
-        this->customAudioTrackVolumeRemoved(id, getStore());
+        auto custom_volume = store_->customAudioTrackVolumes.get(id);
+        if (custom_volume) {
+          store_->customAudioTrackVolumes.remove(id);
+          this->customAudioTrackVolumeRemoved(*custom_volume, getStore());
+        }
 
         /*
          * USERS

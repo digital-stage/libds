@@ -322,3 +322,32 @@ std::vector<DigitalStage::Types::AudioTrack> Store::getLocalAudioTracks() const 
   }
   return vector;
 }
+
+std::vector<std::string> Store::getTurnServers() const {
+  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
+  return turn_urls_;
+}
+
+void Store::setTurnServers(std::vector<std::string> turn_servers) {
+  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
+  turn_servers = turn_servers;
+}
+
+std::optional<std::string> Store::getTurnUsername() const {
+  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
+  return turn_username_;
+}
+std::optional<std::string> Store::getTurnPassword() const {
+  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
+  return turn_password_;
+}
+
+void Store::setTurnUsername(const std::string &username) {
+  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
+  turn_username_ = username;
+}
+
+void Store::setTurnPassword(const std::string &password) {
+  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
+  turn_password_ = password;
+}

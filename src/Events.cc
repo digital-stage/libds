@@ -97,3 +97,4 @@ const std::string RetrieveEvents::P2P_RESTART = "p2p-r";
 const std::string RetrieveEvents::P2P_OFFER_SENT = "p2p-o";
 const std::string RetrieveEvents::P2P_ANSWER_SENT = "p2p-a";
 const std::string RetrieveEvents::ICE_CANDIDATE_SENT = "ice";
+const std::string RetrieveEvents::TURN_SERVERS_CHANGED = "t";

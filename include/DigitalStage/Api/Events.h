@@ -69,6 +69,7 @@ namespace DigitalStage::Api {
       P2P_OFFER_SENT,
       P2P_ANSWER_SENT,
       ICE_CANDIDATE_SENT,
+      TURN_SERVERS_CHANGED
     };
 
     namespace SendEvents {
@@ -145,6 +146,7 @@ namespace DigitalStage::Api {
       extern const std::string P2P_OFFER_SENT;
       extern const std::string P2P_ANSWER_SENT;
       extern const std::string ICE_CANDIDATE_SENT;
+      extern const std::string TURN_SERVERS_CHANGED;
     } // namespace RetrieveEvents
   } // namespace DigitalStage
 

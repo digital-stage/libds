@@ -94,7 +94,7 @@ class Client {
   Pal::sigslot::signal<const std::string &, nlohmann::json,
                        const DigitalStage::Api::Store *>
       customGroupPositionChanged;
-  Pal::sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  Pal::sigslot::signal<const CustomGroupPosition, const DigitalStage::Api::Store *>
       customGroupPositionRemoved;
 
   Pal::sigslot::signal<const CustomGroupVolume, const DigitalStage::Api::Store *>
@@ -102,7 +102,7 @@ class Client {
   Pal::sigslot::signal<const std::string &, nlohmann::json,
                        const DigitalStage::Api::Store *>
       customGroupVolumeChanged;
-  Pal::sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  Pal::sigslot::signal<const CustomGroupVolume, const DigitalStage::Api::Store *>
       customGroupVolumeRemoved;
 
   Pal::sigslot::signal<const StageMember, const DigitalStage::Api::Store *>
@@ -119,7 +119,7 @@ class Client {
   Pal::sigslot::signal<const std::string &, nlohmann::json,
                        const DigitalStage::Api::Store *>
       customStageMemberPositionChanged;
-  Pal::sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  Pal::sigslot::signal<const CustomStageMemberPosition, const DigitalStage::Api::Store *>
       customStageMemberPositionRemoved;
 
   Pal::sigslot::signal<const CustomStageMemberVolume,
@@ -128,7 +128,7 @@ class Client {
   Pal::sigslot::signal<const std::string &, nlohmann::json,
                        const DigitalStage::Api::Store *>
       customStageMemberVolumeChanged;
-  Pal::sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  Pal::sigslot::signal<const CustomStageMemberVolume, const DigitalStage::Api::Store *>
       customStageMemberVolumeRemoved;
 
   Pal::sigslot::signal<const StageDevice, const DigitalStage::Api::Store *>
@@ -145,7 +145,7 @@ class Client {
   Pal::sigslot::signal<const std::string &, nlohmann::json,
                        const DigitalStage::Api::Store *>
       customStageDevicePositionChanged;
-  Pal::sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  Pal::sigslot::signal<const CustomStageDevicePosition, const DigitalStage::Api::Store *>
       customStageDevicePositionRemoved;
 
   Pal::sigslot::signal<const CustomStageDeviceVolume,
@@ -154,7 +154,7 @@ class Client {
   Pal::sigslot::signal<const std::string &, nlohmann::json,
                        const DigitalStage::Api::Store *>
       customStageDeviceVolumeChanged;
-  Pal::sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  Pal::sigslot::signal<const CustomStageDeviceVolume, const DigitalStage::Api::Store *>
       customStageDeviceVolumeRemoved;
 
   Pal::sigslot::signal<const SoundCard, const DigitalStage::Api::Store *>
@@ -193,7 +193,7 @@ class Client {
   Pal::sigslot::signal<const std::string &, nlohmann::json,
                        const DigitalStage::Api::Store *>
       customAudioTrackPositionChanged;
-  Pal::sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  Pal::sigslot::signal<const CustomAudioTrackPosition, const DigitalStage::Api::Store *>
       customAudioTrackPositionRemoved;
 
   Pal::sigslot::signal<const CustomAudioTrackVolume,
@@ -202,7 +202,7 @@ class Client {
   Pal::sigslot::signal<const std::string &, nlohmann::json,
                        const DigitalStage::Api::Store *>
       customAudioTrackVolumeChanged;
-  Pal::sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  Pal::sigslot::signal<const CustomAudioTrackVolume, const DigitalStage::Api::Store *>
       customAudioTrackVolumeRemoved;
 
   Pal::sigslot::signal<const User, const DigitalStage::Api::Store *> userAdded;

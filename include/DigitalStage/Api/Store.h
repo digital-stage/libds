@@ -147,6 +147,43 @@ class Store {
    */
   std::optional<DigitalStage::Types::StageDevice> getStageDevice() const;
 
+  /**
+   * Sets the given TURN/STUN servers
+   * @param turn_servers
+   */
+  void setTurnServers(std::vector<std::string> turn_servers);
+
+  /**
+   * Returns a list of url of TURN/STUN servers.
+   * Prefix them with turn: or stun: by your own needs.
+   * @return list of TURN/STUN server urls
+   */
+  std::vector<std::string> getTurnServers() const;
+
+  /**
+   * Sets the given TURN/STUN username
+   * @param username
+   */
+  void setTurnUsername(const std::string& username);
+
+  /**
+   * Returns the username to authenticate on the TURN servers
+   * @return username
+   */
+  std::optional<std::string> getTurnUsername() const;
+
+  /**
+   * Sets the given TURN/STUN username
+   * @param username
+   */
+  void setTurnPassword(const std::string& username);
+
+  /**
+   * Returns the password to authenticate on the TURN servers.
+   * @return password
+   */
+  std::optional<std::string> getTurnPassword() const;
+
   // Stages
   StoreEntry<DigitalStage::Types::Stage> stages;
 
@@ -266,6 +303,11 @@ class Store {
 
   mutable std::recursive_mutex stage_device_id_mutex_;
   std::optional<std::string> stageDeviceId_;
+
+  mutable std::recursive_mutex turn_mutex_;
+  std::optional<std::string> turn_username_;
+  std::optional<std::string> turn_password_;
+  std::vector<std::string> turn_urls_;
 };
 } // namespace DigitalStage::Api
 
