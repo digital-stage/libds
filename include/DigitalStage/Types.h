@@ -28,6 +28,7 @@ void optional_from_json(const J &j, const char *name, std::optional<T> &value) {
 
 namespace DigitalStage::Types {
 typedef std::string ID_TYPE;
+
 struct Device {
   ID_TYPE _id;
   ID_TYPE userId;

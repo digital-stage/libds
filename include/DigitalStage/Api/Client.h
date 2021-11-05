@@ -7,6 +7,8 @@
 #include <pplx/pplxtasks.h>
 #include <sigslot/signal.hpp>
 #include <teckos/client.h>
+#include <future>
+#include <optional>
 
 using namespace web::websockets::client;
 
@@ -231,6 +233,23 @@ class Client {
    * Not implemented, but could be an alternative to the store
    */
   [[maybe_unused]] void setWholeStage(nlohmann::json wholeStage);
+
+  /**
+   * Decodes an invitation key.
+   * Returns nothing, if invitation key is invalid or expired.
+   * @return pair of stage ID and group ID
+   */
+  std::future<std::pair<std::string, std::string>> decodeInvitationCode(const std::string &code);
+
+  /**
+   * Revoke an invitation code and return a new one.
+   * This invalidates the old code.
+   * @param stage ID
+   * @param group ID
+   */
+  std::future<std::string> revokeInvitationCode(const std::string &stageId, const std::string &groupId);
+
+  std::future<std::string> encodeInvitationCode(const std::string &stageId, const std::string &groupId);
 
  private:
   const std::string apiUrl_;
