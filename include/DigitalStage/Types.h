@@ -184,6 +184,7 @@ struct CustomStageMemberVolume : VolumeProperties {
   ID_TYPE _id;
   ID_TYPE userId;
   ID_TYPE deviceId;
+  ID_TYPE stageId;
   ID_TYPE stageMemberId;
 };
 
@@ -679,13 +680,15 @@ inline void from_json(const json &j, CustomStageMemberPosition &p) {
 }
 
 inline void to_json(json &j, const CustomStageMemberVolume &p) {
-  j = json{{"_id", p._id}, {"userId", p.userId}, {"deviceId", p.deviceId}, {"stageMemberId", p.stageMemberId},
+  j = json{{"_id", p._id}, {"userId", p.userId}, {"stageId", p.stageId}, {"deviceId", p.deviceId}, {"stageMemberId", p.stageMemberId},
            {"volume", p.volume}, {"muted", p.muted}};
 }
 
 inline void from_json(const json &j, CustomStageMemberVolume &p) {
   j.at("_id").get_to(p._id);
   j.at("userId").get_to(p.userId);
+  j.at("stageId").get_to(p.stageId);
+  j.at("deviceId").get_to(p.deviceId);
   j.at("stageMemberId").get_to(p.stageMemberId);
   from_json(j, static_cast<VolumeProperties &>(p));
 }
