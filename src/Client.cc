@@ -595,49 +595,52 @@ pplx::task<void> Client::send(
 }
 
 std::future<std::pair<std::string, std::string>> Client::decodeInvitationCode(const std::string &code) {
-  std::promise<std::pair<std::string, std::string>> promise;
-  wsclient_->emit("decode-invite", code, [&promise](const std::vector<nlohmann::json> &result) {
+   using InvitePromise = std::promise<std::pair<std::string, std::string>>;
+   auto const promise = std::make_shared<InvitePromise>();
+   wsclient_->emit("decode-invite", code, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
-      promise.set_value({result[1]["stageId"], result[1]["groupId"]});
+      promise->set_value({result[1]["stageId"], result[1]["groupId"]});
     } else if (result.size() == 1) {
-      promise.set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+      promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
     } else {
-      promise.set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
+      promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
     }
   });
-  return promise.get_future();
+  return promise->get_future();
 }
 
 std::future<std::string> Client::revokeInvitationCode(const std::string &stageId, const std::string &groupId) {
   nlohmann::json payload;
   payload["stageId"] = stageId;
-  payload["groupId"] = groupId;
-  std::promise<std::string> promise;
-  wsclient_->emit("revoke-invite", payload, [&promise](const std::vector<nlohmann::json> &result) {
+  payload["groupId"] = groupId;  
+  using InvitePromise = std::promise<std::string>;
+  auto const promise = std::make_shared<InvitePromise>();
+  wsclient_->emit("revoke-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
-      promise.set_value(result[1]);
+      promise->set_value(result[1]);
     } else if (result.size() == 1) {
-      promise.set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+      promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
     } else {
-      promise.set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
+      promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
     }
-  });
-  return promise.get_future();
+  });  
+  return promise->get_future();
 }
 
 std::future<std::string> Client::encodeInvitationCode(const std::string &stageId, const std::string &groupId) {
   nlohmann::json payload;
   payload["stageId"] = stageId;
   payload["groupId"] = groupId;
-  std::promise<std::string> promise;
+  using InvitePromise = std::promise<std::string>;
+  auto const promise = std::make_shared<InvitePromise>();
   wsclient_->emit("encode-invite", payload, [&promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
-      promise.set_value(result[1]);
+      promise->set_value(result[1]);
     } else if (result.size() == 1) {
-      promise.set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+      promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
     } else {
-      promise.set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
+      promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
     }
   });
-  return promise.get_future();
+  return promise->get_future();
 }
