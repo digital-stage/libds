@@ -50,6 +50,10 @@ struct Device {
    */
   std::optional<std::string> audioDriver;
   /**
+   * Optional audio engine to support different DACs on the same client
+   */
+  std::optional<std::string> audioEngine;
+  /**
    * The currently selected input sound card or null if none selected
    */
   std::optional<ID_TYPE> inputSoundCardId;
@@ -57,6 +61,8 @@ struct Device {
    * The currently selected output sound card or null if none selected
    */
   std::optional<ID_TYPE> outputSoundCardId;
+
+  unsigned int frameSize;
 
   /**
    * The output volume
@@ -265,11 +271,15 @@ struct SoundCard {
 
   std::optional<bool> isDefault;
 
+  unsigned int frameSize;
+
   unsigned int sampleRate;
   std::set<unsigned int> sampleRates;
   unsigned int periodSize;
   unsigned int numPeriods = 2;
   std::optional<double> softwareLatency;
+
+  unsigned int bufferSize;
 
   unsigned int inputBuffer;
   unsigned int outputBuffer;
@@ -463,6 +473,7 @@ inline void to_json(json &j, const Device &p) {
            {"receiveVideo", p.receiveVideo},
            {"receiveAudio", p.receiveAudio}};
   optional_to_json(j, "audioDriver", p.audioDriver);
+  optional_to_json(j, "audioEngine", p.audioEngine);
   optional_to_json(j, "inputSoundCardId", p.inputSoundCardId);
   optional_to_json(j, "outputSoundCardId", p.outputSoundCardId);
   optional_to_json(j, "ovReceiverType", p.ovReceiverType);
@@ -490,6 +501,7 @@ inline void from_json(const json &j, Device &p) {
   j.at("receiveAudio").get_to(p.receiveAudio);
 
   optional_from_json(j, "audioDriver", p.audioDriver);
+  optional_from_json(j, "audioEngine", p.audioEngine);
   optional_from_json(j, "inputSoundCardId", p.inputSoundCardId);
   optional_from_json(j, "outputSoundCardId", p.outputSoundCardId);
 
@@ -680,7 +692,8 @@ inline void from_json(const json &j, CustomStageMemberPosition &p) {
 }
 
 inline void to_json(json &j, const CustomStageMemberVolume &p) {
-  j = json{{"_id", p._id}, {"userId", p.userId}, {"stageId", p.stageId}, {"deviceId", p.deviceId}, {"stageMemberId", p.stageMemberId},
+  j = json{{"_id", p._id}, {"userId", p.userId}, {"stageId", p.stageId}, {"deviceId", p.deviceId},
+           {"stageMemberId", p.stageMemberId},
            {"volume", p.volume}, {"muted", p.muted}};
 }
 
@@ -789,6 +802,7 @@ inline void to_json(json &j, const SoundCard &p) {
            {"sampleRates", p.sampleRates},
            {"periodSize", p.periodSize},
            {"numPeriods", p.numPeriods},
+           {"frameSize", p.frameSize},
            {"inputBuffer", p.inputBuffer},
            {"outputBuffer", p.outputBuffer},
            {"channels", p.channels},
@@ -807,6 +821,7 @@ inline void from_json(const json &j, SoundCard &p) {
   j.at("label").get_to(p.label);
   j.at("sampleRate").get_to(p.sampleRate);
   j.at("sampleRates").get_to(p.sampleRates);
+  j.at("frameSize").get_to(p.frameSize);
   j.at("periodSize").get_to(p.periodSize);
   j.at("numPeriods").get_to(p.numPeriods);
   j.at("inputBuffer").get_to(p.inputBuffer);
