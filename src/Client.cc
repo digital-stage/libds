@@ -617,7 +617,7 @@ pplx::task<void> Client::send(
   payload["groupId"] = groupId;
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->emit("revoke-invite", payload, [&promise](const std::vector<nlohmann::json> &result) {
+  wsclient_->emit("revoke-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
       promise->set_value(result[1]);
     } else if (result.size() == 1) {
@@ -636,7 +636,9 @@ pplx::task<void> Client::send(
   payload["groupId"] = groupId;
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->emit("encode-invite", payload, [&promise](const std::vector<nlohmann::json> &result) {
+  auto future = promise->get_future();
+  send("encode-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
+    std::cout << "SUCCESS" << std::endl;
     if (result.size() > 1) {
       promise->set_value(result[1]);
     } else if (result.size() == 1) {
@@ -645,5 +647,5 @@ pplx::task<void> Client::send(
       promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
     }
   });
-  return promise->get_future();
+  return future;
 }
