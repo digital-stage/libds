@@ -50,7 +50,8 @@ struct Device {
    */
   std::optional<std::string> audioDriver;
   /**
-   * Optional audio engine to support different DACs on the same client
+   * Audio engine currently selected (will be "juce" always for Jammer and "webaudio" always for "browser").
+   * This enables us to change the audio engine on the fly later.
    */
   std::optional<std::string> audioEngine;
   /**
@@ -62,7 +63,10 @@ struct Device {
    */
   std::optional<ID_TYPE> outputSoundCardId;
 
-  unsigned int frameSize;
+  /**
+   * The amount of network receiver buffer in samples
+   */
+  unsigned int buffer;
 
   /**
    * The output volume
@@ -251,6 +255,11 @@ struct SoundCard {
   ID_TYPE deviceId;
 
   /**
+   * Audio engine, e.g. "juce", "rtaudio", "miniaudio", "webaudio"
+   */
+  std::string audioEngine;
+
+  /**
    * Audio driver, inside JUCE use getTypeName of https://docs.juce.com/master/classAudioIODevice.html
    */
   std::string audioDriver;
@@ -269,8 +278,14 @@ struct SoundCard {
    */
   std::string label;
 
+  /**
+   * Indicates, if this device is system default
+   */
   std::optional<bool> isDefault;
 
+  /**
+   * The frame size used by this sound card (may be ignored by the audio engine).
+   */
   unsigned int frameSize;
 
   unsigned int sampleRate;
@@ -471,7 +486,8 @@ inline void to_json(json &j, const Device &p) {
            {"sendVideo", p.sendVideo},
            {"sendAudio", p.sendAudio},
            {"receiveVideo", p.receiveVideo},
-           {"receiveAudio", p.receiveAudio}};
+           {"receiveAudio", p.receiveAudio},
+           {"buffer", p.buffer}};
   optional_to_json(j, "audioDriver", p.audioDriver);
   optional_to_json(j, "audioEngine", p.audioEngine);
   optional_to_json(j, "inputSoundCardId", p.inputSoundCardId);
@@ -795,6 +811,7 @@ inline void to_json(json &j, const SoundCard &p) {
   j = json{{"_id", p._id},
            {"uuid", p.uuid},
            {"deviceId", p.deviceId},
+           {"audioEngine", p.audioEngine},
            {"audioDriver", p.audioDriver},
            {"type", p.type},
            {"label", p.label},
@@ -816,6 +833,7 @@ inline void from_json(const json &j, SoundCard &p) {
   j.at("_id").get_to(p._id);
   j.at("uuid").get_to(p.uuid);
   j.at("deviceId").get_to(p.deviceId);
+  j.at("audioEngine").get_to(p.audioEngine);
   j.at("audioDriver").get_to(p.audioDriver);
   j.at("type").get_to(p.type);
   j.at("label").get_to(p.label);

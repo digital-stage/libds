@@ -8,8 +8,8 @@
 
 using namespace DigitalStage::Api;
 
-Client::Client(const std::string &apiUrl)
-    : apiUrl_(apiUrl) {
+Client::Client(std::string apiUrl)
+    : apiUrl_(std::move(apiUrl)) {
   store_ = std::make_unique<Store>();
   wsclient_ = std::make_unique<teckos::client>();
   wsclient_->setReconnect(true);
@@ -594,7 +594,7 @@ pplx::task<void> Client::send(
   this->wholeStage_ = std::move(wholeStage);
 }
 
-std::future<std::pair<std::string, std::string>> Client::decodeInvitationCode(const std::string &code) {
+[[maybe_unused]] std::future<std::pair<std::string, std::string>> Client::decodeInvitationCode(const std::string &code) {
   std::promise<std::pair<std::string, std::string>> promise;
   wsclient_->emit("decode-invite", code, [&promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
@@ -608,7 +608,7 @@ std::future<std::pair<std::string, std::string>> Client::decodeInvitationCode(co
   return promise.get_future();
 }
 
-std::future<std::string> Client::revokeInvitationCode(const std::string &stageId, const std::string &groupId) {
+[[maybe_unused]] std::future<std::string> Client::revokeInvitationCode(const std::string &stageId, const std::string &groupId) {
   nlohmann::json payload;
   payload["stageId"] = stageId;
   payload["groupId"] = groupId;
@@ -625,7 +625,7 @@ std::future<std::string> Client::revokeInvitationCode(const std::string &stageId
   return promise.get_future();
 }
 
-std::future<std::string> Client::encodeInvitationCode(const std::string &stageId, const std::string &groupId) {
+[[maybe_unused]] std::future<std::string> Client::encodeInvitationCode(const std::string &stageId, const std::string &groupId) {
   nlohmann::json payload;
   payload["stageId"] = stageId;
   payload["groupId"] = groupId;

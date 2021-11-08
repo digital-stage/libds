@@ -15,7 +15,7 @@ using namespace web::websockets::client;
 namespace DigitalStage::Api {
 class Client {
  public:
-  explicit Client(const std::string &apiUrl);
+  explicit Client(std::string apiUrl);
 
   pplx::task<void>
   connect(const teckos::string_t &apiToken,
