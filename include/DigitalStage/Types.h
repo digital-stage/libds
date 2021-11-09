@@ -284,20 +284,15 @@ struct SoundCard {
   std::optional<bool> isDefault;
 
   /**
-   * The frame size used by this sound card (may be ignored by the audio engine).
+   * The frame size or buffer size used by this sound card (may be ignored by the audio engine).
    */
-  unsigned int frameSize;
+  unsigned int bufferSize;
 
   unsigned int sampleRate;
   std::set<unsigned int> sampleRates;
   unsigned int periodSize;
   unsigned int numPeriods = 2;
   std::optional<double> softwareLatency;
-
-  unsigned int bufferSize;
-
-  unsigned int inputBuffer;
-  unsigned int outputBuffer;
 
   /**
    * Indicate if the given sound card is connected and online
@@ -819,9 +814,7 @@ inline void to_json(json &j, const SoundCard &p) {
            {"sampleRates", p.sampleRates},
            {"periodSize", p.periodSize},
            {"numPeriods", p.numPeriods},
-           {"frameSize", p.frameSize},
-           {"inputBuffer", p.inputBuffer},
-           {"outputBuffer", p.outputBuffer},
+           {"bufferSize", p.bufferSize},
            {"channels", p.channels},
            {"online", p.online},
            {"userId", p.userId}};
@@ -839,11 +832,9 @@ inline void from_json(const json &j, SoundCard &p) {
   j.at("label").get_to(p.label);
   j.at("sampleRate").get_to(p.sampleRate);
   j.at("sampleRates").get_to(p.sampleRates);
-  j.at("frameSize").get_to(p.frameSize);
+  j.at("bufferSize").get_to(p.bufferSize);
   j.at("periodSize").get_to(p.periodSize);
   j.at("numPeriods").get_to(p.numPeriods);
-  j.at("inputBuffer").get_to(p.inputBuffer);
-  j.at("outputBuffer").get_to(p.outputBuffer);
   j.at("channels").get_to(p.channels);
   j.at("online").get_to(p.online);
   j.at("userId").get_to(p.userId);
