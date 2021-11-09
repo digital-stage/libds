@@ -122,6 +122,12 @@ class Store {
    */
   std::optional<std::string> getStageId() const;
 
+  /**
+   * Return the current stage, if available
+   * @return current stage
+   */
+  std::optional<DigitalStage::Types::Stage> getStage() const;
+
   void setGroupId(const std::string &id);
   void resetGroupId();
   /**

@@ -453,7 +453,7 @@ inline void from_json(const json &j, ThreeDimensionalProperties &p) {
   if (j.contains("rZ") && j.at("rZ").is_number()) {
     j.at("rZ").get_to(p.rZ);
   }
-  if (j.at("directivity").is_string()) {
+  if(j.contains("directivity") && j.at("directivity").is_string()) {
     j.at("directivity").get_to(p.directivity);
   }
 }

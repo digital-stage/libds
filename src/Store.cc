@@ -73,6 +73,14 @@ std::optional<std::string> Store::getStageId() const {
   return stageId_;
 }
 
+std::optional<DigitalStage::Types::Stage> Store::getStage() const {
+  std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
+  if (stageId_) {
+    return stages.get(*stageId_);
+  }
+  return std::nullopt;
+}
+
 void Store::setStageId(const std::string &id) {
   std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
   stageId_ = id;
