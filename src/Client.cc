@@ -645,5 +645,5 @@ pplx::task<void> Client::send(
       promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
     }
   });
-  return future;
+  return promise->get_future();
 }
