@@ -53,7 +53,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 if (APPLE)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/FixAppleArchitecture.cmake)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
 endif (APPLE)
 
 # Conan installs find files into the top level projects binary path, make sure to add this to our CMAKE_MODULE_PATH
