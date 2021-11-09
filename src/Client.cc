@@ -633,7 +633,7 @@ std::future<std::string> Client::encodeInvitationCode(const std::string &stageId
   payload["groupId"] = groupId;
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->emit("encode-invite", payload, [&promise](const std::vector<nlohmann::json> &result) {
+  wsclient_->emit("encode-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
       promise->set_value(result[1]);
     } else if (result.size() == 1) {
