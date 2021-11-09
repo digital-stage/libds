@@ -229,6 +229,28 @@ Store::getAudioTracksByStageDevice(const std::string &stageDeviceId) const {
   return vector;
 }
 
+std::vector<AudioTrack>
+Store::getAudioTracksByStageMember(const std::string &stageMemberId) const {
+  std::lock_guard<std::recursive_mutex> lock(this->audioTracks.mutex_store_);
+  auto vector = std::vector<AudioTrack>();
+  for (const auto &audioTrack: this->audioTracks.getAll()) {
+    if (audioTrack.stageMemberId == stageMemberId) {
+      vector.push_back(audioTrack);
+    }
+  }
+  return vector;
+}
+
+std::vector<AudioTrack>
+Store::getAudioTracksByGroup(const std::string &groupId) const {
+  auto vector = std::vector<AudioTrack>();
+  for (const auto &stageMember: this->getStageMembersByGroup(groupId)) {
+    auto audio_tracks = getAudioTracksByStageMember(stageMember._id);
+    vector.insert(vector.end(), audio_tracks.begin(), audio_tracks.end());
+  }
+  return vector;
+}
+
 void Store::setReady(bool ready) {
   std::lock_guard<std::recursive_mutex> lock(this->ready_mutex_);
   this->isReady_ = ready;

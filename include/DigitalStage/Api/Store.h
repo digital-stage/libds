@@ -164,7 +164,7 @@ class Store {
    * Sets the given TURN/STUN username
    * @param username
    */
-  void setTurnUsername(const std::string& username);
+  void setTurnUsername(const std::string &username);
 
   /**
    * Returns the username to authenticate on the TURN servers
@@ -176,7 +176,7 @@ class Store {
    * Sets the given TURN/STUN username
    * @param username
    */
-  void setTurnPassword(const std::string& username);
+  void setTurnPassword(const std::string &username);
 
   /**
    * Returns the password to authenticate on the TURN servers.
@@ -212,6 +212,8 @@ class Store {
   StoreEntry<DigitalStage::Types::AudioTrack> audioTracks;
   std::vector<DigitalStage::Types::AudioTrack>
   getAudioTracksByStageDevice(const std::string &stageDeviceId) const;
+  std::vector<DigitalStage::Types::AudioTrack> getAudioTracksByStageMember(const std::string &stageMemberId) const;
+  std::vector<DigitalStage::Types::AudioTrack> getAudioTracksByGroup(const std::string &groupId) const;
   std::vector<DigitalStage::Types::AudioTrack> getLocalAudioTracks() const;
 
   // Custom group positions
