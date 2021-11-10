@@ -35,6 +35,7 @@ class Client {
        const std::function<void(const std::vector<nlohmann::json> &)> &
        callback);
 
+  Pal::sigslot::signal<bool /* expected */> disconnected;
   Pal::sigslot::signal<const DigitalStage::Api::Store *> ready;
   Pal::sigslot::signal<const Device, const DigitalStage::Api::Store *>
       localDeviceReady;

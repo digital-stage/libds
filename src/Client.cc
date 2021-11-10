@@ -36,6 +36,11 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
   std::cout << "Connecting to " << apiUrl_ << std::endl;
 
   // Set handler
+  wsclient_->on_disconnected([this](bool expected) {
+    std::thread([this, &expected]() {
+      disconnected(expected);
+    }).detach();
+  });
   wsclient_->setMessageHandler([&](const nlohmann::json &j) {
     try {
       if (!j.is_array()) {
