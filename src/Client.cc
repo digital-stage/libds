@@ -33,8 +33,6 @@ bool Client::isConnected() {
 
 pplx::task<void> Client::connect(const teckos::string_t &apiToken,
                                  const nlohmann::json &initialDevice) {
-  std::cout << "Connecting to " << apiUrl_ << std::endl;
-
   // Set handler
   wsclient_->on_disconnected([this](bool expected) {
     std::thread([this, &expected]() {
@@ -59,7 +57,6 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
 #endif
 
       if (event == RetrieveEvents::READY) {
-        std::cout << "READY" << std::endl;
         store_->setReady(true);
         if (payload.contains("turn")) {
           store_->setTurnServers(payload["turn"]["urls"]);
@@ -526,7 +523,6 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
         store_->audioTracks.removeAll();
         store_->customAudioTrackPositions.removeAll();
         store_->customAudioTrackVolumes.removeAll();
-        std::cout << "See me?" << event << std::endl;
         // TODO: Discuss, the store may dispatch all the events instead...
         // TODO: Otherwise we have to dispatch all removals HERE (!)
         // Current workaround: assuming, that on left all using
