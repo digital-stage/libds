@@ -27,7 +27,7 @@ void Client::disconnect() {
 
 bool Client::isConnected() {
   if (wsclient_)
-    wsclient_->isConnected();
+    return wsclient_->isConnected();
   return false;
 }
 
@@ -571,7 +571,7 @@ pplx::task<void> Client::send(const std::string &event,
 #endif
   if (!wsclient_)
     throw std::runtime_error("Not ready");
-  return wsclient_->emit(event, message);
+  return wsclient_->send(event, message);
 }
 
 pplx::task<void> Client::send(
@@ -586,7 +586,7 @@ pplx::task<void> Client::send(
 #endif
   if (!wsclient_)
     throw std::runtime_error("Not ready");
-  return wsclient_->emit(event, message, callback);
+  return wsclient_->send(event, message, callback);
 }
 
 [[maybe_unused]] DigitalStage::Types::WholeStage Client::getWholeStage() const {
@@ -603,7 +603,7 @@ pplx::task<void> Client::send(
                                        std::string>> Client::decodeInvitationCode(const std::string &code) {
   using InvitePromise = std::promise<std::pair<std::string, std::string>>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->emit("decode-invite", code, [promise](const std::vector<nlohmann::json> &result) {
+  wsclient_->send("decode-invite", code, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
       promise->set_value({result[1]["stageId"], result[1]["groupId"]});
     } else if (result.size() == 1) {
@@ -622,7 +622,7 @@ pplx::task<void> Client::send(
   payload["groupId"] = groupId;
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->emit("revoke-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
+  wsclient_->send("revoke-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
       promise->set_value(result[1]);
     } else if (result.size() == 1) {
@@ -641,7 +641,7 @@ pplx::task<void> Client::send(
   payload["groupId"] = groupId;
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->emit("encode-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
+  wsclient_->send("encode-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
       promise->set_value(result[1]);
     } else if (result.size() == 1) {

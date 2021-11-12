@@ -55,21 +55,21 @@ class Client {
                        const DigitalStage::Api::Store *>
       localDeviceChanged;
   /**
-   * This will emit when the audio driver has been changed.
+   * This will send when the audio driver has been changed.
    * The first parameter contains the new audio driver as optional value
    */
   Pal::sigslot::signal<std::optional<std::string>,
                        const DigitalStage::Api::Store *>
       audioDriverSelected;
   /**
-   * This will emit when another input sound card has been selected.
+   * This will send when another input sound card has been selected.
    * First parameter is the ID of the sound card as optional value
    */
   Pal::sigslot::signal<const std::optional<std::string> &,
                        const DigitalStage::Api::Store *>
       inputSoundCardSelected;
   /**
-   * This will emit when another output sound card has been selected.
+   * This will send when another output sound card has been selected.
    * First parameter is the ID of the sound card as optional value
    */
   Pal::sigslot::signal<const std::optional<std::string> &,
