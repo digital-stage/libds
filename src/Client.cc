@@ -426,10 +426,7 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
           }
         }
         if (payload.count("stage") > 0) {
-          for (const auto &item: payload["stage"]) {
-            store_->stages.create(item);
-            this->stageAdded(item.get<Stage>(), getStore());
-          }
+          this->stageAdded(payload["stage"].get<Stage>(), getStore());
         }
         if (payload.count("groups") > 0) {
           for (const auto &item: payload["groups"]) {
