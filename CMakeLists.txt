@@ -80,26 +80,48 @@ set(API_SOURCES
         )
 add_library(DigitalStageApi ${API_SOURCES} ${API_HEADERS})
 add_library(${PROJECT_NAME}::Api ALIAS DigitalStageApi)
+add_library(DigitalStageApiStatic STATIC ${API_SOURCES} ${API_HEADERS})
+add_library(${PROJECT_NAME}::ApiStatic ALIAS DigitalStageApiStatic)
 target_include_directories(DigitalStageApi PUBLIC
+        $<BUILD_INTERFACE:${INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:include>)
+target_include_directories(DigitalStageApiStatic PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
 if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(DigitalStageApi PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(DigitalStageApiStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
 target_link_libraries(DigitalStageApi
         PUBLIC
         teckos::teckos
         Pal::Sigslot
         )
+target_link_libraries(DigitalStageApiStatic
+        PUBLIC
+        teckos::teckosStatic
+        Pal::Sigslot
+        )
 add_library(DigitalStageAuth src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
 add_library(${PROJECT_NAME}::Auth ALIAS DigitalStageAuth)
+add_library(DigitalStageAuthStatic STATIC src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
+add_library(${PROJECT_NAME}::AuthStatic ALIAS DigitalStageAuthStatic)
 target_include_directories(DigitalStageAuth PUBLIC
+        $<BUILD_INTERFACE:${INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:include>)
+target_include_directories(DigitalStageAuthStatic PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
 if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(DigitalStageAuth PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(DigitalStageAuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
 target_link_libraries(DigitalStageAuth
+        PUBLIC
+        cpprestsdk::cpprest
+        OpenSSL::Crypto
+        )
+target_link_libraries(DigitalStageAuthStatic
         PUBLIC
         cpprestsdk::cpprest
         OpenSSL::Crypto
@@ -135,11 +157,11 @@ install(
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 export(
-        TARGETS DigitalStageApi DigitalStageAuth sigslot
+        TARGETS DigitalStageApi DigitalStageAuth sigslot DigitalStageApiStatic DigitalStageAuthStatic
         NAMESPACE ${PROJECT_NAME}::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
-        TARGETS DigitalStageApi DigitalStageAuth sigslot
+        TARGETS DigitalStageApi DigitalStageAuth sigslot DigitalStageApiStatic DigitalStageAuthStatic
         EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
 install(
