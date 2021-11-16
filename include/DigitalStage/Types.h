@@ -347,8 +347,6 @@ struct CustomAudioTrackVolume : VolumeProperties {
   ID_TYPE deviceId;
   ID_TYPE audioTrackId;
   ID_TYPE stageId;
-  double volume = 1;
-  bool muted = false;
 };
 
 struct User {
