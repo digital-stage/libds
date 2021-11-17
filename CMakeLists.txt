@@ -158,10 +158,12 @@ target_link_libraries(libds-example
         DigitalStageAuth
         DigitalStageApi)
 
-##
-## INSTALL
-## install header files, generate and install cmake config files for find_package()
-##
+
+#################################################
+#
+#   Installation
+#
+#################################################
 include(CMakePackageConfigHelpers)
 configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
