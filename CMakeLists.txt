@@ -5,15 +5,15 @@ project(DigitalStage
         VERSION 0.1
         DESCRIPTION "Library for interacting with the digital stage universe")
 
+
 ##
 ## CONFIGURATION
 ##
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-option(DEBUG_EVENTS "Print events to console" OFF)
-option(DEBUG_PAYLOADS "Print payloads to console" OFF)
+add_compile_definitions(DEBUG_EVENTS)
+add_compile_definitions(DEBUG_PAYLOADS)
 
 set(TARGET_NAME ${PROJECT_NAME})
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
@@ -23,28 +23,28 @@ set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "Install path for library
 
 ## Windows setup for Boost
 ## If you wonder WTF that is about, check https://stackoverflow.com/questions/9742003/platform-detection-in-cmake
-if (WIN32)
+if(WIN32)
     macro(get_WIN32_WINNT version)
-        if (CMAKE_SYSTEM_VERSION)
+        if(CMAKE_SYSTEM_VERSION)
             set(ver ${CMAKE_SYSTEM_VERSION})
             string(REGEX MATCH "^([0-9]+).([0-9])" ver ${ver})
             string(REGEX MATCH "^([0-9]+)" verMajor ${ver})
             # Check for Windows 10, b/c we'll need to convert to hex 'A'.
-            if ("${verMajor}" MATCHES "10")
+            if("${verMajor}" MATCHES "10")
                 set(verMajor "A")
                 string(REGEX REPLACE "^([0-9]+)" ${verMajor} ver ${ver})
-            endif ()
+            endif()
             # Remove all remaining '.' characters.
             string(REPLACE "." "" ver ${ver})
             # Prepend each digit with a zero.
             string(REGEX REPLACE "([0-9A-Z])" "0\\1" ver ${ver})
             set(${version} "0x${ver}")
-        endif ()
+        endif()
     endmacro()
 
     get_WIN32_WINNT(ver)
     add_definitions(-D_WIN32_WINNT=${ver})
-endif ()
+endif()
 
 ##
 ## DEPENDENCIES
@@ -80,48 +80,26 @@ set(API_SOURCES
         )
 add_library(DigitalStageApi ${API_SOURCES} ${API_HEADERS})
 add_library(${PROJECT_NAME}::Api ALIAS DigitalStageApi)
-add_library(DigitalStageApiStatic STATIC ${API_SOURCES} ${API_HEADERS})
-add_library(${PROJECT_NAME}::ApiStatic ALIAS DigitalStageApiStatic)
 target_include_directories(DigitalStageApi PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
-target_include_directories(DigitalStageApiStatic PUBLIC
-        $<BUILD_INTERFACE:${INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:include>)
-if (CMAKE_COMPILER_IS_GNUCC)
-    target_compile_options(DigitalStageApi PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_compile_options(DigitalStageApiStatic PRIVATE -Wall -Wextra -pedantic -Werror)
-endif ()
+if(CMAKE_COMPILER_IS_GNUCC)
+target_compile_options(DigitalStageApi PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
 target_link_libraries(DigitalStageApi
         PUBLIC
         teckos::teckos
         Pal::Sigslot
         )
-target_link_libraries(DigitalStageApiStatic
-        PUBLIC
-        teckos::teckosStatic
-        Pal::Sigslot
-        )
 add_library(DigitalStageAuth src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
 add_library(${PROJECT_NAME}::Auth ALIAS DigitalStageAuth)
-add_library(DigitalStageAuthStatic STATIC src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
-add_library(${PROJECT_NAME}::AuthStatic ALIAS DigitalStageAuthStatic)
 target_include_directories(DigitalStageAuth PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
-target_include_directories(DigitalStageAuthStatic PUBLIC
-        $<BUILD_INTERFACE:${INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:include>)
-if (CMAKE_COMPILER_IS_GNUCC)
-    target_compile_options(DigitalStageAuth PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_compile_options(DigitalStageAuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
-endif ()
+if(CMAKE_COMPILER_IS_GNUCC)
+target_compile_options(DigitalStageAuth PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
 target_link_libraries(DigitalStageAuth
-        PUBLIC
-        cpprestsdk::cpprest
-        OpenSSL::Crypto
-        )
-target_link_libraries(DigitalStageAuthStatic
         PUBLIC
         cpprestsdk::cpprest
         OpenSSL::Crypto
@@ -157,11 +135,11 @@ install(
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 export(
-        TARGETS DigitalStageApi DigitalStageAuth sigslot DigitalStageApiStatic DigitalStageAuthStatic
+        TARGETS DigitalStageApi DigitalStageAuth sigslot
         NAMESPACE ${PROJECT_NAME}::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
-        TARGETS DigitalStageApi DigitalStageAuth sigslot DigitalStageApiStatic DigitalStageAuthStatic
+        TARGETS DigitalStageApi DigitalStageAuth sigslot
         EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
 install(
