@@ -151,7 +151,6 @@ target_link_libraries(DigitalStageAuthStatic
 
 add_executable(libds-example
         src/cli.cc)
-set_target_properties(libds-example PROPERTIES OUTPUT_NAME cli)
 target_include_directories(libds-example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(libds-example
         PRIVATE
