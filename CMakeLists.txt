@@ -2,24 +2,34 @@ cmake_minimum_required(VERSION 3.16.0)
 
 project(DigitalStage
         LANGUAGES CXX
-        VERSION 0.1
+        VERSION 0.2
         DESCRIPTION "Library for interacting with the digital stage universe")
 
-##
-## CONFIGURATION
-##
+
+#################################################
+#
+#   Common configuration
+#
+#################################################
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-option(DEBUG_EVENTS "Print events to console" OFF)
-option(DEBUG_PAYLOADS "Print payloads to console" OFF)
-
 set(TARGET_NAME ${PROJECT_NAME})
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/)
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "Install path for include files")
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "Install path for library files")
+
+if (APPLE)
+    if (EXISTS "/usr/local/opt/openssl/")
+        set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl/")
+    else ()
+        include("${PROJECT_SOURCE_DIR}/cmake/BrewResolver.cmake")
+    endif ()
+endif (APPLE)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 ## Windows setup for Boost
 ## If you wonder WTF that is about, check https://stackoverflow.com/questions/9742003/platform-detection-in-cmake
@@ -46,27 +56,32 @@ if (WIN32)
     add_definitions(-D_WIN32_WINNT=${ver})
 endif ()
 
-##
-## DEPENDENCIES
-##
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
-if (APPLE)
-    include(${CMAKE_CURRENT_LIST_DIR}/cmake/FixAppleArchitecture.cmake)
-    include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake)
-endif (APPLE)
 
-# Conan installs find files into the top level projects binary path, make sure to add this to our CMAKE_MODULE_PATH
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+#################################################
+#
+#   Environment
+#
+#################################################
+option(DEBUG_EVENTS "Print events to console" OFF)
+option(DEBUG_PAYLOADS "Print payloads to console" OFF)
 
+
+#################################################
+#
+#   Dependencies
+#
+#################################################
 add_subdirectory(libteckos EXCLUDE_FROM_ALL)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/FetchAndPatchSigslot.cmake)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 
-##
-## TARGET
-## create target and add include path
-##
+
+#################################################
+#
+#   Target: API
+#
+#################################################
 set(API_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Client.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Events.h
@@ -92,6 +107,12 @@ if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(DigitalStageApi PRIVATE -Wall -Wextra -pedantic -Werror)
     target_compile_options(DigitalStageApiStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
+if (DEBUG_EVENTS)
+    target_compile_definitions(DigitalStageApi PRIVATE DEBUG_EVENTS)
+    if (DEBUG_PAYLOADS)
+        target_compile_definitions(DigitalStageApi PRIVATE DEBUG_PAYLOADS)
+    endif (DEBUG_PAYLOADS)
+endif (DEBUG_EVENTS)
 target_link_libraries(DigitalStageApi
         PUBLIC
         teckos::teckos
@@ -102,6 +123,13 @@ target_link_libraries(DigitalStageApiStatic
         teckos::teckosStatic
         Pal::Sigslot
         )
+
+
+#################################################
+#
+#   Target: Auth
+#
+#################################################
 add_library(DigitalStageAuth src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
 add_library(${PROJECT_NAME}::Auth ALIAS DigitalStageAuth)
 add_library(DigitalStageAuthStatic STATIC src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
@@ -129,17 +157,18 @@ target_link_libraries(DigitalStageAuthStatic
 
 add_executable(libds-example
         src/cli.cc)
-set_target_properties(libds-example PROPERTIES OUTPUT_NAME cli)
 target_include_directories(libds-example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(libds-example
         PRIVATE
         DigitalStageAuth
         DigitalStageApi)
 
-##
-## INSTALL
-## install header files, generate and install cmake config files for find_package()
-##
+
+#################################################
+#
+#   Installation
+#
+#################################################
 include(CMakePackageConfigHelpers)
 configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
@@ -168,3 +197,47 @@ install(
         EXPORT ${TARGETS_EXPORT_NAME}
         NAMESPACE ${PROJECT_NAME}::
         DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME})
+
+
+#################################################
+#
+#   Tests
+#
+#################################################
+# TODO: Discuss if we migh add the tests with EXCLUDE_FROM_ALL instead
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    if (NOT TARGET googletest)
+        include(FetchContent)
+        FetchContent_Declare(
+                googletest
+                URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+        )
+        # For Windows: Prevent overriding the parent project's compiler/linker settings
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        FetchContent_MakeAvailable(googletest)
+    endif (NOT TARGET googletest)
+
+    enable_testing()
+
+    # Link runTests with what we want to test and the GTest and pthread library
+    add_executable(${PROJECT_NAME}-test
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/AuthServiceTest.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
+            )
+    target_link_libraries(${PROJECT_NAME}-test
+            PRIVATE
+            gtest_main
+            DigitalStageApi
+            DigitalStageAuth
+            )
+
+    target_compile_definitions(${PROJECT_NAME}-test
+            PRIVATE
+            AUTH_URL="https://auth.dev.cloud.dstage.org"
+            API_URL="wss://api.dev.cloud.dstage.org"
+            )
+
+    include(GoogleTest)
+    gtest_discover_tests(${PROJECT_NAME}-test)
+endif (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)

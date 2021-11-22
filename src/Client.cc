@@ -425,7 +425,7 @@ pplx::task<void> Client::connect(const teckos::string_t &apiToken,
             this->userAdded(item.get<User>(), getStore());
           }
         }
-        if (payload.count("stage") > 0) {          
+        if (payload.count("stage") > 0) {
           store_->stages.create(payload["stage"]);
           this->stageAdded(payload["stage"].get<Stage>(), getStore());
         }
