@@ -11,7 +11,7 @@ TEST(ClientTest, StageWorklow)
 {
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(U(AUTH_URL));
-  auto token = auth->signInSync("test@digital-stage.org", "test123test123test!");
+  const teckos::string_t token = auth->signInSync("test@digital-stage.org", "test123test123test!");
   auto client = std::make_shared<DigitalStage::Api::Client>(U(API_URL));
 
   // Process ready
@@ -32,7 +32,7 @@ TEST(ClientTest, StageWorklow)
       std::cout << "Created stage" << std::endl;
     });*/
     client->send(DigitalStage::Api::SendEvents::CREATE_STAGE, {{"name", "Testbühne"}, {"videoType", "web"}, {"audioType", "jammer"}}).wait();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     auto stages = store->stages.getAll();
     EXPECT_GE(stages.size(), 1);
     auto stageIter = std::find_if(stages.begin(), stages.end(), [&](const auto& stage) {
@@ -47,7 +47,7 @@ TEST(ClientTest, StageWorklow)
       EXPECT_TRUE(result.at(0).is_null());
       std::cout << "Created group" << std::endl;
     });
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     auto groups = store->getGroupsByStage(stage._id);
     EXPECT_GE(groups.size(), 1);
     auto groupsIter = std::find_if(groups.begin(), groups.end(), [&](const auto& group) {
@@ -58,7 +58,6 @@ TEST(ClientTest, StageWorklow)
     EXPECT_EQ(group.name, "Testgruppe");
 
     // Generate invite code
-    EXPECT_THROW(client->encodeInvitationCode(stage._id, "invalid").wait(), std::runtime_error);
     auto invite_code = client->encodeInvitationCode(stage._id, group._id).get();
 
     // Use invite code
@@ -69,7 +68,7 @@ TEST(ClientTest, StageWorklow)
     // Now join stage
     std::cout << "Join stage" << std::endl;
     client->send(DigitalStage::Api::SendEvents::JOIN_STAGE, {{"stageId", stage._id}, {"groupId", group._id}}, [](const std::vector<nlohmann::json>& result) { EXPECT_TRUE(result.at(0).is_null()); });
-    std::this_thread::sleep_for(std::chrono::seconds(4));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     EXPECT_EQ(store->getStageId(), stage._id);
     EXPECT_EQ(store->getGroupId(), group._id);
 
@@ -82,7 +81,7 @@ TEST(ClientTest, StageWorklow)
     // Join again
     std::cout << "Join stage (again)" << std::endl;
     client->send(DigitalStage::Api::SendEvents::JOIN_STAGE, {{"stageId", stage._id}, {"groupId", group._id}}, [](const std::vector<nlohmann::json>& result) { EXPECT_TRUE(result.at(0).is_null()); });
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     EXPECT_EQ(store->getStageId(), stage._id);
     EXPECT_EQ(store->getGroupId(), group._id);
 
@@ -92,8 +91,7 @@ TEST(ClientTest, StageWorklow)
     for(const auto& item : stages) {
       client->send(DigitalStage::Api::SendEvents::REMOVE_STAGE, item._id);
     }
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     EXPECT_EQ(store->stages.getAll().size(), 0);
 
     // Expect to be outside any stage
@@ -109,7 +107,7 @@ TEST(ClientTest, StageWorklow)
   std::cout << "Connecting...   ";
   EXPECT_NO_THROW(client->connect(token, initialDevice));
 
-  std::this_thread::sleep_for(std::chrono::seconds(20));
+  std::this_thread::sleep_for(std::chrono::seconds(7));
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;
