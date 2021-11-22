@@ -20,6 +20,27 @@ const std::string SendEvents::SEND_P2P_ANSWER =
 const std::string SendEvents::SEND_ICE_CANDIDATE =
     "send-ice-candidate";
 
+const std::string SendEvents::CREATE_STAGE =
+    "create-stage";
+const std::string SendEvents::CHANGE_STAGE =
+    "change-stage";
+const std::string SendEvents::REMOVE_STAGE =
+    "remove-stage";
+
+const std::string SendEvents::CREATE_GROUP =
+    "create-group";
+const std::string SendEvents::CHANGE_GROUP =
+    "change-group";
+const std::string SendEvents::REMOVE_GROUP =
+    "remove-group";
+
+const std::string SendEvents::JOIN_STAGE =
+    "join-stage";
+const std::string SendEvents::LEAVE_STAGE =
+    "leave-stage";
+const std::string SendEvents::LEAVE_STAGE_FOR_GOOD =
+    "leave-stage-for-good";
+
 const std::string RetrieveEvents::READY = "ok";
 const std::string RetrieveEvents::LOCAL_DEVICE_READY = "ldr";
 const std::string RetrieveEvents::DEVICE_ADDED = "d-a";

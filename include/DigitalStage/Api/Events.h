@@ -83,6 +83,19 @@ namespace DigitalStage::Api {
       extern const std::string SEND_P2P_OFFER;
       extern const std::string SEND_P2P_ANSWER;
       extern const std::string SEND_ICE_CANDIDATE;
+
+      extern const std::string CREATE_STAGE;
+      extern const std::string CHANGE_STAGE;
+      extern const std::string REMOVE_STAGE;
+
+      extern const std::string CREATE_GROUP;
+      extern const std::string CHANGE_GROUP;
+      extern const std::string REMOVE_GROUP;
+
+      extern const std::string JOIN_STAGE;
+      extern const std::string LEAVE_STAGE;
+      extern const std::string LEAVE_STAGE_FOR_GOOD;
+
     } // namespace SendEvents
 
     namespace RetrieveEvents {

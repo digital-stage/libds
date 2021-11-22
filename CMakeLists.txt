@@ -107,6 +107,12 @@ if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(DigitalStageApi PRIVATE -Wall -Wextra -pedantic -Werror)
     target_compile_options(DigitalStageApiStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
+if (DEBUG_EVENTS)
+    target_compile_definitions(DigitalStageApi PRIVATE DEBUG_EVENTS)
+    if (DEBUG_PAYLOADS)
+        target_compile_definitions(DigitalStageApi PRIVATE DEBUG_PAYLOADS)
+    endif (DEBUG_PAYLOADS)
+endif (DEBUG_EVENTS)
 target_link_libraries(DigitalStageApi
         PUBLIC
         teckos::teckos
@@ -191,3 +197,47 @@ install(
         EXPORT ${TARGETS_EXPORT_NAME}
         NAMESPACE ${PROJECT_NAME}::
         DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME})
+
+
+#################################################
+#
+#   Tests
+#
+#################################################
+# TODO: Discuss if we migh add the tests with EXCLUDE_FROM_ALL instead
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    if (NOT TARGET googletest)
+        include(FetchContent)
+        FetchContent_Declare(
+                googletest
+                URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+        )
+        # For Windows: Prevent overriding the parent project's compiler/linker settings
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        FetchContent_MakeAvailable(googletest)
+    endif (NOT TARGET googletest)
+
+    enable_testing()
+
+    # Link runTests with what we want to test and the GTest and pthread library
+    add_executable(${PROJECT_NAME}-test
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/AuthServiceTest.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
+            )
+    target_link_libraries(${PROJECT_NAME}-test
+            PRIVATE
+            gtest_main
+            DigitalStageApi
+            DigitalStageAuth
+            )
+
+    target_compile_definitions(${PROJECT_NAME}-test
+            PRIVATE
+            AUTH_URL="https://auth.dev.cloud.dstage.org"
+            API_URL="wss://api.dev.cloud.dstage.org"
+            )
+
+    include(GoogleTest)
+    gtest_discover_tests(${PROJECT_NAME}-test)
+endif (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
