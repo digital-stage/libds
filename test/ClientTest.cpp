@@ -75,6 +75,7 @@ TEST(ClientTest, StageWorklow)
     // Leave stage
     std::cout << "Leave stage" << std::endl;
     client->send(DigitalStage::Api::SendEvents::LEAVE_STAGE, {}, [](const std::vector<nlohmann::json>& result) { EXPECT_TRUE(result.at(0).is_null()); });
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     EXPECT_NE(store->getStageId(), stage._id);
     EXPECT_NE(store->getGroupId(), group._id);
 
@@ -91,7 +92,7 @@ TEST(ClientTest, StageWorklow)
     for(const auto& item : stages) {
       client->send(DigitalStage::Api::SendEvents::REMOVE_STAGE, item._id);
     }
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     EXPECT_EQ(store->stages.getAll().size(), 0);
 
     // Expect to be outside any stage
@@ -107,7 +108,7 @@ TEST(ClientTest, StageWorklow)
   std::cout << "Connecting...   ";
   EXPECT_NO_THROW(client->connect(token, initialDevice));
 
-  std::this_thread::sleep_for(std::chrono::seconds(7));
+  std::this_thread::sleep_for(std::chrono::seconds(10));
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;
