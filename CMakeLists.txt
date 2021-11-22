@@ -2,34 +2,24 @@ cmake_minimum_required(VERSION 3.16.0)
 
 project(DigitalStage
         LANGUAGES CXX
-        VERSION 0.2
+        VERSION 0.1
         DESCRIPTION "Library for interacting with the digital stage universe")
 
-
-#################################################
-#
-#   Common configuration
-#
-#################################################
+##
+## CONFIGURATION
+##
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(DEBUG_EVENTS "Print events to console" OFF)
+option(DEBUG_PAYLOADS "Print payloads to console" OFF)
+
 set(TARGET_NAME ${PROJECT_NAME})
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/)
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "Install path for include files")
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "Install path for library files")
-
-if (APPLE)
-    if (EXISTS "/usr/local/opt/openssl/")
-        set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl/")
-    else ()
-        include("${PROJECT_SOURCE_DIR}/cmake/BrewResolver.cmake")
-    endif ()
-endif (APPLE)
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 ## Windows setup for Boost
 ## If you wonder WTF that is about, check https://stackoverflow.com/questions/9742003/platform-detection-in-cmake
@@ -56,32 +46,27 @@ if (WIN32)
     add_definitions(-D_WIN32_WINNT=${ver})
 endif ()
 
+##
+## DEPENDENCIES
+##
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+if (APPLE)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/FixAppleArchitecture.cmake)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/BrewResolver.cmake)
+endif (APPLE)
 
-#################################################
-#
-#   Environment
-#
-#################################################
-option(DEBUG_EVENTS "Print events to console" OFF)
-option(DEBUG_PAYLOADS "Print payloads to console" OFF)
+# Conan installs find files into the top level projects binary path, make sure to add this to our CMAKE_MODULE_PATH
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
-
-#################################################
-#
-#   Dependencies
-#
-#################################################
 add_subdirectory(libteckos EXCLUDE_FROM_ALL)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/FetchAndPatchSigslot.cmake)
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
 
-
-#################################################
-#
-#   Target: API
-#
-#################################################
+##
+## TARGET
+## create target and add include path
+##
 set(API_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Client.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Events.h
@@ -117,13 +102,6 @@ target_link_libraries(DigitalStageApiStatic
         teckos::teckosStatic
         Pal::Sigslot
         )
-
-
-#################################################
-#
-#   Target: Auth
-#
-#################################################
 add_library(DigitalStageAuth src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
 add_library(${PROJECT_NAME}::Auth ALIAS DigitalStageAuth)
 add_library(DigitalStageAuthStatic STATIC src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
@@ -158,12 +136,10 @@ target_link_libraries(libds-example
         DigitalStageAuth
         DigitalStageApi)
 
-
-#################################################
-#
-#   Installation
-#
-#################################################
+##
+## INSTALL
+## install header files, generate and install cmake config files for find_package()
+##
 include(CMakePackageConfigHelpers)
 configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
