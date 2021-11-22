@@ -12,7 +12,7 @@ TEST(ClientTest, StageWorkflow)
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(U(AUTH_URL));
   const teckos::string_t token = auth->signInSync(U("test@digital-stage.org"), U("test123test123test!"));
-  auto client = std::make_shared<DigitalStage::Api::Client>(U(API_URL));
+  auto client = std::make_shared<DigitalStage::Api::Client>(API_URL);
 
   // Process ready
   client->ready.connect([=](const DigitalStage::Api::Store* store) {
