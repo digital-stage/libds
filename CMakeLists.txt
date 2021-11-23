@@ -144,16 +144,6 @@ if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(DigitalStageAuth PRIVATE -Wall -Wextra -pedantic -Werror)
     target_compile_options(DigitalStageAuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
-target_link_libraries(DigitalStageAuth
-        PUBLIC
-        cpprestsdk::cpprest
-        OpenSSL::Crypto
-        )
-target_link_libraries(DigitalStageAuthStatic
-        PUBLIC
-        cpprestsdk::cpprest
-        OpenSSL::Crypto
-        )
 
 add_executable(libds-example
         src/cli.cc)
