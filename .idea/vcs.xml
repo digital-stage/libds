@@ -3,11 +3,13 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libteckos" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libteckos/IXWebSocket" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libteckos/deps/boost-cmake" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libteckos/deps/cpprestsdk" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libteckos/deps/cpprestsdk/Release/libs/websocketpp" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libteckos/deps/cpprestsdk/vcpkg" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libteckos/deps/openssl-cmake" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libteckos/nlohmann_json" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/sigslot" vcs="Git" />
   </component>
 </project>

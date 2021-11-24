@@ -10,9 +10,10 @@
 TEST(ClientTest, StageWorkflow)
 {
   // Get token
-  auto auth = std::make_shared<DigitalStage::Auth::AuthService>(U(AUTH_URL));
-  const teckos::string_t token = auth->signInSync(U("test@digital-stage.org"), U("test123test123test!"));
+  auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
+  const auto token = auth->signInSync("test@digital-stage.org", "test123test123test!");
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL);
+  EXPECT_TRUE(token);
 
   // Process ready
   client->ready.connect([=](const DigitalStage::Api::Store* store) {
@@ -26,12 +27,10 @@ TEST(ClientTest, StageWorkflow)
     };
 
     std::cout << "Create stage" << std::endl;
-    /*
-    client->send(DigitalStage::Api::SendEvents::CREATE_STAGE, {{"name", "Testbühne"}}, [](const std::vector<nlohmann::json>& result) {
+    client->send(DigitalStage::Api::SendEvents::CREATE_STAGE, {{"name", "Testbühne"}, {"videoType", "web"}, {"audioType", "jammer"}}, [](const std::vector<nlohmann::json>& result) {
       EXPECT_TRUE(result.at(0).is_null());
       std::cout << "Created stage" << std::endl;
-    });*/
-    client->send(DigitalStage::Api::SendEvents::CREATE_STAGE, {{"name", "Testbühne"}, {"videoType", "web"}, {"audioType", "jammer"}}).wait();
+    });
     std::this_thread::sleep_for(std::chrono::seconds(1));
     auto stages = store->stages.getAll();
     EXPECT_GE(stages.size(), 1);
@@ -106,7 +105,7 @@ TEST(ClientTest, StageWorkflow)
   initialDevice["canAudio"] = false;
   initialDevice["canVideo"] = false;
   std::cout << "Connecting...   ";
-  EXPECT_NO_THROW(client->connect(token, initialDevice));
+  EXPECT_NO_THROW(client->connect(*token, initialDevice));
 
   std::this_thread::sleep_for(std::chrono::seconds(10));
   std::cout << "Closing connection...   ";

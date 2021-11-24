@@ -7,7 +7,8 @@
 
 using namespace DigitalStage::Types;
 
-namespace DigitalStage::Api {
+namespace DigitalStage {
+  namespace Api {
     enum class EventType {
       READY,
       LOCAL_DEVICE_READY,
@@ -161,6 +162,7 @@ namespace DigitalStage::Api {
       extern const std::string ICE_CANDIDATE_SENT;
       extern const std::string TURN_SERVERS_CHANGED;
     } // namespace RetrieveEvents
-  } // namespace DigitalStage
+  }   // namespace Api
+} // namespace DigitalStage
 
 #endif // DS_EVENTS

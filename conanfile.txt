@@ -1,7 +1,5 @@
 [requires]
-nlohmann_json/3.9.1
-cpprestsdk/2.10.18
-openssl/1.1.1l
+libdeflate/1.8
 
 [generators]
 cmake

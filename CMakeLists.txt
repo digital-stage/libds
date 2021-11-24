@@ -12,7 +12,7 @@ project(DigitalStage
 #
 #################################################
 include(GNUInstallDirs)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(TARGET_NAME ${PROJECT_NAME})
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
@@ -73,8 +73,14 @@ option(DEBUG_PAYLOADS "Print payloads to console" OFF)
 #################################################
 add_subdirectory(libteckos EXCLUDE_FROM_ALL)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/FetchAndPatchSigslot.cmake)
-find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
+if (NOT TARGET plog)
+    FetchContent_Declare(
+            plog
+            GIT_REPOSITORY https://github.com/SergiusTheBest/plog.git
+    )
+    FetchContent_MakeAvailable(plog)
+endif (NOT TARGET plog)
 
 
 #################################################
@@ -93,35 +99,37 @@ set(API_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Events.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Store.cc
         )
-add_library(DigitalStageApi ${API_SOURCES} ${API_HEADERS})
-add_library(${PROJECT_NAME}::Api ALIAS DigitalStageApi)
+add_library(DigitalStageApi SHARED ${API_SOURCES} ${API_HEADERS})
+add_library(${PROJECT_NAME}::Api ALIAS ${PROJECT_NAME}Api)
 add_library(DigitalStageApiStatic STATIC ${API_SOURCES} ${API_HEADERS})
-add_library(${PROJECT_NAME}::ApiStatic ALIAS DigitalStageApiStatic)
-target_include_directories(DigitalStageApi PUBLIC
+add_library(${PROJECT_NAME}::ApiStatic ALIAS ${PROJECT_NAME}ApiStatic)
+target_include_directories(${PROJECT_NAME}Api PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
-target_include_directories(DigitalStageApiStatic PUBLIC
+target_include_directories(${PROJECT_NAME}ApiStatic PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
 if (CMAKE_COMPILER_IS_GNUCC)
-    target_compile_options(DigitalStageApi PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_compile_options(DigitalStageApiStatic PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(${PROJECT_NAME}Api PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(${PROJECT_NAME}Static PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
 if (DEBUG_EVENTS)
-    target_compile_definitions(DigitalStageApi PRIVATE DEBUG_EVENTS)
+    target_compile_definitions(${PROJECT_NAME}Api PRIVATE DEBUG_EVENTS)
     if (DEBUG_PAYLOADS)
-        target_compile_definitions(DigitalStageApi PRIVATE DEBUG_PAYLOADS)
+        target_compile_definitions(${PROJECT_NAME}Api PRIVATE DEBUG_PAYLOADS)
     endif (DEBUG_PAYLOADS)
 endif (DEBUG_EVENTS)
-target_link_libraries(DigitalStageApi
+target_link_libraries(${PROJECT_NAME}Api
         PUBLIC
         teckos::teckos
         Pal::Sigslot
+        plog
         )
-target_link_libraries(DigitalStageApiStatic
+target_link_libraries(${PROJECT_NAME}ApiStatic
         PUBLIC
         teckos::teckosStatic
         Pal::Sigslot
+        plog
         )
 
 
@@ -130,38 +138,50 @@ target_link_libraries(DigitalStageApiStatic
 #   Target: Auth
 #
 #################################################
-add_library(DigitalStageAuth src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
-add_library(${PROJECT_NAME}::Auth ALIAS DigitalStageAuth)
+add_library(DigitalStageAuth SHARED src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
+add_library(${PROJECT_NAME}::Auth ALIAS ${PROJECT_NAME}Auth)
 add_library(DigitalStageAuthStatic STATIC src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
-add_library(${PROJECT_NAME}::AuthStatic ALIAS DigitalStageAuthStatic)
-target_include_directories(DigitalStageAuth PUBLIC
+add_library(${PROJECT_NAME}::AuthStatic ALIAS ${PROJECT_NAME}AuthStatic)
+target_include_directories(${PROJECT_NAME}Auth PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
-target_include_directories(DigitalStageAuthStatic PUBLIC
+target_include_directories(${PROJECT_NAME}AuthStatic PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
 if (CMAKE_COMPILER_IS_GNUCC)
-    target_compile_options(DigitalStageAuth PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_compile_options(DigitalStageAuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(${PROJECT_NAME}Auth PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(${PROJECT_NAME}AuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
-target_link_libraries(DigitalStageAuth
+target_link_libraries(${PROJECT_NAME}Auth
         PUBLIC
-        cpprestsdk::cpprest
-        OpenSSL::Crypto
+        nlohmann_json::nlohmann_json
+        ixwebsocket
+        teckos::teckos
+        plog
         )
-target_link_libraries(DigitalStageAuthStatic
+target_link_libraries(${PROJECT_NAME}AuthStatic
         PUBLIC
-        cpprestsdk::cpprest
-        OpenSSL::Crypto
+        nlohmann_json::nlohmann_json
+        ixwebsocket
+        teckos::teckosStatic
+        plog
         )
 
-add_executable(libds-example
+
+add_executable(${PROJECT_NAME}-example
         src/cli.cc)
-target_include_directories(libds-example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(libds-example
+target_compile_definitions(${PROJECT_NAME}-example
+        PUBLIC
+        )
+target_compile_definitions(${PROJECT_NAME}-example
         PRIVATE
-        DigitalStageAuth
-        DigitalStageApi)
+        DEBUG_EVENTS
+        DEBUG_PAYLOADS)
+target_include_directories(${PROJECT_NAME}-example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(${PROJECT_NAME}-example
+        PRIVATE
+        ${PROJECT_NAME}AuthStatic
+        ${PROJECT_NAME}ApiStatic)
 
 
 #################################################
@@ -186,11 +206,11 @@ install(
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 export(
-        TARGETS DigitalStageApi DigitalStageAuth sigslot DigitalStageApiStatic DigitalStageAuthStatic
+        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth sigslot ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic ixwebsocket plog
         NAMESPACE ${PROJECT_NAME}::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
-        TARGETS DigitalStageApi DigitalStageAuth sigslot DigitalStageApiStatic DigitalStageAuthStatic
+        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth sigslot ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic ixwebsocket plog
         EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
 install(

@@ -4,6 +4,10 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <thread>
+// Logger
+#include <plog/Appenders/ConsoleAppender.h>
+#include <plog/Formatters/TxtFormatter.h>
+#include <plog/Init.h>
 
 using namespace DigitalStage::Api;
 using namespace DigitalStage::Auth;
@@ -67,13 +71,17 @@ void handleReady(const Store*)
 {
   std::cout << "READY TO GO!" << std::endl;
 }
-void handleStageJoined(const ID_TYPE& stageId, const ID_TYPE& groupId,
+void handleStageJoined(const ID_TYPE& stageId, teckos::optional<ID_TYPE> groupId,
                        const Store* s)
 {
   auto stage = s->stages.get(stageId);
-  auto group = s->groups.get(groupId);
-  std::cout << "JOINED STAGE " << stage->name << " AND GROUP " << group->name
-            << std::endl;
+  if(groupId) {
+    auto group = s->groups.get(*groupId);
+    std::cout << "JOINED STAGE " << stage->name << " AND GROUP " << group->name
+              << std::endl;
+  } else {
+    std::cout << "JOINED STAGE " << stage->name << " WITHOUT GROUP" << std::endl;
+  }
 }
 
 void handleStageDeviceChanged(const std::string& id, nlohmann::json, const Store* s)
@@ -105,27 +113,28 @@ int main(int argc, char* argv[])
     std::wcout << "Call this with email and password as parameters" << std::endl;
     return -1;
   }
+  static plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
+  plog::init(plog::debug, &consoleAppender);
+
   auto email = argv[1];
   auto password = argv[2];
-  auto authService = AuthService(U("https://digitalstage-auth.germanywestcentral.cloudapp.azure.com"));
+  auto authService = AuthService("https://auth.dstage.org");
 
   std::cout << "Signing in..." << std::endl;
   try {
-    string_t emailStr(email, email + strlen(email));
-    string_t passwordStr(password, password + strlen(password));
-    auto apiToken = authService.signIn(emailStr, passwordStr).get();
-#ifdef WIN32
-    std::wcout << "Token: " << apiToken << std::endl;
-#else
-    std::cout << "Token: " << apiToken << std::endl;
-#endif
+    std::string emailStr(email, email + strlen(email));
+    std::string passwordStr(password, password + strlen(password));
+    auto apiToken = authService.signInSync(emailStr, passwordStr);
+    if(!apiToken)
+      throw new std::runtime_error("Cloud not sign in");
+    std::cout << "Token: " << *apiToken << std::endl;
 
     nlohmann::json initialDevice;
     initialDevice["uuid"] = "123456";
     initialDevice["type"] = "ov";
     initialDevice["canAudio"] = true;
     initialDevice["canVideo"] = false;
-    auto* client = new Client("wss://digitalstage-api.germanywestcentral.cloudapp.azure.com");
+    auto* client = new Client("wss://api.dstage.org");
 
     client->ready.connect([](const Store*) {
       std::cout << "Ready - this type inside an anonymous callback function"
@@ -161,7 +170,7 @@ int main(int argc, char* argv[])
     client->stageMemberRemoved.connect(
         [](const auto&, const Store* s) { printStage(s); });
 
-    client->connect(apiToken, initialDevice);
+    client->connect(*apiToken, initialDevice);
 
     std::cout << "Started client" << std::endl;
   }
