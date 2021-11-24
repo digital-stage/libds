@@ -383,14 +383,14 @@ void Client::connect(const std::string& apiToken,
         /*
          * USERS
          */
-      } else if(event == RetrieveEvents::REMOTE_USER_ADDED) {
+      } else if(event == RetrieveEvents::USER_ADDED) {
         store_->users.create(payload);
         this->userAdded(payload.get<User>(), getStore());
-      } else if(event == RetrieveEvents::REMOTE_USER_CHANGED) {
+      } else if(event == RetrieveEvents::USER_CHANGED) {
         store_->users.update(payload);
         const std::string id = payload["_id"];
         this->userChanged(id, payload, getStore());
-      } else if(event == RetrieveEvents::REMOTE_USER_REMOVED) {
+      } else if(event == RetrieveEvents::USER_REMOVED) {
         const std::string id = payload;
         store_->users.remove(id);
         this->userRemoved(id, getStore());

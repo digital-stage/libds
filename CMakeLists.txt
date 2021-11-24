@@ -254,8 +254,8 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     target_compile_definitions(${PROJECT_NAME}-test
             PRIVATE
-            AUTH_URL="https://auth.dev.cloud.dstage.org"
-            API_URL="wss://api.dev.cloud.dstage.org"
+            AUTH_URL="http://imac.fritz.box:5000"
+            API_URL="ws://imac.fritz.box:4000"
             )
 
     include(GoogleTest)

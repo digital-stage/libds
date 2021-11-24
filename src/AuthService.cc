@@ -2,7 +2,6 @@
 // Created by Tobias Hegemann on 24.02.21.
 //
 #include "DigitalStage/Auth/AuthService.h"
-#include <iostream>
 #include <ixwebsocket/IXHttpClient.h>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
@@ -20,6 +19,7 @@ bool AuthService::verifyTokenSync(const std::string& token)
 {
   ix::HttpClient httpClient(false);
   ix::HttpRequestArgsPtr args_ptr;
+  args_ptr.reset(new ix::HttpRequestArgs());
   args_ptr->extraHeaders.insert({{"Content-Type", "application/json"},
                                  {"Authorization", "Bearer " + token}});
   auto response = httpClient.get(this->url_ + "/profile", args_ptr);
@@ -73,6 +73,7 @@ bool AuthService::signOutSync(const std::string& token)
 {
   ix::HttpClient httpClient(false);
   ix::HttpRequestArgsPtr args_ptr;
+  args_ptr.reset(new ix::HttpRequestArgs());
   args_ptr->extraHeaders.insert({{"Content-Type", "application/json"},
                                  {"Authorization", "Bearer " + token}});
   auto response = httpClient.get(this->url_ + "/logout", args_ptr);

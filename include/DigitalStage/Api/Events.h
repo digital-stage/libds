@@ -111,9 +111,9 @@ namespace DigitalStage {
       extern const std::string STAGE_ADDED;
       extern const std::string STAGE_CHANGED;
       extern const std::string STAGE_REMOVED;
-      extern const std::string REMOTE_USER_ADDED;
-      extern const std::string REMOTE_USER_CHANGED;
-      extern const std::string REMOTE_USER_REMOVED;
+      extern const std::string USER_ADDED;
+      extern const std::string USER_CHANGED;
+      extern const std::string USER_REMOVED;
       extern const std::string GROUP_ADDED;
       extern const std::string GROUP_CHANGED;
       extern const std::string GROUP_REMOVED;

@@ -66,7 +66,12 @@ TEST(ClientTest, StageWorkflow)
 
     // Now join stage
     std::cout << "Join stage" << std::endl;
-    client->send(DigitalStage::Api::SendEvents::JOIN_STAGE, {{"stageId", stage._id}, {"groupId", group._id}}, [](const std::vector<nlohmann::json>& result) { EXPECT_TRUE(result.at(0).is_null()); });
+    client->send(DigitalStage::Api::SendEvents::JOIN_STAGE, {{"stageId", stage._id}, {"groupId", group._id}}, [](const std::vector<nlohmann::json>& result) {
+      if(!result.at(0).is_null()) {
+        std::cout << "Could not join: " << result.at(0) << std::endl;
+      }
+      EXPECT_TRUE(result.at(0).is_null());
+    });
     std::this_thread::sleep_for(std::chrono::seconds(1));
     EXPECT_EQ(store->getStageId(), stage._id);
     EXPECT_EQ(store->getGroupId(), group._id);
@@ -111,4 +116,8 @@ TEST(ClientTest, StageWorkflow)
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;
+
+  std::cout << "Signing out...   ";
+  auth->signOutSync(*token);
+  std::cout << "[SIGNED OUT]" << std::endl;
 }
