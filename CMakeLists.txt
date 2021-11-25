@@ -64,6 +64,7 @@ endif ()
 #################################################
 option(LIBDS_DEBUG_EVENTS "Print events to console" OFF)
 option(LIBDS_DEBUG_PAYLOADS "Print payloads to console" OFF)
+option(USE_IX_WEBSOCKET "Use ixwebsocket instead of cpprestsdk" OFF)
 
 
 #################################################
@@ -71,7 +72,7 @@ option(LIBDS_DEBUG_PAYLOADS "Print payloads to console" OFF)
 #   Dependencies
 #
 #################################################
-add_subdirectory(libteckos EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libteckos EXCLUDE_FROM_ALL)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/FetchAndPatchSigslot.cmake)
 find_package(OpenSSL REQUIRED)
 if (NOT TARGET plog)
@@ -81,6 +82,11 @@ if (NOT TARGET plog)
     )
     FetchContent_MakeAvailable(plog)
 endif (NOT TARGET plog)
+if (USE_IX_WEBSOCKET)
+    find_package(ixwebsocket REQUIRED)
+else ()
+    find_package(cpprestsdk REQUIRED)
+endif ()
 
 
 #################################################
@@ -138,9 +144,9 @@ target_link_libraries(${PROJECT_NAME}ApiStatic
 #   Target: Auth
 #
 #################################################
-add_library(DigitalStageAuth SHARED src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
+add_library(DigitalStageAuth SHARED)
 add_library(${PROJECT_NAME}::Auth ALIAS ${PROJECT_NAME}Auth)
-add_library(DigitalStageAuthStatic STATIC src/AuthService.cc include/DigitalStage/Auth/AuthService.h)
+add_library(DigitalStageAuthStatic STATIC)
 add_library(${PROJECT_NAME}::AuthStatic ALIAS ${PROJECT_NAME}AuthStatic)
 target_include_directories(${PROJECT_NAME}Auth PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
@@ -152,20 +158,60 @@ if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(${PROJECT_NAME}Auth PRIVATE -Wall -Wextra -pedantic -Werror)
     target_compile_options(${PROJECT_NAME}AuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
-target_link_libraries(${PROJECT_NAME}Auth
-        PUBLIC
-        nlohmann_json::nlohmann_json
-        ixwebsocket
-        teckos::teckos
-        plog
-        )
-target_link_libraries(${PROJECT_NAME}AuthStatic
-        PUBLIC
-        nlohmann_json::nlohmann_json
-        ixwebsocket
-        teckos::teckosStatic
-        plog
-        )
+if (USE_IX_WEBSOCKET)
+    target_compile_definitions(${PROJECT_NAME}
+            PRIVATE
+            USE_IX_WEBSOCKET)
+    target_sources(${PROJECT_NAME}Auth
+            PRIVATE
+            src/AuthService_ixwebsocket.cc
+            include/DigitalStage/Auth/AuthService.h
+            )
+    target_sources(${PROJECT_NAME}AuthStatic
+            PRIVATE
+            src/AuthService_ixwebsocket.cc
+            include/DigitalStage/Auth/AuthService.h
+            )
+    target_link_libraries(${PROJECT_NAME}Auth
+            PUBLIC
+            nlohmann_json::nlohmann_json
+            ixwebsocket
+            teckos::teckos
+            plog
+            )
+    target_link_libraries(${PROJECT_NAME}AuthStatic
+            PUBLIC
+            nlohmann_json::nlohmann_json
+            ixwebsocket
+            teckos::teckosStatic
+            plog
+            )
+else ()
+    target_sources(${PROJECT_NAME}Auth
+            PRIVATE
+            src/AuthService_cpprestsdk.cc
+            include/DigitalStage/Auth/AuthService.h
+            )
+    target_sources(${PROJECT_NAME}AuthStatic
+            PRIVATE
+            src/AuthService_cpprestsdk.cc
+            include/DigitalStage/Auth/AuthService.h
+            )
+    target_link_libraries(${PROJECT_NAME}Auth
+            PUBLIC
+            nlohmann_json::nlohmann_json
+            cpprestsdk::cpprest
+            teckos::teckos
+            plog
+            )
+    target_link_libraries(${PROJECT_NAME}AuthStatic
+            PUBLIC
+            nlohmann_json::nlohmann_json
+            cpprestsdk::cpprest
+            teckos::teckosStatic
+            plog
+            )
+endif ()
 
 
 add_executable(${PROJECT_NAME}-example
@@ -206,11 +252,11 @@ install(
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 export(
-        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth sigslot ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic ixwebsocket plog
+        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth sigslot ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic plog
         NAMESPACE ${PROJECT_NAME}::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
-        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth sigslot ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic ixwebsocket plog
+        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth sigslot ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic plog
         EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
 install(
