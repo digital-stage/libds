@@ -598,75 +598,60 @@ void Client::send(
   this->wholeStage_ = std::move(wholeStage);
 }
 
-[[maybe_unused]] std::pair<std::string, std::string>
-Client::decodeInvitationCodeSync(const std::string &code) {
-  teckos::Callback callback;
-  auto future = callback.get_future();
-  wsclient_->send("decode-invite", code, std::move(callback));
-  auto result = future.get();
-  if (result.size() > 1) {
-    return {result[1]["stageId"], result[1]["groupId"]};
-  }
-  if (result.size() == 1) {
-    throw std::runtime_error(result[0]);
-  }
-  throw std::runtime_error("Unexpected communication error");
-}
-
 [[maybe_unused]] std::future<std::pair<std::string,
                                        std::string>>
-Client::decodeInvitationCode(const std::string &code) {
-  return std::async(std::launch::async, [this, &code] {
-    return decodeInvitationCodeSync(code);
+Client::decodeInvitationCode(const std::string& code)
+{
+  using InvitePromise = std::promise<std::pair<std::string, std::string>>;
+  auto const promise = std::make_shared<InvitePromise>();
+  wsclient_->send("decode-invite", code, [promise](const std::vector<nlohmann::json>& result) {
+    if(result.size() > 1) {
+      promise->set_value({result[1]["stageId"], result[1]["groupId"]});
+    } else if(result.size() == 1) {
+      promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+    } else {
+      promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
+    }
   });
+  return promise->get_future();
 }
 
-[[maybe_unused]] std::string Client::revokeInvitationCodeSync(const std::string &stageId,
-                                                              const std::string &groupId) {
+[[maybe_unused]] std::future<std::string> Client::revokeInvitationCode(const std::string& stageId,
+                                                                       const std::string& groupId)
+{
   nlohmann::json payload;
   payload["stageId"] = stageId;
   payload["groupId"] = groupId;
-  teckos::Callback callback;
-  auto future = callback.get_future();
-  wsclient_->send("revoke-invite", payload, std::move(callback));
-  auto result = future.get();
-  if (result.size() > 1) {
-    return result[1];
-  }
-  if (result.size() == 1) {
-    throw std::runtime_error(result[0]);
-  }
-  throw std::runtime_error("Unexpected communication error");
-}
-
-[[maybe_unused]] std::future<std::string> Client::revokeInvitationCode(const std::string &stageId,
-                                                                       const std::string &groupId) {
-  return std::async(std::launch::async, [this, &stageId, &groupId] {
-    return revokeInvitationCodeSync(stageId, groupId);
+  using InvitePromise = std::promise<std::string>;
+  auto const promise = std::make_shared<InvitePromise>();
+  wsclient_->send("revoke-invite", payload, [promise](const std::vector<nlohmann::json>& result) {
+    if(result.size() > 1) {
+      promise->set_value(result[1]);
+    } else if(result.size() == 1) {
+      promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+    } else {
+      promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
+    }
   });
+  return promise->get_future();
 }
 
-[[maybe_unused]] std::string Client::encodeInvitationCodeSync(const std::string &stageId,
-                                                              const std::string &groupId) {
+[[maybe_unused]] std::future<std::string> Client::encodeInvitationCode(const std::string& stageId,
+                                                                       const std::string& groupId)
+{
   nlohmann::json payload;
   payload["stageId"] = stageId;
   payload["groupId"] = groupId;
-  teckos::Callback callback;
-  auto future = callback.get_future();
-  wsclient_->send("encode-invite", payload, std::move(callback));
-  auto result = future.get();
-  if (result.size() > 1) {
-    return result[1];
-  }
-  if (result.size() == 1) {
-    throw std::runtime_error(result[0]);
-  }
-  throw std::runtime_error("Unexpected communication error");
-}
-
-[[maybe_unused]] std::future<std::string> Client::encodeInvitationCode(const std::string &stageId,
-                                                                       const std::string &groupId) {
-  return std::async(std::launch::async, [this, &stageId, &groupId] {
-    return encodeInvitationCodeSync(stageId, groupId);
+  using InvitePromise = std::promise<std::string>;
+  auto const promise = std::make_shared<InvitePromise>();
+  wsclient_->send("encode-invite", payload, [promise](const std::vector<nlohmann::json>& result) {
+    if(result.size() > 1) {
+      promise->set_value(result[1]);
+    } else if(result.size() == 1) {
+      promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+    } else {
+      promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
+    }
   });
+  return promise->get_future();
 }

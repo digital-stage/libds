@@ -27,17 +27,12 @@ TEST(ClientAsyncTest, StageWorkflow) {
     };
 
     std::cout << "Create stage" << std::endl;
-    teckos::Callback create_stage_callback;
-    std::future<teckos::Result> create_stage_future = create_stage_callback.get_future();
-    // Wait in another thread
-    std::thread create_stage_callback_thread = std::thread([&create_stage_future]() {
-      auto result = create_stage_future.get();
-      EXPECT_TRUE(result.at(0).is_null());
-      std::cout << "Created stage" << std::endl;
-    });
     client->send(DigitalStage::Api::SendEvents::CREATE_STAGE,
                  {{"name", "Testbühne"}, {"videoType", "web"}, {"audioType", "jammer"}},
-                 std::move(create_stage_callback));
+                 [](teckos::Result result) {
+                   EXPECT_TRUE(result.at(0).is_null());
+                   std::cout << "Created stage" << std::endl;
+                 });
     // Expect the stage created asynchronously (not waiting for callback thread)
     std::this_thread::sleep_for(std::chrono::seconds(1));
     auto stages = store->stages.getAll();
@@ -53,19 +48,20 @@ TEST(ClientAsyncTest, StageWorkflow) {
 
     std::cout << "Create group for stage " << stage._id << std::endl;
     teckos::Callback callback;
-    auto create_group_future = callback.get_future();
     client->send(DigitalStage::Api::SendEvents::CREATE_GROUP,
                  {{"stageId", stage._id}, {"name", "Testgruppe"}},
-                 std::move(callback));
-    // Wait for future to resolve
-    EXPECT_TRUE(create_group_future.get().at(0).is_null());
-    std::cout << "Created group" << std::endl;
+                 [](teckos::Result result) {
+                   EXPECT_TRUE(result.at(0).is_null());
+                   std::cout << "Created group" << std::endl;
+                 });
     auto groups = store->getGroupsByStage(stage._id);
     EXPECT_GE(groups.size(), 1);
     auto groupsIter = std::find_if(groups.begin(), groups.end(), [&](const auto &group) {
       return group.name == "Testgruppe";
     });
-    EXPECT_NE(groupsIter, std::end(groups));
+    if(groupsIter == std::end(groups)) {
+      FAIL();
+    }
     auto group = *groupsIter;
     EXPECT_EQ(group.name, "Testgruppe");
 
@@ -113,10 +109,6 @@ TEST(ClientAsyncTest, StageWorkflow) {
     // Expect to be outside any stage
     EXPECT_NE(store->getStageId(), stage._id);
     EXPECT_NE(store->getGroupId(), group._id);
-
-    // Meanwhile, the callback thread should have been called
-    EXPECT_TRUE(create_stage_callback_thread.joinable());
-    create_stage_callback_thread.join();
   });
 
   nlohmann::json initialDevice;
@@ -127,7 +119,7 @@ TEST(ClientAsyncTest, StageWorkflow) {
   std::cout << "Connecting...   ";
   EXPECT_NO_THROW(client->connect(*token, initialDevice));
 
-  std::this_thread::sleep_for(std::chrono::seconds(10));
+  std::this_thread::sleep_for(std::chrono::seconds(6));
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;
