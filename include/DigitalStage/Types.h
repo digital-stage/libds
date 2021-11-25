@@ -5,15 +5,12 @@
 #include <nlohmann/json.hpp>
 #include <set>
 #include <string>
-#include <teckos/optional.hpp>
-
-using teckos::nullopt;
-using teckos::optional;
+#include <optional>
 
 using nlohmann::json;
 
 template <class J, class T>
-void optional_to_json(J& j, const char* name, const optional<T>& value)
+void optional_to_json(J& j, const char* name, const std::optional<T>& value)
 {
   if(value) {
     j[name] = *value;
@@ -21,13 +18,13 @@ void optional_to_json(J& j, const char* name, const optional<T>& value)
 }
 
 template <class J, class T>
-void optional_from_json(const J& j, const char* name, optional<T>& value)
+void optional_from_json(const J& j, const char* name, std::optional<T>& value)
 {
   const auto it = j.find(name);
   if(it != j.end() && !it->is_null()) {
     value = it->template get<T>();
   } else {
-    value = nullopt;
+    value = std::nullopt;
   }
 }
 
@@ -54,20 +51,20 @@ namespace DigitalStage {
       /**
        * The currently selected audioDriver (only one allowed for input and output sound cards)
        */
-      optional<std::string> audioDriver;
+      std::optional<std::string> audioDriver;
       /**
        * Audio engine currently selected (will be "juce" always for Jammer and "webaudio" always for "browser").
        * This enables us to change the audio engine on the fly later.
        */
-      optional<std::string> audioEngine;
+      std::optional<std::string> audioEngine;
       /**
        * The currently selected input sound card or null if none selected
        */
-      optional<ID_TYPE> inputSoundCardId;
+      std::optional<ID_TYPE> inputSoundCardId;
       /**
        * The currently selected output sound card or null if none selected
        */
-      optional<ID_TYPE> outputSoundCardId;
+      std::optional<ID_TYPE> outputSoundCardId;
 
       /**
        * The amount of network receiver buffer in samples
@@ -86,15 +83,15 @@ namespace DigitalStage {
       // jammer specific
 
       // ov specific
-      optional<std::string> ovReceiverType; // Either ortf or hrtf
-      optional<double> ovSenderJitter;
-      optional<double> ovReceiverJitter;
-      optional<bool> ovP2p;
-      optional<bool> ovRenderReverb;
-      optional<double> ovReverbGain;
-      optional<bool> ovRenderISM;
-      optional<bool> ovRawMode;
-      optional<double> egoGain;
+      std::optional<std::string> ovReceiverType; // Either ortf or hrtf
+      std::optional<double> ovSenderJitter;
+      std::optional<double> ovReceiverJitter;
+      std::optional<bool> ovP2p;
+      std::optional<bool> ovRenderReverb;
+      std::optional<double> ovReverbGain;
+      std::optional<bool> ovRenderISM;
+      std::optional<bool> ovRawMode;
+      std::optional<double> egoGain;
     };
 
     struct stage_mediasoup_t {
@@ -106,15 +103,15 @@ namespace DigitalStage {
       ID_TYPE _id;
       std::string name;
       std::string description;
-      optional<std::string> password;
+      std::optional<std::string> password;
       std::set<std::string> admins;
       std::set<std::string> soundEditors;
-      optional<std::string> iconUrl;
+      std::optional<std::string> iconUrl;
 
       std::string videoType;
-      optional<std::string> videoRouter;
+      std::optional<std::string> videoRouter;
       std::string audioType;
-      optional<std::string> audioRouter;
+      std::optional<std::string> audioRouter;
 
       double width;
       double length;
@@ -123,23 +120,23 @@ namespace DigitalStage {
       double absorption;
 
       // mediasoup specific
-      optional<stage_mediasoup_t> mediasoup;
+      std::optional<stage_mediasoup_t> mediasoup;
 
       // jammer specific
-      optional<std::string> jammerIpv4;
-      optional<std::string> jammerIpv6;
-      optional<uint16_t> jammerPort;
-      optional<std::string> jammerKey;
+      std::optional<std::string> jammerIpv4;
+      std::optional<std::string> jammerIpv6;
+      std::optional<uint16_t> jammerPort;
+      std::optional<std::string> jammerKey;
 
       // ov specific
-      optional<bool> ovRenderAmbient;
-      optional<std::string> ovAmbientSoundUrl;
-      optional<double> ovAmbientLevel;
-      optional<std::string> ovIpv4;
-      optional<std::string> ovIpv6;
-      optional<uint16_t> ovPort;
-      optional<uint32_t> ovPin;
-      optional<double> ovJitter;
+      std::optional<bool> ovRenderAmbient;
+      std::optional<std::string> ovAmbientSoundUrl;
+      std::optional<double> ovAmbientLevel;
+      std::optional<std::string> ovIpv4;
+      std::optional<std::string> ovIpv6;
+      std::optional<uint16_t> ovPort;
+      std::optional<uint32_t> ovPin;
+      std::optional<double> ovJitter;
     };
 
     struct ThreeDimensionalProperties {
@@ -162,7 +159,7 @@ namespace DigitalStage {
       ID_TYPE stageId;
       std::string name;
       std::string description;
-      optional<std::string> iconUrl;
+      std::optional<std::string> iconUrl;
       std::string color;
     };
 
@@ -184,7 +181,7 @@ namespace DigitalStage {
       ID_TYPE _id;
       ID_TYPE stageId;
       ID_TYPE userId;
-      optional<std::string> groupId;
+      std::optional<std::string> groupId;
       bool active;
       bool isDirector;
     };
@@ -209,7 +206,7 @@ namespace DigitalStage {
       std::string userId;
       std::string deviceId;
       std::string stageId;
-      optional<std::string> groupId;
+      std::optional<std::string> groupId;
       std::string stageMemberId;
       bool active;
       std::string type;
@@ -240,7 +237,7 @@ namespace DigitalStage {
        * Optional label of this channel.
        * If no label is given, the web client will display the channel index instead
        */
-      optional<std::string> label;
+      std::optional<std::string> label;
       /**
        * Indicates, if this channel is or shall be currently active
        */
@@ -288,7 +285,7 @@ namespace DigitalStage {
       /**
        * Indicates, if this device is system default
        */
-      optional<bool> isDefault;
+      std::optional<bool> isDefault;
 
       /**
        * The frame size or buffer size used by this sound card (may be ignored by the audio engine).
@@ -299,7 +296,7 @@ namespace DigitalStage {
       std::set<unsigned int> sampleRates;
       unsigned int periodSize;
       unsigned int numPeriods = 2;
-      optional<double> softwareLatency;
+      std::optional<double> softwareLatency;
 
       /**
        * Indicate if the given sound card is connected and online
@@ -336,8 +333,8 @@ namespace DigitalStage {
       /**
        * The channel on the source device (see deviceId)
        */
-      optional<unsigned int> sourceChannel;
-      optional<std::string> ovSourcePort;
+      std::optional<unsigned int> sourceChannel;
+      std::optional<std::string> ovSourcePort;
     };
 
     struct CustomAudioTrackPosition : ThreeDimensionalProperties {
@@ -360,11 +357,11 @@ namespace DigitalStage {
       ID_TYPE _id;
       std::string uid;
       std::string name;
-      optional<std::string> avatarUrl;
+      std::optional<std::string> avatarUrl;
       bool canCreateStage;
-      optional<ID_TYPE> stageId;
-      optional<ID_TYPE> groupId;
-      optional<ID_TYPE> stageMemberId;
+      std::optional<ID_TYPE> stageId;
+      std::optional<ID_TYPE> groupId;
+      std::optional<ID_TYPE> stageMemberId;
     };
 
     struct WholeStage {
@@ -426,7 +423,7 @@ namespace DigitalStage {
     struct IceCandidate {
       std::string from;
       std::string to;
-      optional<IceCandidateInit> iceCandidate;
+      std::optional<IceCandidateInit> iceCandidate;
     };
 
     inline void to_json(json& j, const ThreeDimensionalProperties& p)
@@ -609,7 +606,7 @@ namespace DigitalStage {
       if(j.count("mediasoup") != 0) {
         p.mediasoup = j.at("mediasoup").get<stage_mediasoup_t>();
       } else {
-        p.mediasoup = nullopt;
+        p.mediasoup = std::nullopt;
       }
 
       optional_from_json(j, "jammerIpv4", p.jammerIpv4);

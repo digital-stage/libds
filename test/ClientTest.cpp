@@ -13,7 +13,7 @@ TEST(ClientTest, StageWorkflow)
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   const auto token = auth->signInSync("test@digital-stage.org", "test123test123test!");
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL);
-  EXPECT_TRUE(token);
+  EXPECT_TRUE(token.has_value());
 
   // Process ready
   client->ready.connect([=](const DigitalStage::Api::Store* store) {
@@ -46,7 +46,7 @@ TEST(ClientTest, StageWorkflow)
       EXPECT_TRUE(result.at(0).is_null());
       std::cout << "Created group" << std::endl;
     });
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto groups = store->getGroupsByStage(stage._id);
     EXPECT_GE(groups.size(), 1);
     auto groupsIter = std::find_if(groups.begin(), groups.end(), [&](const auto& group) {
@@ -96,7 +96,7 @@ TEST(ClientTest, StageWorkflow)
     for(const auto& item : stages) {
       client->send(DigitalStage::Api::SendEvents::REMOVE_STAGE, item._id);
     }
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     EXPECT_EQ(store->stages.getAll().size(), 0);
 
     // Expect to be outside any stage
@@ -116,6 +116,15 @@ TEST(ClientTest, StageWorkflow)
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;
+
+  EXPECT_NO_THROW(client->disconnect());
+
+  std::cout << "Replace client and connect...";
+  client = std::make_shared<DigitalStage::Api::Client>(API_URL);
+  EXPECT_NO_THROW(client->connect(*token, initialDevice));
+
+  std::cout << "Replace client without disconnecting...";
+  EXPECT_NO_THROW(client.reset());
 
   std::cout << "Signing out...   ";
   auth->signOutSync(*token);

@@ -424,7 +424,7 @@ void Client::connect(const std::string& apiToken,
          */
       } else if(event == RetrieveEvents::STAGE_JOINED) {
         auto stageId = payload["stageId"].get<std::string>();
-        auto groupId = payload["groupId"].is_null() ? nullopt : optional<std::string>(payload["groupId"].get<std::string>());
+        auto groupId = payload["groupId"].is_null() ? std::nullopt : std::optional<std::string>(payload["groupId"].get<std::string>());
         auto localDeviceId = store_->getLocalDeviceId();
         if(payload.count("remoteUsers") > 0) {
           for(const auto& item : payload["remoteUsers"]) {

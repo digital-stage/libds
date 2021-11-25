@@ -7,10 +7,7 @@
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <set>
-#include <teckos/optional.hpp>
-
-using teckos::nullopt;
-using teckos::optional;
+#include <optional>
 
 using namespace nlohmann;
 
@@ -21,13 +18,13 @@ namespace DigitalStage {
     template <typename TYPE>
     class StoreEntry {
     public:
-      optional<TYPE> get(const std::string& id) const
+      std::optional<TYPE> get(const std::string& id) const
       {
         std::lock_guard<std::recursive_mutex> lock(mutex_store_);
         if(storeEntry_.count(id) > 0) {
-          return optional<TYPE>(storeEntry_.at(id).template get<const TYPE>());
+          return std::optional<TYPE>(storeEntry_.at(id).template get<const TYPE>());
         }
-        return nullopt;
+        return std::nullopt;
       }
 
       const std::vector<TYPE> getAll() const
@@ -90,13 +87,13 @@ namespace DigitalStage {
        * Get this (local) device
        * @return this device
        */
-      optional<DigitalStage::Types::Device> getLocalDevice() const;
+      std::optional<DigitalStage::Types::Device> getLocalDevice() const;
       void setLocalDeviceId(const std::string& id);
       /**
        * Returns the ID of this (local) device
        * @return
        */
-      optional<std::string> getLocalDeviceId() const;
+      std::optional<std::string> getLocalDeviceId() const;
 
       // Devices
       StoreEntry<DigitalStage::Types::Device> devices;
@@ -107,14 +104,14 @@ namespace DigitalStage {
        * Returns the ID of the current user
        * @return ID of the current user
        */
-      optional<std::string> getUserId() const;
+      std::optional<std::string> getUserId() const;
       void setStageMemberId(const std::string& id);
       /**
        * Returns the ID of the current stage member
        * This will be null if the user is currently not inside any stage
        * @return ID of the current stage member or null
        */
-      [[maybe_unused]] optional<std::string> getStageMemberId() const;
+      [[maybe_unused]] std::optional<std::string> getStageMemberId() const;
 
       // Users
       StoreEntry<DigitalStage::Types::User> users;
@@ -130,22 +127,22 @@ namespace DigitalStage {
        * Use this variable to obtain, if the user is currently inside a stage.
        * @return ID of the current stage or null
        */
-      optional<std::string> getStageId() const;
+      std::optional<std::string> getStageId() const;
 
       /**
        * Return the current stage, if available
        * @return current stage
        */
-      optional<DigitalStage::Types::Stage> getStage() const;
+      std::optional<DigitalStage::Types::Stage> getStage() const;
 
-      void setGroupId(optional<std::string> id);
+      void setGroupId(std::optional<std::string> id);
       void resetGroupId();
       /**
        * Returns the ID of the current group.
        * This will return null if the user is currently not inside any stage.
        * @return ID of the current group or null
        */
-      [[maybe_unused]] optional<std::string> getGroupId() const;
+      [[maybe_unused]] std::optional<std::string> getGroupId() const;
 
       void setStageDeviceId(const std::string& id);
       void resetStageDeviceId();
@@ -155,13 +152,13 @@ namespace DigitalStage {
        * This will return null if the user is currently not inside any stage.
        * @return ID of this stage device or null
        */
-      optional<std::string> getStageDeviceId() const;
+      std::optional<std::string> getStageDeviceId() const;
       /**
        * Returns the this (local) stage device.
        * This will return null if the user is currently not inside any stage.
        * @return this stage device or null
        */
-      optional<DigitalStage::Types::StageDevice> getStageDevice() const;
+      std::optional<DigitalStage::Types::StageDevice> getStageDevice() const;
 
       /**
        * Sets the given TURN/STUN servers
@@ -186,7 +183,7 @@ namespace DigitalStage {
        * Returns the username to authenticate on the TURN servers
        * @return username
        */
-      optional<std::string> getTurnUsername() const;
+      std::optional<std::string> getTurnUsername() const;
 
       /**
        * Sets the given TURN/STUN username
@@ -198,7 +195,7 @@ namespace DigitalStage {
        * Returns the password to authenticate on the TURN servers.
        * @return password
        */
-      optional<std::string> getTurnPassword() const;
+      std::optional<std::string> getTurnPassword() const;
 
       // Stages
       StoreEntry<DigitalStage::Types::Stage> stages;
@@ -234,57 +231,57 @@ namespace DigitalStage {
 
       // Custom group positions
       StoreEntry<DigitalStage::Types::CustomGroupPosition> customGroupPositions;
-      optional<DigitalStage::Types::CustomGroupPosition>
+      std::optional<DigitalStage::Types::CustomGroupPosition>
       getCustomGroupPositionByGroupAndDevice(const std::string& groupId,
                                              const std::string& deviceId) const;
 
       // Custom group volumes
       StoreEntry<DigitalStage::Types::CustomGroupVolume> customGroupVolumes;
-      optional<DigitalStage::Types::CustomGroupVolume>
+      std::optional<DigitalStage::Types::CustomGroupVolume>
       getCustomGroupVolumeByGroupAndDevice(const std::string& groupId,
                                            const std::string& deviceId) const;
 
       // Custom stage member positions
       StoreEntry<DigitalStage::Types::CustomStageMemberPosition> customStageMemberPositions;
-      [[maybe_unused]] optional<DigitalStage::Types::CustomStageMemberPosition>
+      [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageMemberPosition>
       getCustomStageMemberPositionByStageMemberAndDevice(
           const std::string& stageMemberId, const std::string& deviceId) const;
 
       // Custom stage member volumes
       StoreEntry<DigitalStage::Types::CustomStageMemberVolume> customStageMemberVolumes;
-      [[maybe_unused]] optional<DigitalStage::Types::CustomStageMemberVolume>
+      [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageMemberVolume>
       getCustomStageMemberVolumeByStageMemberAndDevice(
           const std::string& stageMemberId, const std::string& deviceId) const;
 
       // Custom stage device positions
       StoreEntry<DigitalStage::Types::CustomStageDevicePosition> customStageDevicePositions;
-      [[maybe_unused]] optional<DigitalStage::Types::CustomStageDevicePosition>
+      [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageDevicePosition>
       getCustomStageDevicePositionByStageDeviceAndDevice(
           const std::string& stageDeviceId, const std::string& deviceId) const;
 
       // Custom stage device volumes
       StoreEntry<DigitalStage::Types::CustomStageDeviceVolume> customStageDeviceVolumes;
-      [[maybe_unused]] optional<DigitalStage::Types::CustomStageDeviceVolume>
+      [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageDeviceVolume>
       getCustomStageDeviceVolumeByStageDeviceAndDevice(
           const std::string& stageDeviceId, const std::string& deviceId) const;
 
       // Custom audio track positions
       StoreEntry<DigitalStage::Types::CustomAudioTrackPosition> customAudioTrackPositions;
-      [[maybe_unused]] optional<DigitalStage::Types::CustomAudioTrackPosition>
+      [[maybe_unused]] std::optional<DigitalStage::Types::CustomAudioTrackPosition>
       getCustomAudioTrackPositionByAudioTrackAndDevice(
           const std::string& audio_trackId,
           const std::string& deviceId) const;
 
       // Custom audio track volumes
       StoreEntry<DigitalStage::Types::CustomAudioTrackVolume> customAudioTrackVolumes;
-      [[maybe_unused]] optional<DigitalStage::Types::CustomAudioTrackVolume>
+      [[maybe_unused]] std::optional<DigitalStage::Types::CustomAudioTrackVolume>
       getCustomAudioTrackVolumeByAudioTrackAndDevice(
           const std::string& audio_trackId,
           const std::string& deviceId) const;
 
       // Sound cards
       StoreEntry<DigitalStage::Types::SoundCard> soundCards;
-      optional<DigitalStage::Types::SoundCard>
+      std::optional<DigitalStage::Types::SoundCard>
       getSoundCardByDeviceAndDriverAndTypeAndLabel(const std::string& deviceId,
                                                    const std::string& audioDriver,
                                                    const std::string& type,
@@ -293,38 +290,38 @@ namespace DigitalStage {
        * Returns the current input sound card for this device if set
        * @return current input sound card
        */
-      optional<DigitalStage::Types::SoundCard> getInputSoundCard() const;
+      std::optional<DigitalStage::Types::SoundCard> getInputSoundCard() const;
       /**
        * Returns the current output sound card for this device if set
        * @return current output sound card
        */
-      optional<DigitalStage::Types::SoundCard> getOutputSoundCard() const;
+      std::optional<DigitalStage::Types::SoundCard> getOutputSoundCard() const;
 
     protected:
       mutable std::recursive_mutex ready_mutex_;
       bool isReady_;
 
       mutable std::recursive_mutex userId_mutex_;
-      optional<std::string> userId_;
+      std::optional<std::string> userId_;
 
       mutable std::recursive_mutex stageId_mutex_;
-      optional<std::string> stageId_;
+      std::optional<std::string> stageId_;
 
       mutable std::recursive_mutex stageMemberId_mutex_;
-      optional<std::string> stageMemberId_;
+      std::optional<std::string> stageMemberId_;
 
       mutable std::recursive_mutex groupId_mutex_;
-      optional<std::string> groupId_;
+      std::optional<std::string> groupId_;
 
       mutable std::recursive_mutex local_device_id_mutex_;
-      optional<std::string> localDeviceId_;
+      std::optional<std::string> localDeviceId_;
 
       mutable std::recursive_mutex stage_device_id_mutex_;
-      optional<std::string> stageDeviceId_;
+      std::optional<std::string> stageDeviceId_;
 
       mutable std::recursive_mutex turn_mutex_;
-      optional<std::string> turn_username_;
-      optional<std::string> turn_password_;
+      std::optional<std::string> turn_username_;
+      std::optional<std::string> turn_password_;
       std::vector<std::string> turn_urls_;
     };
   } // namespace Api

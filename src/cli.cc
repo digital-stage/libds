@@ -4,6 +4,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <thread>
+#include <optional>
 // Logger
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
@@ -71,7 +72,7 @@ void handleReady(const Store*)
 {
   std::cout << "READY TO GO!" << std::endl;
 }
-void handleStageJoined(const ID_TYPE& stageId, teckos::optional<ID_TYPE> groupId,
+void handleStageJoined(const ID_TYPE& stageId, std::optional<ID_TYPE> groupId,
                        const Store* s)
 {
   auto stage = s->stages.get(stageId);

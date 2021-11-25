@@ -7,16 +7,16 @@ using namespace DigitalStage::Types;
 Store::Store()
     : isReady_(false) {}
 
-optional<Device> Store::getLocalDevice() const
+std::optional<Device> Store::getLocalDevice() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->local_device_id_mutex_);
   if(localDeviceId_) {
     return this->devices.get(localDeviceId_.value());
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-optional<std::string> Store::getLocalDeviceId() const
+std::optional<std::string> Store::getLocalDeviceId() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->local_device_id_mutex_);
   return localDeviceId_;
@@ -28,7 +28,7 @@ void Store::setLocalDeviceId(const std::string& id)
   localDeviceId_ = id;
 }
 
-optional<std::string> Store::getStageDeviceId() const
+std::optional<std::string> Store::getStageDeviceId() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
   return stageDeviceId_;
@@ -43,20 +43,20 @@ void Store::setStageDeviceId(const std::string& id)
 void Store::resetStageDeviceId()
 {
   std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
-  stageDeviceId_ = nullopt;
+  stageDeviceId_ = std::nullopt;
 }
 
-optional<StageDevice> Store::getStageDevice() const
+std::optional<StageDevice> Store::getStageDevice() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
   auto stageDeviceId = getStageDeviceId();
   if(stageDeviceId) {
     return stageDevices.get(*stageDeviceId);
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-[[maybe_unused]] optional<std::string> Store::getStageMemberId() const
+[[maybe_unused]] std::optional<std::string> Store::getStageMemberId() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->stageMemberId_mutex_);
   return this->stageMemberId_;
@@ -68,7 +68,7 @@ void Store::setStageMemberId(const std::string& id)
   stageMemberId_ = id;
 }
 
-optional<std::string> Store::getUserId() const
+std::optional<std::string> Store::getUserId() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->userId_mutex_);
   return userId_;
@@ -80,19 +80,19 @@ void Store::setUserId(const std::string& id)
   userId_ = id;
 }
 
-optional<std::string> Store::getStageId() const
+std::optional<std::string> Store::getStageId() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
   return stageId_;
 }
 
-optional<DigitalStage::Types::Stage> Store::getStage() const
+std::optional<DigitalStage::Types::Stage> Store::getStage() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
   if(stageId_) {
     return stages.get(*stageId_);
   }
-  return nullopt;
+  return std::nullopt;
 }
 
 void Store::setStageId(const std::string& id)
@@ -104,16 +104,16 @@ void Store::setStageId(const std::string& id)
 void Store::resetStageId()
 {
   std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
-  stageId_ = nullopt;
+  stageId_ = std::nullopt;
 }
 
-optional<std::string> Store::getGroupId() const
+std::optional<std::string> Store::getGroupId() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->groupId_mutex_);
   return groupId_;
 }
 
-void Store::setGroupId(optional<std::string> id)
+void Store::setGroupId(std::optional<std::string> id)
 {
   std::lock_guard<std::recursive_mutex> lock(this->groupId_mutex_);
   groupId_ = id;
@@ -122,7 +122,7 @@ void Store::setGroupId(optional<std::string> id)
 void Store::resetGroupId()
 {
   std::lock_guard<std::recursive_mutex> lock(this->groupId_mutex_);
-  groupId_ = nullopt;
+  groupId_ = std::nullopt;
 }
 
 std::vector<Group> Store::getGroupsByStage(const std::string& stageId) const
@@ -163,7 +163,7 @@ Store::getStageMembersByGroup(const std::string& groupId) const
   return vector;
 }
 
-optional<CustomGroupPosition>
+std::optional<CustomGroupPosition>
 Store::getCustomGroupPositionByGroupAndDevice(const std::string& groupId,
                                               const std::string& deviceId) const
 {
@@ -173,10 +173,10 @@ Store::getCustomGroupPositionByGroupAndDevice(const std::string& groupId,
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-optional<CustomGroupVolume>
+std::optional<CustomGroupVolume>
 Store::getCustomGroupVolumeByGroupAndDevice(const std::string& groupId,
                                             const std::string& deviceId) const
 {
@@ -186,10 +186,10 @@ Store::getCustomGroupVolumeByGroupAndDevice(const std::string& groupId,
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-[[maybe_unused]] optional<CustomStageMemberPosition>
+[[maybe_unused]] std::optional<CustomStageMemberPosition>
 Store::getCustomStageMemberPositionByStageMemberAndDevice(
     const std::string& stageMemberId, const std::string& deviceId) const
 {
@@ -199,10 +199,10 @@ Store::getCustomStageMemberPositionByStageMemberAndDevice(
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-optional<CustomStageMemberVolume>
+std::optional<CustomStageMemberVolume>
 Store::getCustomStageMemberVolumeByStageMemberAndDevice(
     const std::string& stageMemberId, const std::string& deviceId) const
 {
@@ -212,10 +212,10 @@ Store::getCustomStageMemberVolumeByStageMemberAndDevice(
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-optional<CustomAudioTrackPosition>
+std::optional<CustomAudioTrackPosition>
 Store::getCustomAudioTrackPositionByAudioTrackAndDevice(
     const std::string& audioTrackId, const std::string& deviceId) const
 {
@@ -225,10 +225,10 @@ Store::getCustomAudioTrackPositionByAudioTrackAndDevice(
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-[[maybe_unused]] optional<CustomAudioTrackVolume>
+[[maybe_unused]] std::optional<CustomAudioTrackVolume>
 Store::getCustomAudioTrackVolumeByAudioTrackAndDevice(
     const std::string& audioTrackId, const std::string& deviceId) const
 {
@@ -238,7 +238,7 @@ Store::getCustomAudioTrackVolumeByAudioTrackAndDevice(
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
 std::vector<VideoTrack>
@@ -303,7 +303,7 @@ bool Store::isReady() const
   return this->isReady_;
 }
 
-optional<DigitalStage::Types::SoundCard>
+std::optional<DigitalStage::Types::SoundCard>
 Store::getSoundCardByDeviceAndDriverAndTypeAndLabel(const std::string& deviceId,
                                                     const std::string& audioDriver,
                                                     const std::string& type,
@@ -318,7 +318,7 @@ Store::getSoundCardByDeviceAndDriverAndTypeAndLabel(const std::string& deviceId,
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
 std::vector<DigitalStage::Types::StageDevice>
@@ -334,7 +334,7 @@ Store::getStageDevicesByStageMember(const std::string& stageMemberId) const
   return vector;
 }
 
-optional<CustomStageDeviceVolume>
+std::optional<CustomStageDeviceVolume>
 Store::getCustomStageDeviceVolumeByStageDeviceAndDevice(
     const std::string& stageDeviceId, const std::string& deviceId) const
 {
@@ -344,10 +344,10 @@ Store::getCustomStageDeviceVolumeByStageDeviceAndDevice(
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-optional<CustomStageDevicePosition>
+std::optional<CustomStageDevicePosition>
 Store::getCustomStageDevicePositionByStageDeviceAndDevice(
     const std::string& stageDeviceId, const std::string& deviceId) const
 {
@@ -357,27 +357,27 @@ Store::getCustomStageDevicePositionByStageDeviceAndDevice(
       return item;
     }
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-optional<DigitalStage::Types::SoundCard> Store::getInputSoundCard() const
+std::optional<DigitalStage::Types::SoundCard> Store::getInputSoundCard() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->soundCards.mutex_store_);
   auto localDevice = this->getLocalDevice();
   if(localDevice && localDevice->inputSoundCardId) {
     return this->soundCards.get(*localDevice->inputSoundCardId);
   }
-  return nullopt;
+  return std::nullopt;
 }
 
-optional<DigitalStage::Types::SoundCard> Store::getOutputSoundCard() const
+std::optional<DigitalStage::Types::SoundCard> Store::getOutputSoundCard() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->soundCards.mutex_store_);
   auto localDevice = this->getLocalDevice();
   if(localDevice && localDevice->outputSoundCardId) {
     return this->soundCards.get(*localDevice->outputSoundCardId);
   }
-  return nullopt;
+  return std::nullopt;
 }
 std::vector<DigitalStage::Types::AudioTrack> Store::getLocalAudioTracks() const
 {
@@ -406,12 +406,12 @@ void Store::setTurnServers(std::vector<std::string> turn_servers)
   turn_urls_ = turn_servers;
 }
 
-optional<std::string> Store::getTurnUsername() const
+std::optional<std::string> Store::getTurnUsername() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
   return turn_username_;
 }
-optional<std::string> Store::getTurnPassword() const
+std::optional<std::string> Store::getTurnPassword() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
   return turn_password_;

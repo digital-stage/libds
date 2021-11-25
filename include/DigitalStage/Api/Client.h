@@ -8,10 +8,8 @@
 #include <optional>
 #include <sigslot/signal.hpp>
 #include <teckos/client.h>
-#include <teckos/optional.hpp>
+#include <optional>
 
-using teckos::nullopt;
-using teckos::optional;
 
 namespace DigitalStage {
   namespace Api {
@@ -44,7 +42,7 @@ namespace DigitalStage {
       Pal::sigslot::signal<const User, const DigitalStage::Api::Store*>
           localUserReady;
 
-      Pal::sigslot::signal<const ID_TYPE&, optional<ID_TYPE>,
+      Pal::sigslot::signal<const ID_TYPE&, const std::optional<ID_TYPE> &,
                            const DigitalStage::Api::Store*>
           stageJoined;
       Pal::sigslot::signal<const DigitalStage::Api::Store*> stageLeft;
@@ -60,21 +58,21 @@ namespace DigitalStage {
        * This will send when the audio driver has been changed.
        * The first parameter contains the new audio driver as optional value
        */
-      Pal::sigslot::signal<optional<std::string>,
+      Pal::sigslot::signal<std::optional<std::string>,
                            const DigitalStage::Api::Store*>
           audioDriverSelected;
       /**
        * This will send when another input sound card has been selected.
        * First parameter is the ID of the sound card as optional value
        */
-      Pal::sigslot::signal<const optional<std::string>&,
+      Pal::sigslot::signal<const std::optional<std::string>&,
                            const DigitalStage::Api::Store*>
           inputSoundCardSelected;
       /**
        * This will send when another output sound card has been selected.
        * First parameter is the ID of the sound card as optional value
        */
-      Pal::sigslot::signal<const optional<std::string>&,
+      Pal::sigslot::signal<const std::optional<std::string>&,
                            const DigitalStage::Api::Store*>
           outputSoundCardSelected;
       Pal::sigslot::signal<const std::string&, const DigitalStage::Api::Store*>

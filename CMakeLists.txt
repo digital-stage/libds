@@ -12,13 +12,14 @@ project(DigitalStage
 #
 #################################################
 include(GNUInstallDirs)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(TARGET_NAME ${PROJECT_NAME})
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/)
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "Install path for include files")
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "Install path for library files")
+cmake_policy(SET CMP0042 NEW)
 
 if (APPLE)
     if (EXISTS "/usr/local/opt/openssl/")
@@ -225,39 +226,40 @@ install(
 #
 #################################################
 # TODO: Discuss if we migh add the tests with EXCLUDE_FROM_ALL instead
-if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    if (NOT TARGET googletest)
-        include(FetchContent)
-        FetchContent_Declare(
-                googletest
-                URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+#if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+
+if (NOT TARGET googletest)
+    include(FetchContent)
+    FetchContent_Declare(
+            googletest
+            URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+endif (NOT TARGET googletest)
+
+enable_testing()
+
+# Link runTests with what we want to test and the GTest and pthread library
+add_executable(${PROJECT_NAME}-test
+        ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/test/AuthServiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
         )
-        # For Windows: Prevent overriding the parent project's compiler/linker settings
-        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-        FetchContent_MakeAvailable(googletest)
-    endif (NOT TARGET googletest)
+target_link_libraries(${PROJECT_NAME}-test
+        PRIVATE
+        gtest_main
+        DigitalStageApi
+        DigitalStageAuth
+        )
 
-    enable_testing()
+target_compile_definitions(${PROJECT_NAME}-test
+        PRIVATE
+        AUTH_URL="https://auth.dstage.org"
+        API_URL="wss://api.dstage.org"
+        )
 
-    # Link runTests with what we want to test and the GTest and pthread library
-    add_executable(${PROJECT_NAME}-test
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/AuthServiceTest.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
-            )
-    target_link_libraries(${PROJECT_NAME}-test
-            PRIVATE
-            gtest_main
-            DigitalStageApi
-            DigitalStageAuth
-            )
-
-    target_compile_definitions(${PROJECT_NAME}-test
-            PRIVATE
-            AUTH_URL="http://imac.fritz.box:5000"
-            API_URL="ws://imac.fritz.box:4000"
-            )
-
-    include(GoogleTest)
-    gtest_discover_tests(${PROJECT_NAME}-test)
-endif (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME}-test)
+#endif (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
