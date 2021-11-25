@@ -63,8 +63,8 @@ endif ()
 #   Environment
 #
 #################################################
-option(DEBUG_EVENTS "Print events to console" OFF)
-option(DEBUG_PAYLOADS "Print payloads to console" OFF)
+option(LIBDS_DEBUG_EVENTS "Print events to console" OFF)
+option(LIBDS_DEBUG_PAYLOADS "Print payloads to console" OFF)
 
 
 #################################################
@@ -114,12 +114,12 @@ if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(${PROJECT_NAME}Api PRIVATE -Wall -Wextra -pedantic -Werror)
     target_compile_options(${PROJECT_NAME}Static PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
-if (DEBUG_EVENTS)
+if (LIBDS_DEBUG_EVENTS)
     target_compile_definitions(${PROJECT_NAME}Api PRIVATE DEBUG_EVENTS)
-    if (DEBUG_PAYLOADS)
+    if (LIBDS_DEBUG_PAYLOADS)
         target_compile_definitions(${PROJECT_NAME}Api PRIVATE DEBUG_PAYLOADS)
-    endif (DEBUG_PAYLOADS)
-endif (DEBUG_EVENTS)
+    endif (LIBDS_DEBUG_PAYLOADS)
+endif (LIBDS_DEBUG_EVENTS)
 target_link_libraries(${PROJECT_NAME}Api
         PUBLIC
         teckos::teckos
@@ -245,6 +245,7 @@ enable_testing()
 add_executable(${PROJECT_NAME}-test
         ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/test/AuthServiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientAsyncTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
         )
 target_link_libraries(${PROJECT_NAME}-test
