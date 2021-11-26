@@ -59,43 +59,44 @@ TEST(ClientAsyncTest, StageWorkflow) {
     auto groupsIter = std::find_if(groups.begin(), groups.end(), [&](const auto &group) {
       return group.name == "Testgruppe";
     });
-    if(groupsIter == std::end(groups)) {
-      FAIL();
+    EXPECT_NE(groupsIter, std::end(groups));
+    if (groupsIter != std::end(groups)) {
+
+      auto group = *groupsIter;
+      EXPECT_EQ(group.name, "Testgruppe");
+
+      // Generate invite code
+      auto invite_code = client->encodeInvitationCode(stage._id, group._id).get();
+
+      // Use invite code
+      auto invite_pair = client->decodeInvitationCode(invite_code).get();
+      EXPECT_EQ(invite_pair.first, stage._id);
+      EXPECT_EQ(invite_pair.second, group._id);
+
+      // Now join stage
+      std::cout << "Join stage" << std::endl;
+      client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
+                   {{"stageId", stage._id}, {"groupId", group._id}});
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      EXPECT_EQ(store->getStageId(), stage._id);
+      EXPECT_EQ(store->getGroupId(), group._id);
+
+      // Leave stage
+      std::cout << "Leave stage" << std::endl;
+      client->send(DigitalStage::Api::SendEvents::LEAVE_STAGE,
+                   {});
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      EXPECT_NE(store->getStageId(), stage._id);
+      EXPECT_NE(store->getGroupId(), group._id);
+
+      // Join again
+      std::cout << "Join stage (again)" << std::endl;
+      client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
+                   {{"stageId", stage._id}, {"groupId", group._id}});
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      EXPECT_EQ(store->getStageId(), stage._id);
+      EXPECT_EQ(store->getGroupId(), group._id);
     }
-    auto group = *groupsIter;
-    EXPECT_EQ(group.name, "Testgruppe");
-
-    // Generate invite code
-    auto invite_code = client->encodeInvitationCode(stage._id, group._id).get();
-
-    // Use invite code
-    auto invite_pair = client->decodeInvitationCode(invite_code).get();
-    EXPECT_EQ(invite_pair.first, stage._id);
-    EXPECT_EQ(invite_pair.second, group._id);
-
-    // Now join stage
-    std::cout << "Join stage" << std::endl;
-    client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
-                 {{"stageId", stage._id}, {"groupId", group._id}});
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    EXPECT_EQ(store->getStageId(), stage._id);
-    EXPECT_EQ(store->getGroupId(), group._id);
-
-    // Leave stage
-    std::cout << "Leave stage" << std::endl;
-    client->send(DigitalStage::Api::SendEvents::LEAVE_STAGE,
-                 {});
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    EXPECT_NE(store->getStageId(), stage._id);
-    EXPECT_NE(store->getGroupId(), group._id);
-
-    // Join again
-    std::cout << "Join stage (again)" << std::endl;
-    client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
-                 {{"stageId", stage._id}, {"groupId", group._id}});
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    EXPECT_EQ(store->getStageId(), stage._id);
-    EXPECT_EQ(store->getGroupId(), group._id);
 
     // Remove all stages
     std::cout << "Cleaning up: removing all stages" << std::endl;
@@ -108,7 +109,6 @@ TEST(ClientAsyncTest, StageWorkflow) {
 
     // Expect to be outside any stage
     EXPECT_NE(store->getStageId(), stage._id);
-    EXPECT_NE(store->getGroupId(), group._id);
   });
 
   nlohmann::json initialDevice;
@@ -119,12 +119,14 @@ TEST(ClientAsyncTest, StageWorkflow) {
   std::cout << "Connecting...   ";
   EXPECT_NO_THROW(client->connect(*token, initialDevice));
 
-  std::this_thread::sleep_for(std::chrono::seconds(6));
+  std::this_thread::sleep_for(std::chrono::seconds(10));
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;
 
+  std::cout << "Closing connection again...   ";
   EXPECT_NO_THROW(client->disconnect());
+  std::cout << "[OK]" << std::endl;
 
   std::cout << "Replace client and connect...";
   client = std::make_shared<DigitalStage::Api::Client>(API_URL);

@@ -1,9 +1,9 @@
 [requires]
 openssl/1.1.1l
 cpprestsdk/2.10.18
-mbedtls/3.0.0
-libdeflate/1.8
-zlib/1.2.11
+nlohmann_json/3.10.4
+ixwebsocket/11.2.4
+gtest/cci.20210126
 
 [generators]
 cmake

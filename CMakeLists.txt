@@ -270,18 +270,7 @@ install(
 #   Tests
 #
 #################################################
-
-if (NOT TARGET googletest)
-    include(FetchContent)
-    FetchContent_Declare(
-            googletest
-            GIT_REPOSITORY https://github.com/google/googletest.git
-            GIT_TAG main
-    )
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-endif (NOT TARGET googletest)
+find_package(gtest REQUIRED)
 
 enable_testing()
 
@@ -296,8 +285,8 @@ add_executable(${PROJECT_NAME}-test
 target_link_libraries(${PROJECT_NAME}-test
         PRIVATE
         gtest_main
-        DigitalStageApi
-        DigitalStageAuth
+        DigitalStageApiStatic
+        DigitalStageAuthStatic
         )
 
 target_compile_definitions(${PROJECT_NAME}-test
