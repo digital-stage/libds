@@ -121,7 +121,7 @@ TEST(ClientTest, StageWorkflow) {
   std::cout << "Join stage (again)" << std::endl;
   client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
                {{"stageId", stage._id}, {"groupId", group._id}});
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::this_thread::sleep_for(std::chrono::seconds(2));
   EXPECT_EQ(store->getStageId(), stage._id);
   EXPECT_EQ(store->getGroupId(), group._id);
 

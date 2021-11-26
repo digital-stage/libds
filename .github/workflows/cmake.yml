@@ -29,10 +29,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      #- name: fetchtags
-      #  run: git fetch --unshallow --tags
-      - name: Checkout Submodules
-        run: git submodule init && git submodule update
+        with:
+          submodules: "recursive"
       - name: Download Conan package manager
         run: |
            pip3 install wheel setuptools
