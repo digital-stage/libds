@@ -18,6 +18,11 @@ Client::Client(std::string apiUrl, bool async_events)
   wsclient_->sendPayloadOnReconnect(true);
 }
 
+Client::~Client() {
+  wsclient_->on_disconnected(nullptr);
+  wsclient_->setMessageHandler(nullptr);
+}
+
 Store *Client::getStore() const {
   return this->store_.get();
 }

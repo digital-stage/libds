@@ -22,6 +22,7 @@ class Client {
   struct Token {};
 
   explicit Client(std::string apiUrl, bool async_events = false);
+  ~Client();
 
   void
   connect(const std::string &apiToken,

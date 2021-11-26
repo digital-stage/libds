@@ -12,7 +12,10 @@ TEST(ClientTest, StageWorkflow) {
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   const auto token = auth->signInSync("test@digital-stage.org", "test123test123test!");
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, false);
-  EXPECT_TRUE(token.has_value());
+  if (!token.has_value()) {
+    FAIL();
+    return;
+  }
 
   // Process ready
   std::atomic<bool> ready = false;
@@ -128,7 +131,7 @@ TEST(ClientTest, StageWorkflow) {
   for (const auto &item: stages) {
     client->send(DigitalStage::Api::SendEvents::REMOVE_STAGE, item._id);
   }
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::this_thread::sleep_for(std::chrono::seconds(3));
   EXPECT_EQ(store->stages.getAll().size(), 0);
 
   // Expect to be outside any stage

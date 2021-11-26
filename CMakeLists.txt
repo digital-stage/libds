@@ -64,8 +64,6 @@ endif ()
 #################################################
 option(LIBDS_DEBUG_EVENTS "Print events to console" OFF)
 option(LIBDS_DEBUG_PAYLOADS "Print payloads to console" OFF)
-option(USE_IX_WEBSOCKET "Use ixwebsocket instead of cpprestsdk" OFF)
-
 
 #################################################
 #
@@ -74,7 +72,6 @@ option(USE_IX_WEBSOCKET "Use ixwebsocket instead of cpprestsdk" OFF)
 #################################################
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libteckos EXCLUDE_FROM_ALL)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/FetchAndPatchSigslot.cmake)
-find_package(OpenSSL REQUIRED)
 if (NOT TARGET plog)
     FetchContent_Declare(
             plog
@@ -82,11 +79,6 @@ if (NOT TARGET plog)
     )
     FetchContent_MakeAvailable(plog)
 endif (NOT TARGET plog)
-if (USE_IX_WEBSOCKET)
-    find_package(ixwebsocket REQUIRED)
-else ()
-    find_package(cpprestsdk REQUIRED)
-endif ()
 
 
 #################################################
@@ -144,9 +136,9 @@ target_link_libraries(${PROJECT_NAME}ApiStatic
 #   Target: Auth
 #
 #################################################
-add_library(DigitalStageAuth SHARED)
+add_library(DigitalStageAuth SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc)
 add_library(${PROJECT_NAME}::Auth ALIAS ${PROJECT_NAME}Auth)
-add_library(DigitalStageAuthStatic STATIC)
+add_library(DigitalStageAuthStatic STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc)
 add_library(${PROJECT_NAME}::AuthStatic ALIAS ${PROJECT_NAME}AuthStatic)
 target_include_directories(${PROJECT_NAME}Auth PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
@@ -158,60 +150,18 @@ if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(${PROJECT_NAME}Auth PRIVATE -Wall -Wextra -pedantic -Werror)
     target_compile_options(${PROJECT_NAME}AuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
-if (USE_IX_WEBSOCKET)
-    target_compile_definitions(${PROJECT_NAME}
-            PRIVATE
-            USE_IX_WEBSOCKET)
-    target_sources(${PROJECT_NAME}Auth
-            PRIVATE
-            src/AuthService_ixwebsocket.cc
-            include/DigitalStage/Auth/AuthService.h
-            )
-    target_sources(${PROJECT_NAME}AuthStatic
-            PRIVATE
-            src/AuthService_ixwebsocket.cc
-            include/DigitalStage/Auth/AuthService.h
-            )
-    target_link_libraries(${PROJECT_NAME}Auth
-            PUBLIC
-            nlohmann_json::nlohmann_json
-            ixwebsocket
-            teckos::teckos
-            plog
-            )
-    target_link_libraries(${PROJECT_NAME}AuthStatic
-            PUBLIC
-            nlohmann_json::nlohmann_json
-            ixwebsocket
-            teckos::teckosStatic
-            plog
-            )
-else ()
-    target_sources(${PROJECT_NAME}Auth
-            PRIVATE
-            src/AuthService_cpprestsdk.cc
-            include/DigitalStage/Auth/AuthService.h
-            )
-    target_sources(${PROJECT_NAME}AuthStatic
-            PRIVATE
-            src/AuthService_cpprestsdk.cc
-            include/DigitalStage/Auth/AuthService.h
-            )
-    target_link_libraries(${PROJECT_NAME}Auth
-            PUBLIC
-            nlohmann_json::nlohmann_json
-            cpprestsdk::cpprest
-            teckos::teckos
-            plog
-            )
-    target_link_libraries(${PROJECT_NAME}AuthStatic
-            PUBLIC
-            nlohmann_json::nlohmann_json
-            cpprestsdk::cpprest
-            teckos::teckosStatic
-            plog
-            )
-endif ()
+target_link_libraries(${PROJECT_NAME}Auth
+        PUBLIC
+        nlohmann_json::nlohmann_json
+        teckos::teckos
+        plog
+        )
+target_link_libraries(${PROJECT_NAME}AuthStatic
+        PUBLIC
+        nlohmann_json::nlohmann_json
+        teckos::teckosStatic
+        plog
+        )
 
 
 add_executable(${PROJECT_NAME}-example
@@ -270,9 +220,8 @@ install(
 #   Tests
 #
 #################################################
-find_package(gtest REQUIRED)
-
 enable_testing()
+find_package(GTest REQUIRED)
 
 # Link runTests with what we want to test and the GTest and pthread library
 add_executable(${PROJECT_NAME}-test
@@ -284,7 +233,8 @@ add_executable(${PROJECT_NAME}-test
         )
 target_link_libraries(${PROJECT_NAME}-test
         PRIVATE
-        gtest_main
+        GTest::gtest
+        GTest::gtest_main
         DigitalStageApiStatic
         DigitalStageAuthStatic
         )
