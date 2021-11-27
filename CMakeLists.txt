@@ -62,6 +62,7 @@ endif ()
 #   Environment
 #
 #################################################
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 option(LIBDS_DEBUG_EVENTS "Print events to console" OFF)
 option(LIBDS_DEBUG_PAYLOADS "Print payloads to console" OFF)
 
