@@ -65,6 +65,7 @@ endif ()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 option(LIBDS_DEBUG_EVENTS "Print events to console" OFF)
 option(LIBDS_DEBUG_PAYLOADS "Print payloads to console" OFF)
+option(BUILD_TESTS "Build tests" OFF)
 
 #################################################
 #
@@ -221,30 +222,32 @@ install(
 #   Tests
 #
 #################################################
-enable_testing()
-find_package(GTest REQUIRED)
+if (BUILD_TESTS)
+    enable_testing()
+    find_package(GTest REQUIRED)
 
-# Link runTests with what we want to test and the GTest and pthread library
-add_executable(${PROJECT_NAME}-test
-        EXCLUDE_FROM_ALL
-        ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/test/AuthServiceTest.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientAsyncTest.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
-        )
-target_link_libraries(${PROJECT_NAME}-test
-        PRIVATE
-        GTest::gtest
-        GTest::gtest_main
-        DigitalStageApiStatic
-        DigitalStageAuthStatic
-        )
+    # Link runTests with what we want to test and the GTest and pthread library
+    add_executable(${PROJECT_NAME}-test
+            EXCLUDE_FROM_ALL
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/AuthServiceTest.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientAsyncTest.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
+            )
+    target_link_libraries(${PROJECT_NAME}-test
+            PRIVATE
+            GTest::gtest
+            GTest::gtest_main
+            DigitalStageApiStatic
+            DigitalStageAuthStatic
+            )
 
-target_compile_definitions(${PROJECT_NAME}-test
-        PRIVATE
-        AUTH_URL="https://auth.dstage.org"
-        API_URL="wss://api.dstage.org"
-        )
+    target_compile_definitions(${PROJECT_NAME}-test
+            PRIVATE
+            AUTH_URL="https://auth.dstage.org"
+            API_URL="wss://api.dstage.org"
+            )
 
-include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME}-test)
+    include(GoogleTest)
+    gtest_discover_tests(${PROJECT_NAME}-test)
+endif (LIBDS_BUILD_TESTS)
