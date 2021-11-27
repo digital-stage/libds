@@ -72,8 +72,16 @@ option(BUILD_TESTS "Build tests" OFF)
 #   Dependencies
 #
 #################################################
+include(FetchContent)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libteckos EXCLUDE_FROM_ALL)
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/FetchAndPatchSigslot.cmake)
+if (NOT TARGET sigslot)
+    FetchContent_Declare(
+            sigslot
+            GIT_REPOSITORY https://github.com/palacaze/sigslot
+            GIT_TAG e41c6e62edfa67b6402b17a627dca698a14f47a8 # v1.2.1
+    )
+    FetchContent_MakeAvailable(sigslot)
+endif (NOT TARGET sigslot)
 if (NOT TARGET plog)
     FetchContent_Declare(
             plog
@@ -138,9 +146,9 @@ target_link_libraries(${PROJECT_NAME}ApiStatic
 #   Target: Auth
 #
 #################################################
-add_library(DigitalStageAuth SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc)
+add_library(DigitalStageAuth SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h)
 add_library(${PROJECT_NAME}::Auth ALIAS ${PROJECT_NAME}Auth)
-add_library(DigitalStageAuthStatic STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc)
+add_library(DigitalStageAuthStatic STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h)
 add_library(${PROJECT_NAME}::AuthStatic ALIAS ${PROJECT_NAME}AuthStatic)
 target_include_directories(${PROJECT_NAME}Auth PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
@@ -250,4 +258,4 @@ if (BUILD_TESTS)
 
     include(GoogleTest)
     gtest_discover_tests(${PROJECT_NAME}-test)
-endif (LIBDS_BUILD_TESTS)
+endif (BUILD_TESTS)
