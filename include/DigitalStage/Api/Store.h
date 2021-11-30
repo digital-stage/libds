@@ -74,7 +74,6 @@ namespace DigitalStage {
     class Store {
     public:
       Store();
-      ~Store();
 
       void setReady(bool ready);
       /**
