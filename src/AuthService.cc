@@ -107,11 +107,11 @@ LoginResult AuthService::signInSync(const string_t& email,
     return LoginResult{postJson.get(), 0};
   }
   catch (const HttpErrorException & e) {
-    return LoginResult{L"", e.errorCode()};
+      return LoginResult{{}, e.errorCode()};
   }
   catch(const std::exception& e) {
     std::cerr << e.what() << std::endl;
-    return LoginResult{L"Unexcepted Error", -1};
+    return LoginResult{string_t{L"Unexcepted Error"}, -1};
   }
 }
 
