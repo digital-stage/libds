@@ -12,6 +12,12 @@ namespace DigitalStage::Auth {
 
     typedef utility::string_t string_t;
 
+    struct LoginResult
+    {
+        string_t token;
+        int httpError; // error code or 0 for no error
+    };
+
     class AuthService {
     public:
       /**
@@ -51,7 +57,7 @@ namespace DigitalStage::Auth {
        * @param password
        * @return valid token when successful, otherwise empty string
        */
-      string_t signInSync(const string_t& email,
+      LoginResult signInSync(const string_t& email,
                              const string_t& password);
 
       /**

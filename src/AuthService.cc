@@ -13,6 +13,26 @@ using namespace web::http::client;
 
 using namespace DigitalStage::Auth;
 
+namespace
+{
+    class HttpErrorException : public std::runtime_error
+    {
+    public:
+        HttpErrorException(int errorCode)
+            : std::runtime_error("Http Error")
+            , errorCode_(errorCode)
+        {}
+
+        [[nodiscard]] int errorCode() const
+        { 
+            return errorCode_; 
+        }
+
+    private:
+        int errorCode_;
+    };
+}
+
 pplx::task<bool> AuthService::verifyToken(const string_t& token)
 {
   auto url = this->url_;
@@ -69,8 +89,7 @@ pplx::task<string_t> AuthService::signIn(const string_t& email,
       .then([](const http_response& response) {
         // Check the status code.
         if(response.status_code() != 200) {
-          throw std::invalid_argument("Returned " +
-                                      std::to_string(response.status_code()));
+            throw HttpErrorException(static_cast<int>(response.status_code()));
         }
         // Convert the response body to JSON object.
         return response.extract_json();
@@ -79,17 +98,20 @@ pplx::task<string_t> AuthService::signIn(const string_t& email,
       .then([](const json::value& jsonObject) { return jsonObject.as_string(); });
 }
 
-string_t AuthService::signInSync(const string_t& email,
+LoginResult AuthService::signInSync(const string_t& email,
                                     const string_t& password)
 {
   auto postJson = this->signIn(email, password);
   try {
     postJson.wait();
-    return postJson.get();
+    return LoginResult{postJson.get(), 0};
+  }
+  catch (const HttpErrorException & e) {
+    return LoginResult{L"", e.errorCode()};
   }
   catch(const std::exception& e) {
     std::cerr << e.what() << std::endl;
-    return U("");
+    return LoginResult{L"Unexcepted Error", -1};
   }
 }
 
