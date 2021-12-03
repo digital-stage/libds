@@ -111,7 +111,7 @@ LoginResult AuthService::signInSync(const string_t& email,
   }
   catch(const std::exception& e) {
     std::cerr << e.what() << std::endl;
-    return LoginResult{string_t{L"Unexpected Error"}, -1};
+    return LoginResult{{}, -1};
   }
 }
 
