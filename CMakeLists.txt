@@ -146,9 +146,9 @@ target_link_libraries(${PROJECT_NAME}ApiStatic
 #   Target: Auth
 #
 #################################################
-add_library(DigitalStageAuth SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h)
+add_library(DigitalStageAuth SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthError.h)
 add_library(${PROJECT_NAME}::Auth ALIAS ${PROJECT_NAME}Auth)
-add_library(DigitalStageAuthStatic STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h)
+add_library(DigitalStageAuthStatic STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/AuthService.cc ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthService.h ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Auth/AuthError.h)
 add_library(${PROJECT_NAME}::AuthStatic ALIAS ${PROJECT_NAME}AuthStatic)
 target_include_directories(${PROJECT_NAME}Auth PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>

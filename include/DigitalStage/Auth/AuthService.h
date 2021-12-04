@@ -7,7 +7,7 @@
 
 #include <future>
 #include <optional>
-
+#include "AuthError.h"
 
 namespace DigitalStage {
 namespace Auth {
@@ -41,18 +41,20 @@ class AuthService {
    * @param email
    * @param password
    * @return task object, use wait() and get() on it to receive the value
+   * @throws AuthError
    */
-  std::future<std::optional<std::string>> signIn(const std::string &email,
+  std::future<std::string> signIn(const std::string &email,
                                                  const std::string &password);
 
   /**
    * Sign into the auth service with given email and password
    * @param email
    * @param password
-   * @return valid token when successful, otherwise empty string
+   * @return valid token when successful, will throw exception otherwise
+   * @throws AuthError
    */
-  std::optional<std::string> signInSync(const std::string &email,
-                                        const std::string &password);
+  std::string signInSync(const std::string &email,
+                         const std::string &password);
 
   /**
    * Sign out of the auth service and invalidate the given token

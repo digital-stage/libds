@@ -30,15 +30,15 @@ AuthService::AuthService(const std::string &authUrl) {
   this->url_ = authUrl;
 }
 
-std::future<std::optional<std::string>> AuthService::signIn(const std::string &email,
+std::future<std::string> AuthService::signIn(const std::string &email,
                                                             const std::string &password) {
   return std::async(std::launch::async, [this, &email, &password] {
     return signInSync(email, password);
   });
 }
 
-std::optional<std::string> AuthService::signInSync(const std::string &email,
-                                                   const std::string &password) {
+std::string AuthService::signInSync(const std::string &email,
+                                    const std::string &password) {
   nlohmann::json jsonBody;
   jsonBody["email"] = email;
   jsonBody["password"] = password;
@@ -47,8 +47,7 @@ std::optional<std::string> AuthService::signInSync(const std::string &email,
   if (result.statusCode == 200) {
     return result.body.get<std::string>();
   }
-  std::cerr << "Could not sign in, reason is " << result.statusCode << ": " << result.statusMessage << std::endl;
-  return std::nullopt;
+  throw AuthError(result.statusCode, result.statusMessage);
 }
 
 std::future<bool> AuthService::signOut(const std::string &token) {
