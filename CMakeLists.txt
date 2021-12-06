@@ -230,9 +230,9 @@ install(
 #   Tests
 #
 #################################################
-if (target GTest)
-    find_package(GTest REQUIRED)
+if (BUILD_TESTS)
     enable_testing()
+    find_package(GTest REQUIRED)
 
     # Link runTests with what we want to test and the GTest and pthread library
     add_executable(${PROJECT_NAME}-test
@@ -258,4 +258,4 @@ if (target GTest)
 
     include(GoogleTest)
     gtest_discover_tests(${PROJECT_NAME}-test)
-endif (target GTest)
+endif (BUILD_TESTS)
