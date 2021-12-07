@@ -10,12 +10,10 @@
 TEST(ClientAsyncTest, StageWorkflow) {
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
-  const auto token = auth->signInSync("test@digital-stage.org", "test123test123test!");
+  std::string token;
+  EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.org", "test123test123test!"));
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, true);
-  if (!token.has_value() || token->empty()) {
-    FAIL();
-  }
-  std::cout << "Got token: " << *token << std::endl;
+  std::cout << "Got token: " << token << std::endl;
 
   // Process ready
   client->ready.connect([=](const DigitalStage::Api::Store *store) {
@@ -120,8 +118,8 @@ TEST(ClientAsyncTest, StageWorkflow) {
   initialDevice["type"] = "ov";
   initialDevice["canAudio"] = false;
   initialDevice["canVideo"] = false;
-  std::cout << "Connecting with token " << *token << " ...   ";
-  EXPECT_NO_THROW(client->connect(*token, initialDevice));
+  std::cout << "Connecting with token " << token << " ...   ";
+  EXPECT_NO_THROW(client->connect(token, initialDevice));
 
   std::this_thread::sleep_for(std::chrono::seconds(10));
   std::cout << "Closing connection...   ";
@@ -134,12 +132,12 @@ TEST(ClientAsyncTest, StageWorkflow) {
 
   std::cout << "Replace client and connect...";
   client = std::make_shared<DigitalStage::Api::Client>(API_URL);
-  EXPECT_NO_THROW(client->connect(*token, initialDevice));
+  EXPECT_NO_THROW(client->connect(token, initialDevice));
 
   std::cout << "Replace client without disconnecting...";
   EXPECT_NO_THROW(client.reset());
 
   std::cout << "Signing out...   ";
-  auth->signOutSync(*token);
+  auth->signOutSync(token);
   std::cout << "[SIGNED OUT]" << std::endl;
 }

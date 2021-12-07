@@ -101,6 +101,8 @@ set(API_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Events.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Store.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Types.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Audio/AudioMixer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Audio/AudioMixer.tpp
         )
 set(API_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cc
@@ -238,7 +240,6 @@ if (BUILD_TESTS)
     add_executable(${PROJECT_NAME}-test
             EXCLUDE_FROM_ALL
             ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/AuthServiceTest.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientAsyncTest.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
             )

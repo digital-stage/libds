@@ -10,12 +10,9 @@
 TEST(ClientTest, StageWorkflow) {
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
-  const auto token = auth->signInSync("test@digital-stage.org", "test123test123test!");
+  std::string token;
+  EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.org", "test123test123test!"));
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, false);
-  if (!token.has_value()) {
-    FAIL();
-    return;
-  }
 
   // Process ready
   std::atomic<bool> ready = false;
@@ -29,7 +26,7 @@ TEST(ClientTest, StageWorkflow) {
   initialDevice["canAudio"] = false;
   initialDevice["canVideo"] = false;
   std::cout << "Connecting...   ";
-  EXPECT_NO_THROW(client->connect(*token, initialDevice));
+  EXPECT_NO_THROW(client->connect(token, initialDevice));
   std::cout << "[CONNECTED]" << std::endl;
 
   int attempts = 0;
@@ -146,12 +143,12 @@ TEST(ClientTest, StageWorkflow) {
 
   std::cout << "Replace client and connect...";
   client = std::make_shared<DigitalStage::Api::Client>(API_URL);
-  EXPECT_NO_THROW(client->connect(*token, initialDevice));
+  EXPECT_NO_THROW(client->connect(token, initialDevice));
 
   std::cout << "Replace client without disconnecting...";
   EXPECT_NO_THROW(client.reset());
 
   std::cout << "Signing out...   ";
-  auth->signOutSync(*token);
+  auth->signOutSync(token);
   std::cout << "[SIGNED OUT]" << std::endl;
 }
