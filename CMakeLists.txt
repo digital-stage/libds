@@ -145,7 +145,8 @@ target_include_directories(${PROJECT_NAME}Auth PUBLIC
         $<INSTALL_INTERFACE:include>)
 target_include_directories(${PROJECT_NAME}AuthStatic PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:include>)
+        $<INSTALL_INTERFACE:include>
+        )
 if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(${PROJECT_NAME}Auth PRIVATE -Wall -Wextra -pedantic -Werror)
     target_compile_options(${PROJECT_NAME}AuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
@@ -202,11 +203,11 @@ install(
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 export(
-        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic
+        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic plog
         NAMESPACE ${PROJECT_NAME}::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
-        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic
+        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic plog
         EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
 install(
