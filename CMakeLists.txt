@@ -148,6 +148,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(${PROJECT_NAME}Auth PRIVATE -Wall -Wextra -pedantic -Werror)
     target_compile_options(${PROJECT_NAME}AuthStatic PRIVATE -Wall -Wextra -pedantic -Werror)
 endif ()
+
 target_link_libraries(${PROJECT_NAME}Auth
         PUBLIC
         nlohmann_json::nlohmann_json
