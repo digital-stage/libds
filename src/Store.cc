@@ -10,7 +10,7 @@ Store::Store()
 std::optional<Device> Store::getLocalDevice() const {
   std::lock_guard<std::recursive_mutex> lock(this->local_device_id_mutex_);
   if (localDeviceId_) {
-    return this->devices.get(localDeviceId_.value());
+    return this->devices.get(*localDeviceId_);
   }
   return std::nullopt;
 }

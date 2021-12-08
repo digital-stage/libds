@@ -89,6 +89,7 @@ if (NOT TARGET plog)
     )
     FetchContent_MakeAvailable(plog)
 endif (NOT TARGET plog)
+find_package(nlohmann_json 3.2.0 REQUIRED)
 
 
 #################################################

@@ -459,10 +459,12 @@ void Client::connect(const std::string &apiToken,
             this->groupAdded(item.get<Group>(), getStore());
           }
         }
-        for (const auto &item: payload["customGroups"]) {
-          store_->customGroups.create(item);
-          this->customGroupAdded(
-              item.get<CustomGroup>(), getStore());
+        if(payload.contains("customGroups")) {
+          for (const auto &item: payload["customGroups"]) {
+            store_->customGroups.create(item);
+            this->customGroupAdded(
+                item.get<CustomGroup>(), getStore());
+          }
         }
         for (const auto &item: payload["customGroupVolumes"]) {
           store_->customGroupVolumes.create(item);
