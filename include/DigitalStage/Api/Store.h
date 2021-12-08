@@ -202,87 +202,91 @@ namespace DigitalStage {
 
       // Groups
       StoreEntry<DigitalStage::Types::Group> groups;
-      std::vector<DigitalStage::Types::Group> getGroupsByStage(const std::string& stageId) const;
+      std::vector<DigitalStage::Types::Group> getGroupsByStage(const Types::ID_TYPE& stageId) const;
 
       // Stage members
       StoreEntry<DigitalStage::Types::StageMember> stageMembers;
       [[maybe_unused]] std::vector<DigitalStage::Types::StageMember>
-      getStageMembersByStage(const std::string& stageId) const;
+      getStageMembersByStage(const Types::ID_TYPE& stageId) const;
       std::vector<DigitalStage::Types::StageMember>
-      getStageMembersByGroup(const std::string& audio_trackId) const;
+      getStageMembersByGroup(const Types::ID_TYPE& audio_trackId) const;
 
       // Stage devices
       StoreEntry<DigitalStage::Types::StageDevice> stageDevices;
       std::vector<DigitalStage::Types::StageDevice>
-      getStageDevicesByStageMember(const std::string& stageMemberId) const;
+      getStageDevicesByStageMember(const Types::ID_TYPE& stageMemberId) const;
 
       // Video tracks
       StoreEntry<DigitalStage::Types::VideoTrack> videoTracks;
       std::vector<DigitalStage::Types::VideoTrack>
-      getVideoTracksByStageDevice(const std::string& stageDeviceId) const;
+      getVideoTracksByStageDevice(const Types::ID_TYPE& stageDeviceId) const;
 
       // Audio tracks
       StoreEntry<DigitalStage::Types::AudioTrack> audioTracks;
       std::vector<DigitalStage::Types::AudioTrack>
-      getAudioTracksByStageDevice(const std::string& stageDeviceId) const;
-      std::vector<DigitalStage::Types::AudioTrack> getAudioTracksByStageMember(const std::string& stageMemberId) const;
-      std::vector<DigitalStage::Types::AudioTrack> getAudioTracksByGroup(const std::string& groupId) const;
+      getAudioTracksByStageDevice(const Types::ID_TYPE& stageDeviceId) const;
+      std::vector<DigitalStage::Types::AudioTrack> getAudioTracksByStageMember(const Types::ID_TYPE& stageMemberId) const;
+      std::vector<DigitalStage::Types::AudioTrack> getAudioTracksByGroup(const Types::ID_TYPE& groupId) const;
       std::vector<DigitalStage::Types::AudioTrack> getLocalAudioTracks() const;
+
+      // Custom Groups
+      StoreEntry<DigitalStage::Types::CustomGroup> customGroups;
+      std::vector<DigitalStage::Types::CustomGroup> getCustomGroupByGroupAndTargetGroup(const Types::ID_TYPE& groupId, const Types::ID_TYPE& targetGroupId) const;
 
       // Custom group positions
       StoreEntry<DigitalStage::Types::CustomGroupPosition> customGroupPositions;
       std::optional<DigitalStage::Types::CustomGroupPosition>
-      getCustomGroupPositionByGroupAndDevice(const std::string& groupId,
-                                             const std::string& deviceId) const;
+      getCustomGroupPositionByGroupAndDevice(const Types::ID_TYPE& groupId,
+                                             const Types::ID_TYPE& deviceId) const;
 
       // Custom group volumes
       StoreEntry<DigitalStage::Types::CustomGroupVolume> customGroupVolumes;
       std::optional<DigitalStage::Types::CustomGroupVolume>
-      getCustomGroupVolumeByGroupAndDevice(const std::string& groupId,
-                                           const std::string& deviceId) const;
+      getCustomGroupVolumeByGroupAndDevice(const Types::ID_TYPE& groupId,
+                                           const Types::ID_TYPE& deviceId) const;
 
       // Custom stage member positions
       StoreEntry<DigitalStage::Types::CustomStageMemberPosition> customStageMemberPositions;
       [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageMemberPosition>
       getCustomStageMemberPositionByStageMemberAndDevice(
-          const std::string& stageMemberId, const std::string& deviceId) const;
+          const Types::ID_TYPE& stageMemberId, const Types::ID_TYPE& deviceId) const;
 
       // Custom stage member volumes
       StoreEntry<DigitalStage::Types::CustomStageMemberVolume> customStageMemberVolumes;
       [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageMemberVolume>
       getCustomStageMemberVolumeByStageMemberAndDevice(
-          const std::string& stageMemberId, const std::string& deviceId) const;
+          const Types::ID_TYPE& stageMemberId, const Types::ID_TYPE& deviceId) const;
 
       // Custom stage device positions
       StoreEntry<DigitalStage::Types::CustomStageDevicePosition> customStageDevicePositions;
       [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageDevicePosition>
       getCustomStageDevicePositionByStageDeviceAndDevice(
-          const std::string& stageDeviceId, const std::string& deviceId) const;
+          const Types::ID_TYPE& stageDeviceId, const Types::ID_TYPE& deviceId) const;
 
       // Custom stage device volumes
       StoreEntry<DigitalStage::Types::CustomStageDeviceVolume> customStageDeviceVolumes;
       [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageDeviceVolume>
       getCustomStageDeviceVolumeByStageDeviceAndDevice(
-          const std::string& stageDeviceId, const std::string& deviceId) const;
+          const Types::ID_TYPE& stageDeviceId, const Types::ID_TYPE& deviceId) const;
 
       // Custom audio track positions
       StoreEntry<DigitalStage::Types::CustomAudioTrackPosition> customAudioTrackPositions;
       [[maybe_unused]] std::optional<DigitalStage::Types::CustomAudioTrackPosition>
       getCustomAudioTrackPositionByAudioTrackAndDevice(
-          const std::string& audio_trackId,
-          const std::string& deviceId) const;
+          const Types::ID_TYPE& audio_trackId,
+          const Types::ID_TYPE& deviceId) const;
 
       // Custom audio track volumes
       StoreEntry<DigitalStage::Types::CustomAudioTrackVolume> customAudioTrackVolumes;
       [[maybe_unused]] std::optional<DigitalStage::Types::CustomAudioTrackVolume>
       getCustomAudioTrackVolumeByAudioTrackAndDevice(
-          const std::string& audio_trackId,
-          const std::string& deviceId) const;
+          const Types::ID_TYPE& audio_trackId,
+          const Types::ID_TYPE& deviceId) const;
 
       // Sound cards
       StoreEntry<DigitalStage::Types::SoundCard> soundCards;
       std::optional<DigitalStage::Types::SoundCard>
-      getSoundCardByDeviceAndDriverAndTypeAndLabel(const std::string& deviceId,
+      getSoundCardByDeviceAndDriverAndTypeAndLabel(const Types::ID_TYPE& deviceId,
                                                    const std::string& audioDriver,
                                                    const std::string& type,
                                                    const std::string& label) const;
@@ -302,22 +306,22 @@ namespace DigitalStage {
       bool isReady_;
 
       mutable std::recursive_mutex userId_mutex_;
-      std::optional<std::string> userId_;
+      std::optional<Types::ID_TYPE> userId_;
 
       mutable std::recursive_mutex stageId_mutex_;
-      std::optional<std::string> stageId_;
+      std::optional<Types::ID_TYPE> stageId_;
 
       mutable std::recursive_mutex stageMemberId_mutex_;
-      std::optional<std::string> stageMemberId_;
+      std::optional<Types::ID_TYPE> stageMemberId_;
 
       mutable std::recursive_mutex groupId_mutex_;
-      std::optional<std::string> groupId_;
+      std::optional<Types::ID_TYPE> groupId_;
 
       mutable std::recursive_mutex local_device_id_mutex_;
-      std::optional<std::string> localDeviceId_;
+      std::optional<Types::ID_TYPE> localDeviceId_;
 
       mutable std::recursive_mutex stage_device_id_mutex_;
-      std::optional<std::string> stageDeviceId_;
+      std::optional<Types::ID_TYPE> stageDeviceId_;
 
       mutable std::recursive_mutex turn_mutex_;
       std::optional<std::string> turn_username_;

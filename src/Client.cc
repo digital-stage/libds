@@ -108,7 +108,7 @@ void Client::connect(const std::string &apiToken,
         this->deviceAdded(device, getStore());
       } else if (event == RetrieveEvents::DEVICE_CHANGED) {
         store_->devices.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->deviceChanged(id, payload, getStore());
         auto localDeviceIdPtr = store_->getLocalDeviceId();
         if (localDeviceIdPtr && *localDeviceIdPtr == id) {
@@ -125,7 +125,7 @@ void Client::connect(const std::string &apiToken,
           }
         }
       } else if (event == RetrieveEvents::DEVICE_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         store_->devices.remove(id);
         this->deviceRemoved(id, getStore());
 
@@ -137,10 +137,10 @@ void Client::connect(const std::string &apiToken,
         this->stageAdded(payload.get<Stage>(), getStore());
       } else if (event == RetrieveEvents::STAGE_CHANGED) {
         store_->stages.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->stageChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::STAGE_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         store_->stages.remove(id);
         this->stageRemoved(id, getStore());
 
@@ -152,12 +152,27 @@ void Client::connect(const std::string &apiToken,
         this->groupAdded(payload.get<Group>(), getStore());
       } else if (event == RetrieveEvents::GROUP_CHANGED) {
         store_->groups.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->groupChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::GROUP_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         store_->groups.remove(id);
         this->groupRemoved(id, getStore());
+
+        /*
+         * CUSTOM GROUP
+         */
+      } else if (event == RetrieveEvents::CUSTOM_GROUP_ADDED) {
+        store_->customGroups.create(payload);
+        this->customGroupAdded(payload.get<CustomGroup>(), getStore());
+      } else if (event == RetrieveEvents::CUSTOM_GROUP_CHANGED) {
+        store_->stageMembers.update(payload);
+        const ID_TYPE id = payload["_id"];
+        this->customGroupChanged(id, payload, getStore());
+      } else if (event == RetrieveEvents::CUSTOM_GROUP_REMOVED) {
+        const ID_TYPE id = payload;
+        store_->customGroups.remove(id);
+        this->customGroupRemoved(id, getStore());
 
         /*
          * CUSTOM GROUP VOLUME AND POSITIONS
@@ -168,10 +183,10 @@ void Client::connect(const std::string &apiToken,
                                        getStore());
       } else if (event == RetrieveEvents::CUSTOM_GROUP_POSITION_CHANGED) {
         store_->customGroupPositions.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->customGroupPositionChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_GROUP_POSITION_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto custom_position = store_->customGroupPositions.get(id);
         if (custom_position) {
           store_->customGroupPositions.remove(id);
@@ -183,10 +198,10 @@ void Client::connect(const std::string &apiToken,
                                      getStore());
       } else if (event == RetrieveEvents::CUSTOM_GROUP_VOLUME_CHANGED) {
         store_->customGroupVolumes.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->customGroupVolumeChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_GROUP_VOLUME_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto custom_volume = store_->customGroupVolumes.get(id);
         if (custom_volume) {
           store_->customGroupVolumes.remove(id);
@@ -201,10 +216,10 @@ void Client::connect(const std::string &apiToken,
         this->stageMemberAdded(payload.get<StageMember>(), getStore());
       } else if (event == RetrieveEvents::STAGE_MEMBER_CHANGED) {
         store_->stageMembers.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->stageMemberChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::STAGE_MEMBER_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         store_->stageMembers.remove(id);
         this->stageMemberRemoved(id, getStore());
 
@@ -217,10 +232,10 @@ void Client::connect(const std::string &apiToken,
             payload.get<CustomStageMemberPosition>(), getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_CHANGED) {
         store_->customStageMemberPositions.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->customStageMemberPositionChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto custom_position = store_->customStageMemberPositions.get(id);
         if (custom_position) {
           store_->customStageMemberPositions.remove(id);
@@ -232,10 +247,10 @@ void Client::connect(const std::string &apiToken,
             payload.get<CustomStageMemberVolume>(), getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_CHANGED) {
         store_->customStageMemberVolumes.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->customStageMemberVolumeChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto custom_volume = store_->customStageMemberVolumes.get(id);
         if (custom_volume) {
           store_->customStageMemberVolumes.remove(id);
@@ -257,10 +272,10 @@ void Client::connect(const std::string &apiToken,
         this->stageDeviceAdded(stageDevice, getStore());
       } else if (event == RetrieveEvents::STAGE_DEVICE_CHANGED) {
         store_->stageDevices.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->stageDeviceChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::STAGE_DEVICE_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto stageDevice = store_->stageDevices.get(id);
         if (stageDevice) {
           store_->stageDevices.remove(id);
@@ -282,10 +297,10 @@ void Client::connect(const std::string &apiToken,
             payload.get<CustomStageDevicePosition>(), getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_CHANGED) {
         store_->customStageDevicePositions.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->customStageDevicePositionChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto custom_position = store_->customStageDevicePositions.get(id);
         if (custom_position) {
           store_->customStageDevicePositions.remove(id);
@@ -297,10 +312,10 @@ void Client::connect(const std::string &apiToken,
             payload.get<CustomStageDeviceVolume>(), getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_CHANGED) {
         store_->customStageDeviceVolumes.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->customStageDeviceVolumeChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto custom_volume = store_->customStageDeviceVolumes.get(id);
         if (custom_volume) {
           store_->customStageDeviceVolumes.remove(id);
@@ -316,10 +331,10 @@ void Client::connect(const std::string &apiToken,
                               getStore());
       } else if (event == RetrieveEvents::VIDEO_TRACK_CHANGED) {
         store_->videoTracks.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->videoTrackChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::VIDEO_TRACK_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto track = store_->videoTracks.get(id);
         store_->videoTracks.remove(id);
         this->videoTrackRemoved(*track, getStore());
@@ -333,10 +348,10 @@ void Client::connect(const std::string &apiToken,
                               getStore());
       } else if (event == RetrieveEvents::AUDIO_TRACK_CHANGED) {
         store_->audioTracks.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->audioTrackChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::AUDIO_TRACK_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto track = store_->audioTracks.get(id);
         store_->audioTracks.remove(id);
         this->audioTrackRemoved(*track, getStore());
@@ -352,11 +367,11 @@ void Client::connect(const std::string &apiToken,
       } else if (event ==
           RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_CHANGED) {
         store_->customAudioTrackPositions.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->customAudioTrackPositionChanged(id, payload, getStore());
       } else if (event ==
           RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto custom_position = store_->customAudioTrackPositions.get(id);
         if (custom_position) {
           store_->customAudioTrackPositions.remove(id);
@@ -370,11 +385,11 @@ void Client::connect(const std::string &apiToken,
       } else if (event ==
           RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_CHANGED) {
         store_->customAudioTrackVolumes.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->customAudioTrackVolumeChanged(id, payload, getStore());
       } else if (event ==
           RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         auto custom_volume = store_->customAudioTrackVolumes.get(id);
         if (custom_volume) {
           store_->customAudioTrackVolumes.remove(id);
@@ -389,10 +404,10 @@ void Client::connect(const std::string &apiToken,
         this->userAdded(payload.get<User>(), getStore());
       } else if (event == RetrieveEvents::USER_CHANGED) {
         store_->users.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->userChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::USER_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         store_->users.remove(id);
         this->userRemoved(id, getStore());
 
@@ -404,7 +419,7 @@ void Client::connect(const std::string &apiToken,
         this->soundCardAdded(payload.get<SoundCard>(), getStore());
       } else if (event == RetrieveEvents::SOUND_CARD_CHANGED) {
         store_->soundCards.update(payload);
-        const std::string id = payload["_id"];
+        const ID_TYPE id = payload["_id"];
         this->soundCardChanged(id, payload, getStore());
         auto localDevice = store_->getLocalDevice();
         if (localDevice) {
@@ -416,7 +431,7 @@ void Client::connect(const std::string &apiToken,
           }
         }
       } else if (event == RetrieveEvents::SOUND_CARD_REMOVED) {
-        const std::string id = payload;
+        const ID_TYPE id = payload;
         store_->soundCards.remove(id);
         this->soundCardRemoved(id, getStore());
 
@@ -443,6 +458,11 @@ void Client::connect(const std::string &apiToken,
             store_->groups.create(item);
             this->groupAdded(item.get<Group>(), getStore());
           }
+        }
+        for (const auto &item: payload["customGroups"]) {
+          store_->customGroups.create(item);
+          this->customGroupAdded(
+              item.get<CustomGroup>(), getStore());
         }
         for (const auto &item: payload["customGroupVolumes"]) {
           store_->customGroupVolumes.create(item);

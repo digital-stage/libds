@@ -33,6 +33,9 @@ namespace DigitalStage {
       STAGE_DEVICE_ADDED,
       STAGE_DEVICE_CHANGED,
       STAGE_DEVICE_REMOVED,
+      CUSTOM_GROUP_ADDED,
+      CUSTOM_GROUP_CHANGED,
+      CUSTOM_GROUP_REMOVED,
       CUSTOM_GROUP_VOLUME_ADDED,
       CUSTOM_GROUP_VOLUME_CHANGED,
       CUSTOM_GROUP_VOLUME_REMOVED,
@@ -123,6 +126,9 @@ namespace DigitalStage {
       extern const std::string STAGE_DEVICE_ADDED;
       extern const std::string STAGE_DEVICE_CHANGED;
       extern const std::string STAGE_DEVICE_REMOVED;
+    extern const std::string CUSTOM_GROUP_ADDED;
+    extern const std::string CUSTOM_GROUP_CHANGED;
+    extern const std::string CUSTOM_GROUP_REMOVED;
       extern const std::string CUSTOM_GROUP_VOLUME_ADDED;
       extern const std::string CUSTOM_GROUP_VOLUME_CHANGED;
       extern const std::string CUSTOM_GROUP_VOLUME_REMOVED;

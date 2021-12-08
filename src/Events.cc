@@ -8,7 +8,7 @@ const std::string SendEvents::CHANGE_SOUND_CARD = "change-sound-card";
 const std::string SendEvents::CREATE_AUDIO_TRACK =
     "create-audio-track";
 const std::string SendEvents::CHANGE_AUDIO_TRACK =
-    "create-audio-track";
+    "change-audio-track";
 const std::string SendEvents::REMOVE_AUDIO_TRACK =
     "remove-audio-track";
 const std::string SendEvents::SEND_P2P_RESTART =
@@ -58,6 +58,9 @@ const std::string RetrieveEvents::USER_REMOVED = "u-r";
 const std::string RetrieveEvents::GROUP_ADDED = "g-a";
 const std::string RetrieveEvents::GROUP_CHANGED = "g-c";
 const std::string RetrieveEvents::GROUP_REMOVED = "g-r";
+const std::string RetrieveEvents::CUSTOM_GROUP_ADDED = "c-g-a";
+const std::string RetrieveEvents::CUSTOM_GROUP_CHANGED = "c-g-c";
+const std::string RetrieveEvents::CUSTOM_GROUP_REMOVED = "c-g-r";
 const std::string RetrieveEvents::STAGE_MEMBER_ADDED = "sm-a";
 const std::string RetrieveEvents::STAGE_MEMBER_CHANGED = "sm-c";
 const std::string RetrieveEvents::STAGE_MEMBER_REMOVED = "sm-r";

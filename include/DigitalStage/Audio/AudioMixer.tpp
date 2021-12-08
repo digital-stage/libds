@@ -6,8 +6,10 @@
 using namespace DigitalStage::Audio;
 
 template<class T>
-AudioMixer<T>::AudioMixer(std::shared_ptr<DigitalStage::Api::Client> client)
-    : client_(std::move(client)), token_(std::make_shared<DigitalStage::Api::Client::Token>()) {
+AudioMixer<T>::AudioMixer(std::shared_ptr<DigitalStage::Api::Client> client, bool use_balance)
+    : client_(std::move(client)),
+      token_(std::make_shared<DigitalStage::Api::Client::Token>()),
+      use_balance_(use_balance) {
   attachHandlers();
 }
 
@@ -216,15 +218,9 @@ template<class T>
 double AudioMixer<T>::calculateBalance(double balance, bool is_local) {
   PLOGI << "balance: " << std::to_string(balance) << " for " << (is_local ? "local" : "foreign");
   if (is_local) {
-    if (balance > 0.5) {
-      return 1 - balance;
-    }
-    return 1;
+    return sqrtf(0.5f * (1.0f - balance));
   } else {
-    if (balance < 0.5) {
-      return balance;
-    }
-    return 1;
+    return sqrtf(0.5f * (1.0f + balance));
   }
 }
 
@@ -234,9 +230,6 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
   // Get this device ID
   auto local_device_id = store.getLocalDeviceId();
   assert(local_device_id);
-  // Get balance (0 = only me, 1 = only others)
-  auto balance = calculateBalance(store.getLocalDevice()->balance, audio_track.deviceId == *local_device_id);
-  PLOGI << "Results in " << balance;
 
   auto custom_audio_track_volume =
       store.getCustomAudioTrackVolumeByAudioTrackAndDevice(audio_track._id, *local_device_id);
@@ -263,7 +256,11 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
   if (group) {
     volume *= custom_group_volume ? custom_group_volume->volume : group->volume;
   }
-  volume *= balance;
+  // Get balance (0 = only me, 1 = only others)
+  if (use_balance_) {
+    auto balance = calculateBalance(store.getLocalDevice()->balance, audio_track.deviceId == *local_device_id);
+    volume *= balance;
+  }
 
   bool muted =
       (custom_stage_member_volume ? custom_stage_member_volume->muted : stage_member->muted) ||
@@ -281,7 +278,7 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
 }
 
 template<class T>
-std::optional<VolumeInfo < T>>
+std::optional<VolumeInfo<T>>
 AudioMixer<T>::getGain(const std::string &audio_track_id) const {
   if (volume_map_.count(audio_track_id)) {
     return volume_map_.at(audio_track_id);
