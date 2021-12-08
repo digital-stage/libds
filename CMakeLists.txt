@@ -74,21 +74,8 @@ option(BUILD_TESTS "Build tests" OFF)
 #################################################
 include(FetchContent)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libteckos EXCLUDE_FROM_ALL)
-if (NOT TARGET sigslot)
-    FetchContent_Declare(
-            sigslot
-            GIT_REPOSITORY https://github.com/palacaze/sigslot
-            GIT_TAG e41c6e62edfa67b6402b17a627dca698a14f47a8 # v1.2.1
-    )
-    FetchContent_MakeAvailable(sigslot)
-endif (NOT TARGET sigslot)
-if (NOT TARGET plog)
-    FetchContent_Declare(
-            plog
-            GIT_REPOSITORY https://github.com/SergiusTheBest/plog.git
-    )
-    FetchContent_MakeAvailable(plog)
-endif (NOT TARGET plog)
+find_package(PalSigslot REQUIRED)
+find_package(plog REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 
@@ -134,13 +121,13 @@ target_link_libraries(${PROJECT_NAME}Api
         PUBLIC
         teckos::teckos
         Pal::Sigslot
-        plog
+        plog::plog
         )
 target_link_libraries(${PROJECT_NAME}ApiStatic
         PUBLIC
         teckos::teckosStatic
         Pal::Sigslot
-        plog
+        plog::plog
         )
 
 
@@ -167,13 +154,13 @@ target_link_libraries(${PROJECT_NAME}Auth
         PUBLIC
         nlohmann_json::nlohmann_json
         teckos::teckos
-        plog
+        plog::plog
         )
 target_link_libraries(${PROJECT_NAME}AuthStatic
         PUBLIC
         nlohmann_json::nlohmann_json
         teckos::teckosStatic
-        plog
+        plog::plog
         )
 
 
@@ -215,11 +202,11 @@ install(
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 export(
-        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth sigslot ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic plog
+        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic
         NAMESPACE ${PROJECT_NAME}::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
-        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth sigslot ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic plog
+        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic
         EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
 install(

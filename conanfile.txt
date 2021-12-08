@@ -2,6 +2,8 @@
 cpprestsdk/2.10.18
 ixwebsocket/11.2.4
 nlohmann_json/3.10.4
+sigslot/1.2.1
+plog/1.1.5
 gtest/cci.20210126
 
 [generators]

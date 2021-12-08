@@ -126,9 +126,7 @@ int main(int argc, char* argv[])
     std::string emailStr(email, email + strlen(email));
     std::string passwordStr(password, password + strlen(password));
     auto apiToken = authService.signInSync(emailStr, passwordStr);
-    if(!apiToken)
-      throw new std::runtime_error("Cloud not sign in");
-    std::cout << "Token: " << *apiToken << std::endl;
+    std::cout << "Token: " << apiToken << std::endl;
 
     nlohmann::json initialDevice;
     initialDevice["uuid"] = "123456";
@@ -171,7 +169,7 @@ int main(int argc, char* argv[])
     client->stageMemberRemoved.connect(
         [](const auto&, const Store* s) { printStage(s); });
 
-    client->connect(*apiToken, initialDevice);
+    client->connect(apiToken, initialDevice);
 
     std::cout << "Started client" << std::endl;
   }
