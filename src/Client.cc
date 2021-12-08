@@ -2,16 +2,14 @@
 #include "DigitalStage/Api/Events.h"
 
 #include <exception>
-#include <iostream>
 #include <memory>
-#include <plog/Log.h>
 #include <utility>
+#include <iostream>
 
 using namespace DigitalStage::Api;
 
 Client::Client(std::string apiUrl, bool async_events)
     : apiUrl_(std::move(apiUrl)) {
-  PLOGD << "New client for " << apiUrl;
   store_ = std::make_unique<Store>();
   wsclient_ = std::make_unique<teckos::client>(async_events);
   wsclient_->setReconnect(true);
@@ -39,7 +37,6 @@ bool Client::isConnected() {
 
 void Client::connect(const std::string &apiToken,
                      const nlohmann::json &initialDevice) {
-  PLOGD << "Connecting with apiToken=" << apiToken << " and initialDevice=" << initialDevice.dump();
   // Set handler
   wsclient_->on_disconnected([this](bool expected) {
     disconnected(expected);
@@ -47,8 +44,7 @@ void Client::connect(const std::string &apiToken,
   wsclient_->setMessageHandler([&](const nlohmann::json &j) {
     try {
       if (!j.is_array()) {
-        PLOGE << "WARNING: not an array: " << j.dump();
-        std::cerr << "WARNING: not an array: " << j.dump() << std::endl;
+        std::cerr << "WARNING: invalid payload received - not an array: " << j.dump() << std::endl;
         return;
       }
       const std::string &event = j[0];
@@ -60,8 +56,6 @@ void Client::connect(const std::string &apiToken,
 #else
       std::cout << "[EVENT] " << event << std::endl;
 #endif
-#else
-      PLOGD << "[EVENT] " << event << " " << payload.dump();
 #endif
 
       if (event == RetrieveEvents::READY) {
@@ -459,7 +453,7 @@ void Client::connect(const std::string &apiToken,
             this->groupAdded(item.get<Group>(), getStore());
           }
         }
-        if(payload.contains("customGroups")) {
+        if (payload.contains("customGroups")) {
           for (const auto &item: payload["customGroups"]) {
             store_->customGroups.create(item);
             this->customGroupAdded(
@@ -571,7 +565,6 @@ void Client::connect(const std::string &apiToken,
       } else {
         std::cerr << "Unknown event " << event;
       }
-      PLOGD << "All event handlers for '" << event << "'" << " finished";
     }
     catch (const std::exception &e) {
       std::cerr << "[ERROR] std::exception: " << e.what();
@@ -590,9 +583,9 @@ void Client::send(const std::string &event,
                   const nlohmann::json &message) {
 #ifdef DEBUG_EVENTS
 #ifdef DEBUG_PAYLOADS
-  PLOGD << "[SENDING] " << event << ": " << message;
+  std::cout << "[SENDING] " << event << ": " << message;
 #else
-  PLOGD << "[SENDING] " << event;
+  std::cout << "[SENDING] " << event;
 #endif
 #endif
   if (!wsclient_)
@@ -605,9 +598,9 @@ void Client::send(
     teckos::Callback callback) {
 #ifdef DEBUG_EVENTS
 #ifdef DEBUG_PAYLOADS
-  PLOGD << "[SENDING] " << event << ": " << message;
+  std::cout << "[SENDING] " << event << ": " << message;
 #else
-  PLOGD << "[SENDING] " << event;
+  std::cout << "[SENDING] " << event;
 #endif
 #endif
   if (!wsclient_)
@@ -627,14 +620,13 @@ void Client::send(
 
 [[maybe_unused]] std::future<std::pair<std::string,
                                        std::string>>
-Client::decodeInvitationCode(const std::string& code)
-{
+Client::decodeInvitationCode(const std::string &code) {
   using InvitePromise = std::promise<std::pair<std::string, std::string>>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->send("decode-invite", code, [promise](const std::vector<nlohmann::json>& result) {
-    if(result.size() > 1) {
+  wsclient_->send("decode-invite", code, [promise](const std::vector<nlohmann::json> &result) {
+    if (result.size() > 1) {
       promise->set_value({result[1]["stageId"], result[1]["groupId"]});
-    } else if(result.size() == 1) {
+    } else if (result.size() == 1) {
       promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
     } else {
       promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
@@ -643,18 +635,17 @@ Client::decodeInvitationCode(const std::string& code)
   return promise->get_future();
 }
 
-[[maybe_unused]] std::future<std::string> Client::revokeInvitationCode(const std::string& stageId,
-                                                                       const std::string& groupId)
-{
+[[maybe_unused]] std::future<std::string> Client::revokeInvitationCode(const std::string &stageId,
+                                                                       const std::string &groupId) {
   nlohmann::json payload;
   payload["stageId"] = stageId;
   payload["groupId"] = groupId;
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->send("revoke-invite", payload, [promise](const std::vector<nlohmann::json>& result) {
-    if(result.size() > 1) {
+  wsclient_->send("revoke-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
+    if (result.size() > 1) {
       promise->set_value(result[1]);
-    } else if(result.size() == 1) {
+    } else if (result.size() == 1) {
       promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
     } else {
       promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
@@ -663,18 +654,17 @@ Client::decodeInvitationCode(const std::string& code)
   return promise->get_future();
 }
 
-[[maybe_unused]] std::future<std::string> Client::encodeInvitationCode(const std::string& stageId,
-                                                                       const std::string& groupId)
-{
+[[maybe_unused]] std::future<std::string> Client::encodeInvitationCode(const std::string &stageId,
+                                                                       const std::string &groupId) {
   nlohmann::json payload;
   payload["stageId"] = stageId;
   payload["groupId"] = groupId;
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
-  wsclient_->send("encode-invite", payload, [promise](const std::vector<nlohmann::json>& result) {
-    if(result.size() > 1) {
+  wsclient_->send("encode-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
+    if (result.size() > 1) {
       promise->set_value(result[1]);
-    } else if(result.size() == 1) {
+    } else if (result.size() == 1) {
       promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
     } else {
       promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));

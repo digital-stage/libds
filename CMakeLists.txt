@@ -75,7 +75,6 @@ option(BUILD_TESTS "Build tests" OFF)
 include(FetchContent)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libteckos EXCLUDE_FROM_ALL)
 find_package(PalSigslot REQUIRED)
-find_package(plog REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 
@@ -121,13 +120,11 @@ target_link_libraries(${PROJECT_NAME}Api
         PUBLIC
         teckos::teckos
         Pal::Sigslot
-        plog::plog
         )
 target_link_libraries(${PROJECT_NAME}ApiStatic
         PUBLIC
         teckos::teckosStatic
         Pal::Sigslot
-        plog::plog
         )
 
 
@@ -155,13 +152,11 @@ target_link_libraries(${PROJECT_NAME}Auth
         PUBLIC
         nlohmann_json::nlohmann_json
         teckos::teckos
-        plog::plog
         )
 target_link_libraries(${PROJECT_NAME}AuthStatic
         PUBLIC
         nlohmann_json::nlohmann_json
         teckos::teckosStatic
-        plog::plog
         )
 
 

@@ -5,10 +5,6 @@
 #include <nlohmann/json.hpp>
 #include <thread>
 #include <optional>
-// Logger
-#include <plog/Appenders/ConsoleAppender.h>
-#include <plog/Formatters/TxtFormatter.h>
-#include <plog/Init.h>
 
 using namespace DigitalStage::Api;
 using namespace DigitalStage::Auth;
@@ -114,8 +110,6 @@ int main(int argc, char* argv[])
     std::wcout << "Call this with email and password as parameters" << std::endl;
     return -1;
   }
-  static plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
-  plog::init(plog::debug, &consoleAppender);
 
   auto email = argv[1];
   auto password = argv[2];

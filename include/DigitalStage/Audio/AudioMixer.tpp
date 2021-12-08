@@ -1,7 +1,6 @@
 //
 // Created by Tobias Hegemann on 04.11.21.
 //
-#include <plog/Log.h>
 
 using namespace DigitalStage::Audio;
 
@@ -39,7 +38,6 @@ template<class T>
 void AudioMixer<T>::attachHandlers() {
   // React to all changes of volume related entities and precalculate the resulting volume
   client_->ready.connect([this](const DigitalStage::Api::Store *store) {
-    PLOGD << "ready";
     auto audioTracks = store->audioTracks.getAll();
     for (const auto &audio_track: audioTracks) {
       volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
@@ -216,7 +214,6 @@ void AudioMixer<T>::attachHandlers() {
 
 template<class T>
 double AudioMixer<T>::calculateBalance(double balance, bool is_local) {
-  PLOGI << "balance: " << std::to_string(balance) << " for " << (is_local ? "local" : "foreign");
   if (is_local) {
     return sqrtf(0.5f * (1.0f - balance));
   } else {
@@ -269,8 +266,6 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
   if (group) {
     muted = (custom_group_volume ? custom_group_volume->muted : group->muted) || muted;
   }
-
-  PLOGD << "Got new volume for " << audio_track._id << ": " << volume << " " << (muted ? "(muted)" : "(unmuted)");
 
   std::pair<T, bool> pair = {volume, muted};
   onGainChanged(audio_track._id, pair);
