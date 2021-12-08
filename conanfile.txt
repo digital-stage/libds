@@ -1,6 +1,7 @@
 [requires]
 cpprestsdk/2.10.18
 ixwebsocket/11.2.4
+nlohmann_json/3.10.4
 gtest/cci.20210126
 
 [generators]
