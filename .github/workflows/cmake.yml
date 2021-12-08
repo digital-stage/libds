@@ -48,7 +48,7 @@ jobs:
           conan install -if build --build=missing .
       - name: Configure CMake
         run: |
-          cmake -S . -B build -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
       - name: Build with CMake
         run: |
           cmake --build build --config ${{ matrix.config.build_type }}

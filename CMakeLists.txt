@@ -74,8 +74,12 @@ option(BUILD_TESTS "Build tests" OFF)
 #################################################
 include(FetchContent)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libteckos EXCLUDE_FROM_ALL)
-find_package(PalSigslot REQUIRED)
-find_package(nlohmann_json 3.2.0 REQUIRED)
+if (NOT TARGET Pal::Sigslot)
+    find_package(PalSigslot REQUIRED)
+endif (NOT TARGET Pal::Sigslot)
+if (NOT TARGET nlohmann_json::nlohmann_json)
+    find_package(nlohmann_json 3.2.0 REQUIRED)
+endif (NOT TARGET nlohmann_json::nlohmann_json)
 
 
 #################################################
