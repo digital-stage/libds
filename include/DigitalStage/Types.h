@@ -339,6 +339,10 @@ struct AudioTrack : VolumeProperties, ThreeDimensionalProperties {
    * The channel on the source device (see deviceId)
    */
   std::optional<unsigned int> sourceChannel;
+  /**
+   * Channel (used by our PC client for uniqueness)
+   */
+  std::optional<std::string> name;
   std::optional<std::string> ovSourcePort;
 };
 
@@ -916,6 +920,7 @@ inline void to_json(json &j, const AudioTrack &p) {
            {"rX", p.rX},
            {"rY", p.rY},
            {"rZ", p.rZ}};
+  optional_to_json(j, "name", p.name);
   optional_to_json(j, "sourceChannel", p.sourceChannel);
   optional_to_json(j, "ovSourcePort", p.ovSourcePort);
 }
@@ -928,6 +933,7 @@ inline void from_json(const json &j, AudioTrack &p) {
   j.at("deviceId").get_to(p.deviceId);
   j.at("userId").get_to(p.userId);
   j.at("type").get_to(p.type);
+  optional_from_json(j, "name", p.name);
   optional_from_json(j, "sourceChannel", p.sourceChannel);
   optional_from_json(j, "ovSourcePort", p.ovSourcePort);
   from_json(j, static_cast<VolumeProperties &>(p));
