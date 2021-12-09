@@ -1,10 +1,17 @@
 [requires]
+# Common
+nlohmann_json/3.10.4
+sigslot/1.2.1
+
+# when using cpprestsdk for libteckos
 cpprestsdk/2.10.18
+
+# when using IXWebSocket for libteckos
 mbedtls/3.0.0
 libdeflate/1.8
 zlib/1.2.11
-nlohmann_json/3.10.4
-sigslot/1.2.1
+
+# Testing
 gtest/cci.20210126
 
 [generators]
