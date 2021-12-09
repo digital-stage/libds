@@ -110,10 +110,6 @@ target_include_directories(${PROJECT_NAME}Api PUBLIC
 target_include_directories(${PROJECT_NAME}ApiStatic PUBLIC
         $<BUILD_INTERFACE:${INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
-if (CMAKE_COMPILER_IS_GNUCC)
-    target_compile_options(${PROJECT_NAME}Api PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_compile_options(${PROJECT_NAME}Static PRIVATE -Wall -Wextra -pedantic -Werror)
-endif ()
 if (LIBDS_DEBUG_EVENTS)
     target_compile_definitions(${PROJECT_NAME}Api PRIVATE DEBUG_EVENTS)
     if (LIBDS_DEBUG_PAYLOADS)
