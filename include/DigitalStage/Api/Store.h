@@ -18,7 +18,7 @@ namespace DigitalStage {
     template <typename TYPE>
     class StoreEntry {
     public:
-      std::optional<TYPE> get(const std::string& id) const
+      std::optional<TYPE> get(const Types::ID_TYPE& id) const
       {
         std::lock_guard<std::recursive_mutex> lock(mutex_store_);
         if(storeEntry_.count(id) > 0) {
@@ -40,18 +40,18 @@ namespace DigitalStage {
       void create(const json& payload)
       {
         std::lock_guard<std::recursive_mutex> lock(mutex_store_);
-        const std::string _id = payload.at("_id").get<std::string>();
+        const Types::ID_TYPE _id = payload.at("_id").get<std::string>();
         storeEntry_[_id] = payload;
       }
 
       void update(const json& payload)
       {
-        const std::string& id = payload.at("_id").get<std::string>();
+        const Types::ID_TYPE& id = payload.at("_id").get<std::string>();
         std::lock_guard<std::recursive_mutex> lock(mutex_store_);
         storeEntry_[id].merge_patch(payload);
       }
 
-      void remove(const std::string& id)
+      void remove(const Types::ID_TYPE& id)
       {
         std::lock_guard<std::recursive_mutex> lock(mutex_store_);
         storeEntry_.erase(id);
@@ -88,30 +88,30 @@ namespace DigitalStage {
        * @return this device
        */
       std::optional<DigitalStage::Types::Device> getLocalDevice() const;
-      void setLocalDeviceId(const std::string& id);
+      void setLocalDeviceId(const Types::ID_TYPE& id);
       /**
        * Returns the ID of this (local) device
        * @return
        */
-      std::optional<std::string> getLocalDeviceId() const;
+      std::optional<ID_TYPE> getLocalDeviceId() const;
 
       // Devices
       StoreEntry<DigitalStage::Types::Device> devices;
 
       // Local user
-      void setUserId(const std::string& id);
+      void setUserId(const Types::ID_TYPE& id);
       /**
        * Returns the ID of the current user
        * @return ID of the current user
        */
-      std::optional<std::string> getUserId() const;
-      void setStageMemberId(const std::string& id);
+      std::optional<ID_TYPE> getUserId() const;
+      void setStageMemberId(const Types::ID_TYPE& id);
       /**
        * Returns the ID of the current stage member
        * This will be null if the user is currently not inside any stage
        * @return ID of the current stage member or null
        */
-      [[maybe_unused]] std::optional<std::string> getStageMemberId() const;
+      [[maybe_unused]] std::optional<ID_TYPE> getStageMemberId() const;
 
       // Users
       StoreEntry<DigitalStage::Types::User> users;
@@ -119,7 +119,7 @@ namespace DigitalStage {
       /*
        * Stage management
        */
-      void setStageId(const std::string& id);
+      void setStageId(const Types::ID_TYPE& id);
       void resetStageId();
       /**
        * Returns the ID of the current stage.
@@ -127,7 +127,7 @@ namespace DigitalStage {
        * Use this variable to obtain, if the user is currently inside a stage.
        * @return ID of the current stage or null
        */
-      std::optional<std::string> getStageId() const;
+      std::optional<ID_TYPE> getStageId() const;
 
       /**
        * Return the current stage, if available
@@ -135,16 +135,16 @@ namespace DigitalStage {
        */
       std::optional<DigitalStage::Types::Stage> getStage() const;
 
-      void setGroupId(std::optional<std::string> id);
+      void setGroupId(std::optional<ID_TYPE> id);
       void resetGroupId();
       /**
        * Returns the ID of the current group.
        * This will return null if the user is currently not inside any stage.
        * @return ID of the current group or null
        */
-      [[maybe_unused]] std::optional<std::string> getGroupId() const;
+      [[maybe_unused]] std::optional<ID_TYPE> getGroupId() const;
 
-      void setStageDeviceId(const std::string& id);
+      void setStageDeviceId(const Types::ID_TYPE& id);
       void resetStageDeviceId();
       /**
        * Returns the ID of this (local) stage device.
@@ -152,7 +152,7 @@ namespace DigitalStage {
        * This will return null if the user is currently not inside any stage.
        * @return ID of this stage device or null
        */
-      std::optional<std::string> getStageDeviceId() const;
+      std::optional<ID_TYPE> getStageDeviceId() const;
       /**
        * Returns the this (local) stage device.
        * This will return null if the user is currently not inside any stage.
@@ -189,7 +189,7 @@ namespace DigitalStage {
        * Sets the given TURN/STUN username
        * @param username
        */
-      void setTurnPassword(const std::string& username);
+      void setTurnPassword(const Types::ID_TYPE& username);
 
       /**
        * Returns the password to authenticate on the TURN servers.
@@ -231,7 +231,7 @@ namespace DigitalStage {
 
       // Custom Groups
       StoreEntry<DigitalStage::Types::CustomGroup> customGroups;
-      std::vector<DigitalStage::Types::CustomGroup> getCustomGroupByGroupAndTargetGroup(const Types::ID_TYPE& groupId, const Types::ID_TYPE& targetGroupId) const;
+      std::optional<DigitalStage::Types::CustomGroup> getCustomGroupByGroupAndTargetGroup(const Types::ID_TYPE& groupId, const Types::ID_TYPE& targetGroupId) const;
 
       // Custom group positions
       StoreEntry<DigitalStage::Types::CustomGroupPosition> customGroupPositions;

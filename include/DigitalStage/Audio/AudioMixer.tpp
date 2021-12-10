@@ -227,6 +227,7 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
   // Get this device ID
   auto local_device_id = store.getLocalDeviceId();
   assert(local_device_id);
+  auto group_id = store.getGroupId();
 
   auto custom_audio_track_volume =
       store.getCustomAudioTrackVolumeByAudioTrackAndDevice(audio_track._id, *local_device_id);
@@ -243,6 +244,7 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
 
   // Get related group
   auto group = stage_member->groupId ? store.groups.get(*stage_member->groupId) : std::nullopt;
+  auto custom_group = (group_id && stage_member->groupId) ? store.getCustomGroupByGroupAndTargetGroup(*stage_member->groupId, *group_id) : std::nullopt;
   auto custom_group_volume =
       group ? store.getCustomGroupVolumeByGroupAndDevice(group->_id, *local_device_id) : std::nullopt;
 
@@ -250,7 +252,9 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
   double volume = custom_audio_track_volume ? custom_audio_track_volume->volume : audio_track.volume;
   volume *= custom_stage_device_volume ? custom_stage_device_volume->volume : stage_device->volume;
   volume *= custom_stage_member_volume ? custom_stage_member_volume->volume : stage_member->volume;
-  if (group) {
+  if(custom_group) {
+    volume *= custom_group_volume ? custom_group_volume->volume : custom_group->volume;
+  } else if (group) {
     volume *= custom_group_volume ? custom_group_volume->volume : group->volume;
   }
   // Get balance (0 = only me, 1 = only others)
@@ -263,7 +267,9 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
       (custom_stage_member_volume ? custom_stage_member_volume->muted : stage_member->muted) ||
           (custom_stage_device_volume ? custom_stage_device_volume->muted : stage_device->muted) ||
           (custom_audio_track_volume ? custom_audio_track_volume->muted : audio_track.muted);
-  if (group) {
+  if(custom_group) {
+    muted = (custom_group_volume ? custom_group_volume->muted : custom_group->muted) || muted;
+  } else if (group) {
     muted = (custom_group_volume ? custom_group_volume->muted : group->muted) || muted;
   }
 
