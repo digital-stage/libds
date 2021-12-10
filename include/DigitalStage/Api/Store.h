@@ -93,7 +93,7 @@ namespace DigitalStage {
        * Returns the ID of this (local) device
        * @return
        */
-      std::optional<ID_TYPE> getLocalDeviceId() const;
+      std::optional<Types::ID_TYPE> getLocalDeviceId() const;
 
       // Devices
       StoreEntry<DigitalStage::Types::Device> devices;
@@ -104,14 +104,14 @@ namespace DigitalStage {
        * Returns the ID of the current user
        * @return ID of the current user
        */
-      std::optional<ID_TYPE> getUserId() const;
+      std::optional<Types::ID_TYPE> getUserId() const;
       void setStageMemberId(const Types::ID_TYPE& id);
       /**
        * Returns the ID of the current stage member
        * This will be null if the user is currently not inside any stage
        * @return ID of the current stage member or null
        */
-      [[maybe_unused]] std::optional<ID_TYPE> getStageMemberId() const;
+      [[maybe_unused]] std::optional<Types::ID_TYPE> getStageMemberId() const;
 
       // Users
       StoreEntry<DigitalStage::Types::User> users;
@@ -127,7 +127,7 @@ namespace DigitalStage {
        * Use this variable to obtain, if the user is currently inside a stage.
        * @return ID of the current stage or null
        */
-      std::optional<ID_TYPE> getStageId() const;
+      std::optional<Types::ID_TYPE> getStageId() const;
 
       /**
        * Return the current stage, if available
@@ -135,14 +135,14 @@ namespace DigitalStage {
        */
       std::optional<DigitalStage::Types::Stage> getStage() const;
 
-      void setGroupId(std::optional<ID_TYPE> id);
+      void setGroupId(std::optional<Types::ID_TYPE> id);
       void resetGroupId();
       /**
        * Returns the ID of the current group.
        * This will return null if the user is currently not inside any stage.
        * @return ID of the current group or null
        */
-      [[maybe_unused]] std::optional<ID_TYPE> getGroupId() const;
+      [[maybe_unused]] std::optional<Types::ID_TYPE> getGroupId() const;
 
       void setStageDeviceId(const Types::ID_TYPE& id);
       void resetStageDeviceId();
@@ -152,7 +152,7 @@ namespace DigitalStage {
        * This will return null if the user is currently not inside any stage.
        * @return ID of this stage device or null
        */
-      std::optional<ID_TYPE> getStageDeviceId() const;
+      std::optional<Types::ID_TYPE> getStageDeviceId() const;
       /**
        * Returns the this (local) stage device.
        * This will return null if the user is currently not inside any stage.
