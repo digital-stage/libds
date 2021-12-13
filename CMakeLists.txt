@@ -11,7 +11,6 @@ project(DigitalStage
 #   Common configuration
 #
 #################################################
-include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(TARGET_NAME ${PROJECT_NAME})
@@ -20,42 +19,8 @@ set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/)
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "Install path for include files")
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "Install path for library files")
 
-if (APPLE)
-    if (EXISTS "/usr/local/opt/openssl/")
-        set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl/")
-    else ()
-        include("${PROJECT_SOURCE_DIR}/cmake/BrewResolver.cmake")
-    endif ()
-endif (APPLE)
-
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
-
-## Windows setup for Boost
-## If you wonder WTF that is about, check https://stackoverflow.com/questions/9742003/platform-detection-in-cmake
-if (WIN32)
-    macro(get_WIN32_WINNT version)
-        if (CMAKE_SYSTEM_VERSION)
-            set(ver ${CMAKE_SYSTEM_VERSION})
-            string(REGEX MATCH "^([0-9]+).([0-9])" ver ${ver})
-            string(REGEX MATCH "^([0-9]+)" verMajor ${ver})
-            # Check for Windows 10, b/c we'll need to convert to hex 'A'.
-            if ("${verMajor}" MATCHES "10")
-                set(verMajor "A")
-                string(REGEX REPLACE "^([0-9]+)" ${verMajor} ver ${ver})
-            endif ()
-            # Remove all remaining '.' characters.
-            string(REPLACE "." "" ver ${ver})
-            # Prepend each digit with a zero.
-            string(REGEX REPLACE "([0-9A-Z])" "0\\1" ver ${ver})
-            set(${version} "0x${ver}")
-        endif ()
-    endmacro()
-
-    get_WIN32_WINNT(ver)
-    add_definitions(-D_WIN32_WINNT=${ver})
-endif ()
-
+#list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 #################################################
 #
