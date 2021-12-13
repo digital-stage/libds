@@ -57,7 +57,7 @@ jobs:
       - name: Configure CMake (macOS 10.13+)
         if: ${{ matrix.config.os == 'macos-10.15' }}
         run: |
-          cmake -S . -B build -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+          cmake -S . -B build -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 -DUSE_IX_WEBSOCKET=ON -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
       - name: Build with CMake
         run: |
           cmake --build build --config ${{ matrix.config.build_type }}
