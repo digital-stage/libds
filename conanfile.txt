@@ -8,7 +8,7 @@ cpprestsdk/2.10.18
 openssl/1.1.1l
 
 # when using IXWebSocket for libteckos
-mbedtls/3.0.0
+mbedtls/2.25.0
 libdeflate/1.8
 zlib/1.2.11
 
