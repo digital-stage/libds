@@ -5,6 +5,7 @@ sigslot/1.2.1
 
 # when using cpprestsdk for libteckos
 cpprestsdk/2.10.18
+openssl/1.1.1l
 
 # when using IXWebSocket for libteckos
 mbedtls/3.0.0
