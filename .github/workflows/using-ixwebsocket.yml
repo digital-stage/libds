@@ -39,17 +39,17 @@ jobs:
       - name: Install Dependencies with Conan (Windows)
         if: ${{ matrix.config.os == 'windows-latest' }}
         run: |
-          conan install -if build --build=missing .
+          conan install -if build --build=missing conanfile-ix.py
       - name: Install Dependencies with Conan (macOS 10.13)
         if: ${{ matrix.config.os == 'macos-10.15' }}
         run: |
-          conan install -if build --build=missing -s os.version=10.13 .
+          conan install -if build --build=missing -s os.version=10.13 conanfile-ix.py
       - name: Install Dependencies with Conan (Ubuntu)
         if: ${{ matrix.config.os == 'ubuntu-latest' }}
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-          conan install -if build --build=missing .
+          conan install -if build --build=missing conanfile-ix.py
       - name: Configure CMake
         if: ${{ matrix.config.os != 'macos-10.15' }}
         run: |
