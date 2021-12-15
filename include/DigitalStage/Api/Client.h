@@ -53,10 +53,10 @@ class Client {
   sigslot::signal<const DigitalStage::Api::Store *> stageLeft;
 
   sigslot::signal<const Device, const DigitalStage::Api::Store *> deviceAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       deviceChanged;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       localDeviceChanged;
   /**
@@ -70,43 +70,43 @@ class Client {
    * This will send when another input sound card has been selected.
    * First parameter is the ID of the sound card as optional value
    */
-  sigslot::signal<const std::optional<std::string> &,
+  sigslot::signal<const std::optional<ID_TYPE> &,
                   const DigitalStage::Api::Store *>
       inputSoundCardSelected;
   /**
    * This will send when another output sound card has been selected.
    * First parameter is the ID of the sound card as optional value
    */
-  sigslot::signal<const std::optional<std::string> &,
+  sigslot::signal<const std::optional<ID_TYPE> &,
                   const DigitalStage::Api::Store *>
       outputSoundCardSelected;
-  sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       deviceRemoved;
 
   sigslot::signal<const Stage, const DigitalStage::Api::Store *> stageAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       stageChanged;
-  sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       stageRemoved;
 
   sigslot::signal<const Group, const DigitalStage::Api::Store *> groupAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       groupChanged;
-  sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       groupRemoved;
 
   sigslot::signal<const CustomGroup, const DigitalStage::Api::Store *> customGroupAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customGroupChanged;
-  sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomGroup, const DigitalStage::Api::Store *>
       customGroupRemoved;
 
   sigslot::signal<const CustomGroupPosition, const DigitalStage::Api::Store *>
       customGroupPositionAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customGroupPositionChanged;
   sigslot::signal<const CustomGroupPosition, const DigitalStage::Api::Store *>
@@ -114,7 +114,7 @@ class Client {
 
   sigslot::signal<const CustomGroupVolume, const DigitalStage::Api::Store *>
       customGroupVolumeAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customGroupVolumeChanged;
   sigslot::signal<const CustomGroupVolume, const DigitalStage::Api::Store *>
@@ -122,16 +122,16 @@ class Client {
 
   sigslot::signal<const StageMember, const DigitalStage::Api::Store *>
       stageMemberAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       stageMemberChanged;
-  sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       stageMemberRemoved;
 
   sigslot::signal<const CustomStageMemberPosition,
                   const DigitalStage::Api::Store *>
       customStageMemberPositionAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customStageMemberPositionChanged;
   sigslot::signal<const CustomStageMemberPosition, const DigitalStage::Api::Store *>
@@ -140,7 +140,7 @@ class Client {
   sigslot::signal<const CustomStageMemberVolume,
                   const DigitalStage::Api::Store *>
       customStageMemberVolumeAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customStageMemberVolumeChanged;
   sigslot::signal<const CustomStageMemberVolume, const DigitalStage::Api::Store *>
@@ -148,7 +148,7 @@ class Client {
 
   sigslot::signal<const StageDevice, const DigitalStage::Api::Store *>
       stageDeviceAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       stageDeviceChanged;
   sigslot::signal<const StageDevice &, const DigitalStage::Api::Store *>
@@ -157,7 +157,7 @@ class Client {
   sigslot::signal<const CustomStageDevicePosition,
                   const DigitalStage::Api::Store *>
       customStageDevicePositionAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customStageDevicePositionChanged;
   sigslot::signal<const CustomStageDevicePosition, const DigitalStage::Api::Store *>
@@ -166,7 +166,7 @@ class Client {
   sigslot::signal<const CustomStageDeviceVolume,
                   const DigitalStage::Api::Store *>
       customStageDeviceVolumeAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customStageDeviceVolumeChanged;
   sigslot::signal<const CustomStageDeviceVolume, const DigitalStage::Api::Store *>
@@ -174,21 +174,21 @@ class Client {
 
   sigslot::signal<const SoundCard, const DigitalStage::Api::Store *>
       soundCardAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       soundCardChanged;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       inputSoundCardChanged;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       outputSoundCardChanged;
-  sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       soundCardRemoved;
 
   sigslot::signal<const VideoTrack, const DigitalStage::Api::Store *>
       videoTrackAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       videoTrackChanged;
   sigslot::signal<const VideoTrack, const DigitalStage::Api::Store *>
@@ -196,7 +196,7 @@ class Client {
 
   sigslot::signal<const AudioTrack, const DigitalStage::Api::Store *>
       audioTrackAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       audioTrackChanged;
   sigslot::signal<const AudioTrack, const DigitalStage::Api::Store *>
@@ -205,7 +205,7 @@ class Client {
   sigslot::signal<const CustomAudioTrackPosition,
                   const DigitalStage::Api::Store *>
       customAudioTrackPositionAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customAudioTrackPositionChanged;
   sigslot::signal<const CustomAudioTrackPosition, const DigitalStage::Api::Store *>
@@ -214,17 +214,17 @@ class Client {
   sigslot::signal<const CustomAudioTrackVolume,
                   const DigitalStage::Api::Store *>
       customAudioTrackVolumeAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customAudioTrackVolumeChanged;
   sigslot::signal<const CustomAudioTrackVolume, const DigitalStage::Api::Store *>
       customAudioTrackVolumeRemoved;
 
   sigslot::signal<const User, const DigitalStage::Api::Store *> userAdded;
-  sigslot::signal<const std::string &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       userChanged;
-  sigslot::signal<const std::string &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       userRemoved;
 
   sigslot::signal<const P2PRestart, const DigitalStage::Api::Store *>

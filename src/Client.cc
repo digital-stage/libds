@@ -160,13 +160,16 @@ void Client::connect(const std::string &apiToken,
         store_->customGroups.create(payload);
         this->customGroupAdded(payload.get<CustomGroup>(), getStore());
       } else if (event == RetrieveEvents::CUSTOM_GROUP_CHANGED) {
-        store_->stageMembers.update(payload);
+        store_->customGroups.update(payload);
         const ID_TYPE id = payload["_id"];
         this->customGroupChanged(id, payload, getStore());
       } else if (event == RetrieveEvents::CUSTOM_GROUP_REMOVED) {
         const ID_TYPE id = payload;
-        store_->customGroups.remove(id);
-        this->customGroupRemoved(id, getStore());
+        auto custom_group = store_->customGroups.get(id);
+        if (custom_group) {
+          store_->customGroups.remove(id);
+          this->customGroupRemoved(*custom_group, getStore());
+        }
 
         /*
          * CUSTOM GROUP VOLUME AND POSITIONS

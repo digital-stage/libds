@@ -174,6 +174,51 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
+  client_->customGroupAdded.connect([this](const CustomGroup &custom_group,
+                                           const DigitalStage::Api::Store *store) {
+    auto group_id = store->getGroupId();
+    if (group_id && custom_group.targetGroupId == group_id) {
+      for (const auto &stage_member: store->getStageMembersByGroup(custom_group.groupId)) {
+        for (const auto &audio_track: store->audioTracks.getAll()) {
+          if (audio_track.stageMemberId == stage_member._id) {
+            volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+          }
+        }
+      }
+    }
+  }, token_);
+  client_->customGroupChanged.connect([this](const std::string &custom_group_id,
+                                             const nlohmann::json &update,
+                                             const DigitalStage::Api::Store *store) {
+    if (update.contains("volume") || update.contains("muted")) {
+      auto custom_group = store->customGroups.get(custom_group_id);
+      assert(custom_group);
+      auto group_id = store->getGroupId();
+      if (group_id && custom_group->targetGroupId == group_id) {
+        // Find and update all related audio tracks
+        for (const auto &stage_member: store->getStageMembersByGroup(custom_group->groupId)) {
+          for (const auto &audio_track: store->audioTracks.getAll()) {
+            if (audio_track.stageMemberId == stage_member._id) {
+              volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+            }
+          }
+        }
+      }
+    }
+  }, token_);
+  client_->customGroupRemoved.connect([this](const CustomGroup &custom_group,
+                                             const DigitalStage::Api::Store *store) {
+    auto group_id = store->getGroupId();
+    if (group_id && custom_group.targetGroupId == group_id) {
+      for (const auto &stage_member: store->getStageMembersByGroup(custom_group.groupId)) {
+        for (const auto &audio_track: store->audioTracks.getAll()) {
+          if (audio_track.stageMemberId == stage_member._id) {
+            volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+          }
+        }
+      }
+    }
+  }, token_);
   client_->customGroupVolumeAdded.connect([this](const CustomGroupVolume &custom_volume,
                                                  const DigitalStage::Api::Store *store) {
     for (const auto &stage_member: store->getStageMembersByGroup(custom_volume.groupId)) {
@@ -244,15 +289,46 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
 
   // Get related group
   auto group = stage_member->groupId ? store.groups.get(*stage_member->groupId) : std::nullopt;
-  auto custom_group = (group_id && stage_member->groupId) ? store.getCustomGroupByGroupAndTargetGroup(*stage_member->groupId, *group_id) : std::nullopt;
+  auto custom_group =
+      (group_id && stage_member->groupId) ? store.getCustomGroupByGroupAndTargetGroup(*stage_member->groupId, *group_id)
+                                          : std::nullopt;
   auto custom_group_volume =
       group ? store.getCustomGroupVolumeByGroupAndDevice(group->_id, *local_device_id) : std::nullopt;
 
   // Calculate volumes
+  std::cout << "Calculating volume: " << std::endl;
+  if (custom_audio_track_volume) {
+    std::cout << "(custom-audio-track-volume) " << std::to_string(custom_audio_track_volume->volume) << std::endl;
+  } else {
+    std::cout << "(audio-track) " << std::to_string(audio_track.volume) << std::endl;
+  }
+  if (custom_stage_device_volume) {
+    std::cout << "(custom-stage-device-volume) " << std::to_string(custom_stage_device_volume->volume) << std::endl;
+  } else {
+    std::cout << "(stage-device) " << std::to_string(stage_device->volume) << std::endl;
+  }
+  if (custom_stage_device_volume) {
+    std::cout << "(custom-stage-device-volume) " << std::to_string(custom_stage_device_volume->volume) << std::endl;
+  } else {
+    std::cout << "(stage-device) " << std::to_string(stage_device->volume) << std::endl;
+  }
+  if (custom_stage_member_volume) {
+    std::cout << "(custom-stage-member-volume) " << std::to_string(custom_stage_member_volume->volume) << std::endl;
+  } else {
+    std::cout << "(stage-device) " << std::to_string(stage_member->volume) << std::endl;
+  }
+  if (custom_group_volume) {
+    std::cout << "(custom-group-volume) " << std::to_string(custom_group_volume->volume) << std::endl;
+  } else if (custom_group) {
+    std::cout << "(custom-group) " << std::to_string(custom_group->volume) << std::endl;
+  } else {
+    std::cout << "(group) " << std::to_string(group->volume) << std::endl;
+  }
+
   double volume = custom_audio_track_volume ? custom_audio_track_volume->volume : audio_track.volume;
   volume *= custom_stage_device_volume ? custom_stage_device_volume->volume : stage_device->volume;
   volume *= custom_stage_member_volume ? custom_stage_member_volume->volume : stage_member->volume;
-  if(custom_group) {
+  if (custom_group) {
     volume *= custom_group_volume ? custom_group_volume->volume : custom_group->volume;
   } else if (group) {
     volume *= custom_group_volume ? custom_group_volume->volume : group->volume;
@@ -260,14 +336,16 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
   // Get balance (0 = only me, 1 = only others)
   if (use_balance_) {
     auto balance = calculateBalance(store.getLocalDevice()->balance, audio_track.deviceId == *local_device_id);
+    std::cout << "(balance) " << balance;
     volume *= balance;
   }
+  std::cout << "Resulting volume:  " << volume << std::endl;
 
   bool muted =
       (custom_stage_member_volume ? custom_stage_member_volume->muted : stage_member->muted) ||
           (custom_stage_device_volume ? custom_stage_device_volume->muted : stage_device->muted) ||
           (custom_audio_track_volume ? custom_audio_track_volume->muted : audio_track.muted);
-  if(custom_group) {
+  if (custom_group) {
     muted = (custom_group_volume ? custom_group_volume->muted : custom_group->muted) || muted;
   } else if (group) {
     muted = (custom_group_volume ? custom_group_volume->muted : group->muted) || muted;
