@@ -42,16 +42,16 @@ void printStage(const Store* s)
   }
 }
 
-void handleLocalDeviceReady(const Device& d, const Store*)
+void handleLocalDeviceReady(const DigitalStage::Types::Device& d, const Store*)
 {
   std::cout << "Local device " << d._id << " ready" << std::endl;
 }
 
-void handleDeviceAdded(const Device& d, const Store*)
+void handleDeviceAdded(const DigitalStage::Types::Device& d, const Store*)
 {
   std::cout << "NEW Device " << d._id << " added" << std::endl;
 }
-void handleDeviceChanged(const ID_TYPE& id, const nlohmann::json& update,
+void handleDeviceChanged(const DigitalStage::Types::ID_TYPE& id, const nlohmann::json& update,
                          const Store* s)
 {
   auto device = s->devices.get(id);
@@ -60,7 +60,7 @@ void handleDeviceChanged(const ID_TYPE& id, const nlohmann::json& update,
               << std::endl;
   }
 }
-void handleDeviceRemoved(const ID_TYPE& id, const Store*)
+void handleDeviceRemoved(const DigitalStage::Types::ID_TYPE& id, const Store*)
 {
   std::cout << "Device " << id << " removed" << std::endl;
 }
@@ -68,7 +68,7 @@ void handleReady(const Store*)
 {
   std::cout << "READY TO GO!" << std::endl;
 }
-void handleStageJoined(const ID_TYPE& stageId, std::optional<ID_TYPE> groupId,
+void handleStageJoined(const DigitalStage::Types::ID_TYPE& stageId, std::optional<DigitalStage::Types::ID_TYPE> groupId,
                        const Store* s)
 {
   auto stage = s->stages.get(stageId);
@@ -81,7 +81,7 @@ void handleStageJoined(const ID_TYPE& stageId, std::optional<ID_TYPE> groupId,
   }
 }
 
-void handleStageDeviceChanged(const std::string& id, nlohmann::json, const Store* s)
+void handleStageDeviceChanged(const std::string& id, nlohmann::json, const DigitalStage::Api::Store* s)
 {
   auto d = s->stageDevices.get(id);
   std::cout << "Stage device " << id << " changed" << std::endl;
