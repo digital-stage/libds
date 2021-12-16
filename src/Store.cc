@@ -1,5 +1,5 @@
-
 #include "DigitalStage/Api/Store.h"
+//#include <type_traits>  // for remove_reference<>::type
 
 using namespace DigitalStage::Api;
 using namespace DigitalStage::Types;

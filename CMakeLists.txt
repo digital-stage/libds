@@ -21,7 +21,20 @@ set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "Install path for
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "Install path for library files")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-#list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+
+# include-what-you-use
+option(CMAKE_RUN_IWYU "Run include-what-you-use with the compiler." OFF)
+if (CMAKE_RUN_IWYU)
+    find_program(IWYU_COMMAND NAMES include-what-you-use iwyu)
+    if (NOT IWYU_COMMAND)
+        message(WARNING "CMAKE_RUN_IWYU is ON but include-what-you-use is not found!")
+    else ()
+        set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE
+                "${IWYU_COMMAND};-Xiwyu;--cxx17ns;--output=iwyu.log")
+        list(APPEND CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${CMAKE_IWYU_OPTIONS})
+        message(STATUS "Using include-what-you-use")
+    endif ()
+endif ()
 
 #################################################
 #

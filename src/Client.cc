@@ -1,10 +1,16 @@
 #include "DigitalStage/Api/Client.h"
-#include "DigitalStage/Api/Events.h"
-
-#include <exception>
-#include <memory>
-#include <utility>
-#include <iostream>
+#include <memory>                                   // for shared_ptr, make_...
+#include <utility>                                  // for move
+#include <exception>                                // for make_exception_ptr
+#include <iostream>                                 // for string, operator<<
+#include <map>                                      // for operator!=, opera...
+#include <nlohmann/detail/iterators/iter_impl.hpp>  // for iter_impl
+#include <stdexcept>                                // for out_of_range, run...
+#include <string>                                   // for operator==, basic...
+#include <type_traits>                              // for remove_extent_t
+#include "DigitalStage/Api/Events.h"                // for AUDIO_TRACK_ADDED
+#include "DigitalStage/Api/Store.h"                 // for Store, StoreEntry
+#include "teckos/client.h"                          // for client, Callback
 
 using namespace DigitalStage::Api;
 

@@ -1,9 +1,8 @@
 #ifndef DS_EVENTS
 #define DS_EVENTS
 
-#include <DigitalStage/Types.h>
-#include <nlohmann/json.hpp>
-#include <string>
+#include <DigitalStage/Types.h>  // for Types
+#include <iosfwd>                // for string
 
 using namespace DigitalStage::Types;
 
