@@ -122,7 +122,7 @@ void AudioMixer<T>::attachHandlers() {
   }, token_);
   client_->stageMemberChanged.connect([this](const std::string &stage_member_id, const nlohmann::json &update,
                                              const DigitalStage::Api::Store *store) {
-    if (update.contains("volume") || update.contains("muted")) {
+    if (update.contains("volume") || update.contains("muted") || update.contains("groupId")) {
       // Find and update all related audio tracks
       for (const auto &audio_track: store->audioTracks.getAll()) {
         if (audio_track.stageMemberId == stage_member_id) {
