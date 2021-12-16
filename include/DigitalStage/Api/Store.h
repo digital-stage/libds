@@ -3,7 +3,7 @@
 #define DS_STORE
 
 #include <utility>                      // for pair
-#include <__mutex_base>                 // for lock_guard
+#include <mutex>                        // for lock_guard
 #include <iosfwd>                       // for string
 #include <map>                          // for map, __map_const_iterator
 #include <mutex>                        // for recursive_mutex
