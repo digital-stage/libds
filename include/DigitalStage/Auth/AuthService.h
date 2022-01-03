@@ -5,8 +5,9 @@
 #ifndef DS_AUTH_SERVICE_H
 #define DS_AUTH_SERVICE_H
 
-#include <future>  // for future
-#include <iosfwd>  // for string
+#include <future>
+#include <optional>
+#include "AuthError.h"
 
 namespace DigitalStage {
 namespace Auth {

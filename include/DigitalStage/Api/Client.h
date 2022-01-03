@@ -1,19 +1,14 @@
 #ifndef DS_CLIENT
 #define DS_CLIENT
 
-#include <memory>                 // for unique_ptr
-#include <utility>                // for pair
-#include <teckos/client.h>        // for Callback
-#include <__mutex_base>           // for mutex
-#include <future>                 // for future
-#include <iosfwd>                 // for string
-#include <nlohmann/json.hpp>      // for basic_json
-#include <nlohmann/json_fwd.hpp>  // for json
-#include <optional>               // for optional
-#include <sigslot/signal.hpp>     // for signal
-#include <vector>                 // for vector
-#include "DigitalStage/Types.h"   // for ID_TYPE, json, AudioTrack (ptr only)
-namespace DigitalStage::Api { class Store; }
+#include "Events.h"
+#include "Store.h"
+#include <future>
+#include <mutex>
+#include <optional>
+#include <sigslot/signal.hpp>
+#include <teckos/client.h>
+#include <optional>
 
 namespace DigitalStage {
 namespace Api {
@@ -47,21 +42,21 @@ class Client {
 
   sigslot::signal<bool /* expected */> disconnected;
   sigslot::signal<const DigitalStage::Api::Store *> ready;
-  sigslot::signal<const Types::Device, const DigitalStage::Api::Store *>
+  sigslot::signal<const Device, const DigitalStage::Api::Store *>
       localDeviceReady;
-  sigslot::signal<const Types::User, const DigitalStage::Api::Store *>
+  sigslot::signal<const User, const DigitalStage::Api::Store *>
       localUserReady;
 
-  sigslot::signal<const Types::ID_TYPE &, const std::optional<Types::ID_TYPE> &,
+  sigslot::signal<const ID_TYPE &, const std::optional<ID_TYPE> &,
                   const DigitalStage::Api::Store *>
       stageJoined;
   sigslot::signal<const DigitalStage::Api::Store *> stageLeft;
 
-  sigslot::signal<const Types::Device, const DigitalStage::Api::Store *> deviceAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const Device, const DigitalStage::Api::Store *> deviceAdded;
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       deviceChanged;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       localDeviceChanged;
   /**
@@ -75,170 +70,170 @@ class Client {
    * This will send when another input sound card has been selected.
    * First parameter is the ID of the sound card as optional value
    */
-  sigslot::signal<const std::optional<Types::ID_TYPE> &,
+  sigslot::signal<const std::optional<ID_TYPE> &,
                   const DigitalStage::Api::Store *>
       inputSoundCardSelected;
   /**
    * This will send when another output sound card has been selected.
    * First parameter is the ID of the sound card as optional value
    */
-  sigslot::signal<const std::optional<Types::ID_TYPE> &,
+  sigslot::signal<const std::optional<ID_TYPE> &,
                   const DigitalStage::Api::Store *>
       outputSoundCardSelected;
-  sigslot::signal<const Types::ID_TYPE &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       deviceRemoved;
 
-  sigslot::signal<const Types::Stage, const DigitalStage::Api::Store *> stageAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const Stage, const DigitalStage::Api::Store *> stageAdded;
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       stageChanged;
-  sigslot::signal<const Types::ID_TYPE &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       stageRemoved;
 
-  sigslot::signal<const Types::Group, const DigitalStage::Api::Store *> groupAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const Group, const DigitalStage::Api::Store *> groupAdded;
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       groupChanged;
-  sigslot::signal<const Types::ID_TYPE &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       groupRemoved;
 
-  sigslot::signal<const Types::CustomGroup, const DigitalStage::Api::Store *> customGroupAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const CustomGroup, const DigitalStage::Api::Store *> customGroupAdded;
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customGroupChanged;
-  sigslot::signal<const Types::CustomGroup, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomGroup, const DigitalStage::Api::Store *>
       customGroupRemoved;
 
-  sigslot::signal<const Types::CustomGroupPosition, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomGroupPosition, const DigitalStage::Api::Store *>
       customGroupPositionAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customGroupPositionChanged;
-  sigslot::signal<const Types::CustomGroupPosition, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomGroupPosition, const DigitalStage::Api::Store *>
       customGroupPositionRemoved;
 
-  sigslot::signal<const Types::CustomGroupVolume, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomGroupVolume, const DigitalStage::Api::Store *>
       customGroupVolumeAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customGroupVolumeChanged;
-  sigslot::signal<const Types::CustomGroupVolume, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomGroupVolume, const DigitalStage::Api::Store *>
       customGroupVolumeRemoved;
 
-  sigslot::signal<const Types::StageMember, const DigitalStage::Api::Store *>
+  sigslot::signal<const StageMember, const DigitalStage::Api::Store *>
       stageMemberAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       stageMemberChanged;
-  sigslot::signal<const Types::ID_TYPE &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       stageMemberRemoved;
 
-  sigslot::signal<const Types::CustomStageMemberPosition,
+  sigslot::signal<const CustomStageMemberPosition,
                   const DigitalStage::Api::Store *>
       customStageMemberPositionAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customStageMemberPositionChanged;
-  sigslot::signal<const Types::CustomStageMemberPosition, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomStageMemberPosition, const DigitalStage::Api::Store *>
       customStageMemberPositionRemoved;
 
-  sigslot::signal<const Types::CustomStageMemberVolume,
+  sigslot::signal<const CustomStageMemberVolume,
                   const DigitalStage::Api::Store *>
       customStageMemberVolumeAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customStageMemberVolumeChanged;
-  sigslot::signal<const Types::CustomStageMemberVolume, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomStageMemberVolume, const DigitalStage::Api::Store *>
       customStageMemberVolumeRemoved;
 
-  sigslot::signal<const Types::StageDevice, const DigitalStage::Api::Store *>
+  sigslot::signal<const StageDevice, const DigitalStage::Api::Store *>
       stageDeviceAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       stageDeviceChanged;
-  sigslot::signal<const Types::StageDevice &, const DigitalStage::Api::Store *>
+  sigslot::signal<const StageDevice &, const DigitalStage::Api::Store *>
       stageDeviceRemoved;
 
-  sigslot::signal<const Types::CustomStageDevicePosition,
+  sigslot::signal<const CustomStageDevicePosition,
                   const DigitalStage::Api::Store *>
       customStageDevicePositionAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customStageDevicePositionChanged;
-  sigslot::signal<const Types::CustomStageDevicePosition, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomStageDevicePosition, const DigitalStage::Api::Store *>
       customStageDevicePositionRemoved;
 
-  sigslot::signal<const Types::CustomStageDeviceVolume,
+  sigslot::signal<const CustomStageDeviceVolume,
                   const DigitalStage::Api::Store *>
       customStageDeviceVolumeAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customStageDeviceVolumeChanged;
-  sigslot::signal<const Types::CustomStageDeviceVolume, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomStageDeviceVolume, const DigitalStage::Api::Store *>
       customStageDeviceVolumeRemoved;
 
-  sigslot::signal<const Types::SoundCard, const DigitalStage::Api::Store *>
+  sigslot::signal<const SoundCard, const DigitalStage::Api::Store *>
       soundCardAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       soundCardChanged;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       inputSoundCardChanged;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       outputSoundCardChanged;
-  sigslot::signal<const Types::ID_TYPE &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       soundCardRemoved;
 
-  sigslot::signal<const Types::VideoTrack, const DigitalStage::Api::Store *>
+  sigslot::signal<const VideoTrack, const DigitalStage::Api::Store *>
       videoTrackAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       videoTrackChanged;
-  sigslot::signal<const Types::VideoTrack, const DigitalStage::Api::Store *>
+  sigslot::signal<const VideoTrack, const DigitalStage::Api::Store *>
       videoTrackRemoved;
 
-  sigslot::signal<const Types::AudioTrack, const DigitalStage::Api::Store *>
+  sigslot::signal<const AudioTrack, const DigitalStage::Api::Store *>
       audioTrackAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       audioTrackChanged;
-  sigslot::signal<const Types::AudioTrack, const DigitalStage::Api::Store *>
+  sigslot::signal<const AudioTrack, const DigitalStage::Api::Store *>
       audioTrackRemoved;
 
-  sigslot::signal<const Types::CustomAudioTrackPosition,
+  sigslot::signal<const CustomAudioTrackPosition,
                   const DigitalStage::Api::Store *>
       customAudioTrackPositionAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customAudioTrackPositionChanged;
-  sigslot::signal<const Types::CustomAudioTrackPosition, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomAudioTrackPosition, const DigitalStage::Api::Store *>
       customAudioTrackPositionRemoved;
 
-  sigslot::signal<const Types::CustomAudioTrackVolume,
+  sigslot::signal<const CustomAudioTrackVolume,
                   const DigitalStage::Api::Store *>
       customAudioTrackVolumeAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       customAudioTrackVolumeChanged;
-  sigslot::signal<const Types::CustomAudioTrackVolume, const DigitalStage::Api::Store *>
+  sigslot::signal<const CustomAudioTrackVolume, const DigitalStage::Api::Store *>
       customAudioTrackVolumeRemoved;
 
-  sigslot::signal<const Types::User, const DigitalStage::Api::Store *> userAdded;
-  sigslot::signal<const Types::ID_TYPE &, nlohmann::json,
+  sigslot::signal<const User, const DigitalStage::Api::Store *> userAdded;
+  sigslot::signal<const ID_TYPE &, nlohmann::json,
                   const DigitalStage::Api::Store *>
       userChanged;
-  sigslot::signal<const Types::ID_TYPE &, const DigitalStage::Api::Store *>
+  sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       userRemoved;
 
-  sigslot::signal<const Types::P2PRestart, const DigitalStage::Api::Store *>
+  sigslot::signal<const P2PRestart, const DigitalStage::Api::Store *>
       p2pRestart;
-  sigslot::signal<const Types::P2PAnswer, const DigitalStage::Api::Store *>
+  sigslot::signal<const P2PAnswer, const DigitalStage::Api::Store *>
       p2pAnswer;
-  sigslot::signal<const Types::P2POffer, const DigitalStage::Api::Store *>
+  sigslot::signal<const P2POffer, const DigitalStage::Api::Store *>
       p2pOffer;
-  sigslot::signal<const Types::IceCandidate, const DigitalStage::Api::Store *>
+  sigslot::signal<const IceCandidate, const DigitalStage::Api::Store *>
       iceCandidate;
 
   /**

@@ -43,7 +43,7 @@ void AudioMixer<T>::attachHandlers() {
       volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
     }
   }, token_);
-  client_->audioTrackAdded.connect([this](const DigitalStage::Types::AudioTrack &audio_track, const DigitalStage::Api::Store *store) {
+  client_->audioTrackAdded.connect([this](const AudioTrack &audio_track, const DigitalStage::Api::Store *store) {
     volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
   }, token_);
   client_->audioTrackChanged.connect([this](const std::string &audio_track_id, const nlohmann::json &update,
@@ -54,10 +54,10 @@ void AudioMixer<T>::attachHandlers() {
       volume_map_[audio_track->_id] = calculateVolume(*audio_track, *store);
     }
   }, token_);
-  client_->audioTrackRemoved.connect([this](const DigitalStage::Types::AudioTrack &audio_track, const DigitalStage::Api::Store *) {
+  client_->audioTrackRemoved.connect([this](const AudioTrack &audio_track, const DigitalStage::Api::Store *) {
     volume_map_.erase(audio_track._id);
   }, token_);
-  client_->customAudioTrackVolumeAdded.connect([this](const DigitalStage::Types::CustomAudioTrackVolume &custom_volume,
+  client_->customAudioTrackVolumeAdded.connect([this](const CustomAudioTrackVolume &custom_volume,
                                                       const DigitalStage::Api::Store *store) {
     auto audio_track = store->audioTracks.get(custom_volume.audioTrackId);
     assert(audio_track);
@@ -73,7 +73,7 @@ void AudioMixer<T>::attachHandlers() {
       volume_map_[audio_track->_id] = calculateVolume(*audio_track, *store);
     }
   }, token_);
-  client_->customAudioTrackVolumeRemoved.connect([this](const DigitalStage::Types::CustomAudioTrackVolume &custom_volume,
+  client_->customAudioTrackVolumeRemoved.connect([this](const CustomAudioTrackVolume &custom_volume,
                                                         const DigitalStage::Api::Store *store) {
     auto audio_track = store->audioTracks.get(custom_volume.audioTrackId);
     assert(audio_track);
@@ -90,7 +90,7 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
-  client_->customStageDeviceVolumeAdded.connect([this](const DigitalStage::Types::CustomStageDeviceVolume &custom_volume,
+  client_->customStageDeviceVolumeAdded.connect([this](const CustomStageDeviceVolume &custom_volume,
                                                        const DigitalStage::Api::Store *store) {
     for (const auto &audio_track: store->audioTracks.getAll()) {
       if (audio_track.stageDeviceId == custom_volume.stageDeviceId) {
@@ -112,7 +112,7 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
-  client_->customStageDeviceVolumeRemoved.connect([this](const DigitalStage::Types::CustomStageDeviceVolume &custom_volume,
+  client_->customStageDeviceVolumeRemoved.connect([this](const CustomStageDeviceVolume &custom_volume,
                                                          const DigitalStage::Api::Store *store) {
     for (const auto &audio_track: store->audioTracks.getAll()) {
       if (audio_track.stageDeviceId == custom_volume.stageDeviceId) {
@@ -131,7 +131,7 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
-  client_->customStageMemberVolumeAdded.connect([this](const DigitalStage::Types::CustomStageMemberVolume &custom_volume,
+  client_->customStageMemberVolumeAdded.connect([this](const CustomStageMemberVolume &custom_volume,
                                                        const DigitalStage::Api::Store *store) {
     for (const auto &audio_track: store->audioTracks.getAll()) {
       if (audio_track.stageMemberId == custom_volume.stageMemberId) {
@@ -153,7 +153,7 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
-  client_->customStageMemberVolumeRemoved.connect([this](const DigitalStage::Types::CustomStageMemberVolume &custom_volume,
+  client_->customStageMemberVolumeRemoved.connect([this](const CustomStageMemberVolume &custom_volume,
                                                          const DigitalStage::Api::Store *store) {
     for (const auto &audio_track: store->audioTracks.getAll()) {
       if (audio_track.stageMemberId == custom_volume.stageMemberId) {
@@ -174,7 +174,7 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
-  client_->customGroupAdded.connect([this](const DigitalStage::Types::CustomGroup &custom_group,
+  client_->customGroupAdded.connect([this](const CustomGroup &custom_group,
                                            const DigitalStage::Api::Store *store) {
     auto group_id = store->getGroupId();
     if (group_id && custom_group.targetGroupId == group_id) {
@@ -206,7 +206,7 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
-  client_->customGroupRemoved.connect([this](const DigitalStage::Types::CustomGroup &custom_group,
+  client_->customGroupRemoved.connect([this](const CustomGroup &custom_group,
                                              const DigitalStage::Api::Store *store) {
     auto group_id = store->getGroupId();
     if (group_id && custom_group.targetGroupId == group_id) {
@@ -219,7 +219,7 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
-  client_->customGroupVolumeAdded.connect([this](const DigitalStage::Types::CustomGroupVolume &custom_volume,
+  client_->customGroupVolumeAdded.connect([this](const CustomGroupVolume &custom_volume,
                                                  const DigitalStage::Api::Store *store) {
     for (const auto &stage_member: store->getStageMembersByGroup(custom_volume.groupId)) {
       for (const auto &audio_track: store->audioTracks.getAll()) {
@@ -245,7 +245,7 @@ void AudioMixer<T>::attachHandlers() {
       }
     }
   }, token_);
-  client_->customGroupVolumeRemoved.connect([this](const DigitalStage::Types::CustomGroupVolume &custom_volume,
+  client_->customGroupVolumeRemoved.connect([this](const CustomGroupVolume &custom_volume,
                                                    const DigitalStage::Api::Store *store) {
     for (const auto &stage_member: store->getStageMembersByGroup(custom_volume.groupId)) {
       for (const auto &audio_track: store->audioTracks.getAll()) {
@@ -267,7 +267,7 @@ double AudioMixer<T>::calculateBalance(double balance, bool is_local) {
 }
 
 template<class T>
-std::pair<T, bool> AudioMixer<T>::calculateVolume(const DigitalStage::Types::AudioTrack &audio_track,
+std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
                                                   const DigitalStage::Api::Store &store) {
   // Get this device ID
   auto local_device_id = store.getLocalDeviceId();

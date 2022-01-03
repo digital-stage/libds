@@ -2,19 +2,12 @@
 #ifndef DS_STORE
 #define DS_STORE
 
-#include <utility>                      // for pair
-#include <__mutex_base>                 // for lock_guard
-#include <iosfwd>                       // for string
-#include <map>                          // for map, __map_const_iterator
-#include <mutex>                        // for recursive_mutex
-#include <nlohmann/detail/value_t.hpp>  // for nlohmann
-#include <nlohmann/json.hpp>            // for basic_json, basic_json<>::obj...
-#include <nlohmann/json_fwd.hpp>        // for json
-#include <optional>                     // for optional, nullopt
-#include <stdexcept>                    // for out_of_range
-#include <string>                       // for operator<
-#include <vector>                       // for vector
-#include "DigitalStage/Types.h"         // for ID_TYPE, json, AudioTrack (pt...
+#include "DigitalStage/Types.h"
+#include <map>
+#include <mutex>
+#include <nlohmann/json.hpp>
+#include <set>
+#include <optional>
 
 using namespace nlohmann;
 
