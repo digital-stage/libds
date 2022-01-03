@@ -4,7 +4,7 @@
 #include <memory>                 // for unique_ptr
 #include <utility>                // for pair
 #include <teckos/client.h>        // for Callback
-#include <mutex>                  // for mutex
+#include <__mutex_base>           // for mutex
 #include <future>                 // for future
 #include <iosfwd>                 // for string
 #include <nlohmann/json.hpp>      // for basic_json
