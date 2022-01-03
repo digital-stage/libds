@@ -3,9 +3,9 @@
 //
 #pragma once
 
-#include "DigitalStage/Api/Client.h"
-#include "DigitalStage/Api/Store.h"
-#include "DigitalStage/Types.h"
+#include "./../Api/Client.h"
+#include "./../Api/Store.h"
+#include "./../Types.h"
 #include <string>
 #include <unordered_map>
 #include <optional>
