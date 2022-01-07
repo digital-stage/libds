@@ -628,7 +628,12 @@ Client::decodeInvitationCode(const std::string &code) {
   auto const promise = std::make_shared<InvitePromise>();
   wsclient_->send("decode-invite", code, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1) {
-      promise->set_value({result[1]["stageId"], result[1]["groupId"]});
+        if (result[1].count("groupId") != 0 && !result[1]["groupId"].is_null()) {
+            promise->set_value({ result[1]["stageId"], result[1]["groupId"] });
+        }
+        else {
+            promise->set_value({ result[1]["stageId"], {} });
+        }
     } else if (result.size() == 1) {
       promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
     } else {
