@@ -151,9 +151,6 @@ double AudioMixer<T>::calculateBalance(double balance, bool is_local) {
 template<class T>
 std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
                                                   const DigitalStage::Api::Store &store) {
-  // Get this device ID
-  auto local_device_id = store.getLocalDeviceId();
-  assert(local_device_id);
   auto group_id = store.getGroupId();
 
   // Get related stage member
@@ -184,17 +181,25 @@ std::pair<T, bool> AudioMixer<T>::calculateVolume(const AudioTrack &audio_track,
   }
   // Get balance (0 = only me, 1 = only others)
   if (use_balance_) {
-    auto balance = calculateBalance(store.getLocalDevice()->balance, audio_track.deviceId == *local_device_id);
-    std::cout << "(balance) " << balance;
-    volume *= balance;
+    auto local_device_id = store.getLocalDeviceId();
+    if(local_device_id) {
+      auto balance = calculateBalance(store.getLocalDevice()->balance, audio_track.deviceId == *local_device_id);
+      std::cout << "(balance) " << balance;
+      volume *= balance;
+    }
   }
-  std::cout << "Resulting volume:  " << volume << std::endl;
 
   bool muted = stage_member->muted || audio_track.muted;
   if (custom_group) {
     muted = custom_group->muted || muted;
   } else if (group) {
     muted = group->muted || muted;
+  }
+
+  if(muted) {
+    std::cout << "Muted with resulting volume:  " << volume << std::endl;
+  } else {
+    std::cout << "Resulting volume:  " << volume << std::endl;
   }
 
   std::pair<T, bool> pair = {volume, muted};
