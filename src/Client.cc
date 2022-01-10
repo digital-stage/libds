@@ -172,45 +172,15 @@ void Client::connect(const std::string &apiToken,
         }
 
         /*
-         * CUSTOM GROUP VOLUME AND POSITIONS
-         */
-      } else if (event == RetrieveEvents::CUSTOM_GROUP_POSITION_ADDED) {
-        store_->customGroupPositions.create(payload);
-        this->customGroupPositionAdded(payload.get<CustomGroupPosition>(),
-                                       getStore());
-      } else if (event == RetrieveEvents::CUSTOM_GROUP_POSITION_CHANGED) {
-        store_->customGroupPositions.update(payload);
-        const ID_TYPE id = payload["_id"];
-        this->customGroupPositionChanged(id, payload, getStore());
-      } else if (event == RetrieveEvents::CUSTOM_GROUP_POSITION_REMOVED) {
-        const ID_TYPE id = payload;
-        auto custom_position = store_->customGroupPositions.get(id);
-        if (custom_position) {
-          store_->customGroupPositions.remove(id);
-          this->customGroupPositionRemoved(*custom_position, getStore());
-        }
-      } else if (event == RetrieveEvents::CUSTOM_GROUP_VOLUME_ADDED) {
-        store_->customGroupVolumes.create(payload);
-        this->customGroupVolumeAdded(payload.get<CustomGroupVolume>(),
-                                     getStore());
-      } else if (event == RetrieveEvents::CUSTOM_GROUP_VOLUME_CHANGED) {
-        store_->customGroupVolumes.update(payload);
-        const ID_TYPE id = payload["_id"];
-        this->customGroupVolumeChanged(id, payload, getStore());
-      } else if (event == RetrieveEvents::CUSTOM_GROUP_VOLUME_REMOVED) {
-        const ID_TYPE id = payload;
-        auto custom_volume = store_->customGroupVolumes.get(id);
-        if (custom_volume) {
-          store_->customGroupVolumes.remove(id);
-          this->customGroupVolumeRemoved(*custom_volume, getStore());
-        }
-
-        /*
          * STAGE MEMBERS
          */
       } else if (event == RetrieveEvents::STAGE_MEMBER_ADDED) {
         store_->stageMembers.create(payload);
-        this->stageMemberAdded(payload.get<StageMember>(), getStore());
+        auto stage_member = payload.get<StageMember>();
+        this->stageMemberAdded(stage_member, getStore());
+        if(stage_member.userId == store_->getUserId()) {
+          store_->setStageMemberId(stage_member._id);
+        }
       } else if (event == RetrieveEvents::STAGE_MEMBER_CHANGED) {
         store_->stageMembers.update(payload);
         const ID_TYPE id = payload["_id"];
@@ -219,40 +189,6 @@ void Client::connect(const std::string &apiToken,
         const ID_TYPE id = payload;
         store_->stageMembers.remove(id);
         this->stageMemberRemoved(id, getStore());
-
-        /*
-         * CUSTOM STAGE MEMBERS VOLUME AND POSITIONS
-         */
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_ADDED) {
-        store_->customStageMemberPositions.create(payload);
-        this->customStageMemberPositionAdded(
-            payload.get<CustomStageMemberPosition>(), getStore());
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_CHANGED) {
-        store_->customStageMemberPositions.update(payload);
-        const ID_TYPE id = payload["_id"];
-        this->customStageMemberPositionChanged(id, payload, getStore());
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_POSITION_REMOVED) {
-        const ID_TYPE id = payload;
-        auto custom_position = store_->customStageMemberPositions.get(id);
-        if (custom_position) {
-          store_->customStageMemberPositions.remove(id);
-          this->customStageMemberPositionRemoved(*custom_position, getStore());
-        }
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_ADDED) {
-        store_->customStageMemberVolumes.create(payload);
-        this->customStageMemberVolumeAdded(
-            payload.get<CustomStageMemberVolume>(), getStore());
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_CHANGED) {
-        store_->customStageMemberVolumes.update(payload);
-        const ID_TYPE id = payload["_id"];
-        this->customStageMemberVolumeChanged(id, payload, getStore());
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_MEMBER_VOLUME_REMOVED) {
-        const ID_TYPE id = payload;
-        auto custom_volume = store_->customStageMemberVolumes.get(id);
-        if (custom_volume) {
-          store_->customStageMemberVolumes.remove(id);
-          this->customStageMemberVolumeRemoved(*custom_volume, getStore());
-        }
 
         /*
          * STAGE DEVICES
@@ -283,40 +219,6 @@ void Client::connect(const std::string &apiToken,
             store_->resetStageDeviceId();
           }
           this->stageDeviceRemoved(*stageDevice, getStore());
-        }
-
-        /*
-         * CUSTOM STAGE DEVICES VOLUME AND POSITIONS
-         */
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_ADDED) {
-        store_->customStageDevicePositions.create(payload);
-        this->customStageDevicePositionAdded(
-            payload.get<CustomStageDevicePosition>(), getStore());
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_CHANGED) {
-        store_->customStageDevicePositions.update(payload);
-        const ID_TYPE id = payload["_id"];
-        this->customStageDevicePositionChanged(id, payload, getStore());
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_POSITION_REMOVED) {
-        const ID_TYPE id = payload;
-        auto custom_position = store_->customStageDevicePositions.get(id);
-        if (custom_position) {
-          store_->customStageDevicePositions.remove(id);
-          this->customStageDevicePositionRemoved(*custom_position, getStore());
-        }
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_ADDED) {
-        store_->customStageDeviceVolumes.create(payload);
-        this->customStageDeviceVolumeAdded(
-            payload.get<CustomStageDeviceVolume>(), getStore());
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_CHANGED) {
-        store_->customStageDeviceVolumes.update(payload);
-        const ID_TYPE id = payload["_id"];
-        this->customStageDeviceVolumeChanged(id, payload, getStore());
-      } else if (event == RetrieveEvents::CUSTOM_STAGE_DEVICE_VOLUME_REMOVED) {
-        const ID_TYPE id = payload;
-        auto custom_volume = store_->customStageDeviceVolumes.get(id);
-        if (custom_volume) {
-          store_->customStageDeviceVolumes.remove(id);
-          this->customStageDeviceVolumeRemoved(*custom_volume, getStore());
         }
 
         /*
@@ -352,46 +254,6 @@ void Client::connect(const std::string &apiToken,
         auto track = store_->audioTracks.get(id);
         store_->audioTracks.remove(id);
         this->audioTrackRemoved(*track, getStore());
-
-        /*
-         * AUDIO TRACK VOLUME AND POSITIONS
-         */
-      } else if (event ==
-          RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_ADDED) {
-        store_->customAudioTrackPositions.create(payload);
-        this->customAudioTrackPositionAdded(
-            payload.get<CustomAudioTrackPosition>(), getStore());
-      } else if (event ==
-          RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_CHANGED) {
-        store_->customAudioTrackPositions.update(payload);
-        const ID_TYPE id = payload["_id"];
-        this->customAudioTrackPositionChanged(id, payload, getStore());
-      } else if (event ==
-          RetrieveEvents::CUSTOM_AUDIO_TRACK_POSITION_REMOVED) {
-        const ID_TYPE id = payload;
-        auto custom_position = store_->customAudioTrackPositions.get(id);
-        if (custom_position) {
-          store_->customAudioTrackPositions.remove(id);
-          this->customAudioTrackPositionRemoved(*custom_position, getStore());
-        }
-      } else if (event ==
-          RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_ADDED) {
-        store_->customAudioTrackVolumes.create(payload);
-        this->customAudioTrackVolumeAdded(
-            payload.get<CustomAudioTrackVolume>(), getStore());
-      } else if (event ==
-          RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_CHANGED) {
-        store_->customAudioTrackVolumes.update(payload);
-        const ID_TYPE id = payload["_id"];
-        this->customAudioTrackVolumeChanged(id, payload, getStore());
-      } else if (event ==
-          RetrieveEvents::CUSTOM_AUDIO_TRACK_VOLUME_REMOVED) {
-        const ID_TYPE id = payload;
-        auto custom_volume = store_->customAudioTrackVolumes.get(id);
-        if (custom_volume) {
-          store_->customAudioTrackVolumes.remove(id);
-          this->customAudioTrackVolumeRemoved(*custom_volume, getStore());
-        }
 
         /*
          * USERS
@@ -463,29 +325,13 @@ void Client::connect(const std::string &apiToken,
                 item.get<CustomGroup>(), getStore());
           }
         }
-        for (const auto &item: payload["customGroupVolumes"]) {
-          store_->customGroupVolumes.create(item);
-          this->customGroupVolumeAdded(item.get<CustomGroupVolume>(),
-                                       getStore());
-        }
-        for (const auto &item: payload["customGroupPositions"]) {
-          store_->customGroupPositions.create(item);
-          this->customGroupPositionAdded(item.get<CustomGroupPosition>(),
-                                         getStore());
-        }
         for (const auto &item: payload["stageMembers"]) {
           store_->stageMembers.create(item);
-          this->stageMemberAdded(item.get<StageMember>(), getStore());
-        }
-        for (const auto &item: payload["customStageMemberVolumes"]) {
-          store_->customStageMemberVolumes.create(item);
-          this->customStageMemberVolumeAdded(
-              item.get<CustomStageMemberVolume>(), getStore());
-        }
-        for (const auto &item: payload["customStageMemberPositions"]) {
-          store_->customStageMemberPositions.create(item);
-          this->customStageMemberPositionAdded(
-              item.get<CustomStageMemberPosition>(), getStore());
+          auto stage_member = item.get<StageMember>();
+          this->stageMemberAdded(stage_member, getStore());
+          if(stage_member.userId == store_->getUserId()) {
+            store_->setStageMemberId(stage_member._id);
+          }
         }
         for (const auto &item: payload["stageDevices"]) {
           store_->stageDevices.create(item);
@@ -496,16 +342,6 @@ void Client::connect(const std::string &apiToken,
           }
           this->stageDeviceAdded(stageDevice, getStore());
         }
-        for (const auto &item: payload["customStageDeviceVolumes"]) {
-          store_->customStageDeviceVolumes.create(item);
-          this->customStageDeviceVolumeAdded(
-              item.get<CustomStageDeviceVolume>(), getStore());
-        }
-        for (const auto &item: payload["customStageDevicePositions"]) {
-          store_->customStageDevicePositions.create(item);
-          this->customStageDevicePositionAdded(
-              item.get<CustomStageDevicePosition>(), getStore());
-        }
         for (const auto &item: payload["audioTracks"]) {
           store_->audioTracks.create(item);
           this->audioTrackAdded(item.get<AudioTrack>(),
@@ -515,16 +351,6 @@ void Client::connect(const std::string &apiToken,
           store_->videoTracks.create(item);
           this->videoTrackAdded(item.get<VideoTrack>(),
                                 getStore());
-        }
-        for (const auto &item: payload["customAudioTrackPositions"]) {
-          store_->customAudioTrackPositions.create(item);
-          this->customAudioTrackPositionAdded(
-              item.get<CustomAudioTrackPosition>(), getStore());
-        }
-        for (const auto &item: payload["customAudioTrackVolumes"]) {
-          store_->customAudioTrackVolumes.create(item);
-          this->customAudioTrackVolumeAdded(
-              item.get<CustomAudioTrackVolume>(), getStore());
         }
         store_->setStageId(stageId);
         store_->setGroupId(groupId);
@@ -538,17 +364,9 @@ void Client::connect(const std::string &apiToken,
         store_->resetGroupId();
         store_->resetStageDeviceId();
         store_->stageMembers.removeAll();
-        store_->customStageMemberPositions.removeAll();
-        store_->customStageMemberVolumes.removeAll();
-        store_->customGroupPositions.removeAll();
-        store_->customGroupVolumes.removeAll();
-        store_->stageMembers.removeAll();
-        store_->customStageMemberPositions.removeAll();
-        store_->customStageMemberVolumes.removeAll();
+        //store_->customGroups.removeAll();
         store_->videoTracks.removeAll();
         store_->audioTracks.removeAll();
-        store_->customAudioTrackPositions.removeAll();
-        store_->customAudioTrackVolumes.removeAll();
         // TODO: Discuss, the store may dispatch all the events instead...
         // TODO: Otherwise we have to dispatch all removals HERE (!)
         // Current workaround: assuming, that on left all using

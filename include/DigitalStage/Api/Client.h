@@ -104,22 +104,6 @@ class Client {
   sigslot::signal<const CustomGroup, const DigitalStage::Api::Store *>
       customGroupRemoved;
 
-  sigslot::signal<const CustomGroupPosition, const DigitalStage::Api::Store *>
-      customGroupPositionAdded;
-  sigslot::signal<const ID_TYPE &, nlohmann::json,
-                  const DigitalStage::Api::Store *>
-      customGroupPositionChanged;
-  sigslot::signal<const CustomGroupPosition, const DigitalStage::Api::Store *>
-      customGroupPositionRemoved;
-
-  sigslot::signal<const CustomGroupVolume, const DigitalStage::Api::Store *>
-      customGroupVolumeAdded;
-  sigslot::signal<const ID_TYPE &, nlohmann::json,
-                  const DigitalStage::Api::Store *>
-      customGroupVolumeChanged;
-  sigslot::signal<const CustomGroupVolume, const DigitalStage::Api::Store *>
-      customGroupVolumeRemoved;
-
   sigslot::signal<const StageMember, const DigitalStage::Api::Store *>
       stageMemberAdded;
   sigslot::signal<const ID_TYPE &, nlohmann::json,
@@ -128,24 +112,6 @@ class Client {
   sigslot::signal<const ID_TYPE &, const DigitalStage::Api::Store *>
       stageMemberRemoved;
 
-  sigslot::signal<const CustomStageMemberPosition,
-                  const DigitalStage::Api::Store *>
-      customStageMemberPositionAdded;
-  sigslot::signal<const ID_TYPE &, nlohmann::json,
-                  const DigitalStage::Api::Store *>
-      customStageMemberPositionChanged;
-  sigslot::signal<const CustomStageMemberPosition, const DigitalStage::Api::Store *>
-      customStageMemberPositionRemoved;
-
-  sigslot::signal<const CustomStageMemberVolume,
-                  const DigitalStage::Api::Store *>
-      customStageMemberVolumeAdded;
-  sigslot::signal<const ID_TYPE &, nlohmann::json,
-                  const DigitalStage::Api::Store *>
-      customStageMemberVolumeChanged;
-  sigslot::signal<const CustomStageMemberVolume, const DigitalStage::Api::Store *>
-      customStageMemberVolumeRemoved;
-
   sigslot::signal<const StageDevice, const DigitalStage::Api::Store *>
       stageDeviceAdded;
   sigslot::signal<const ID_TYPE &, nlohmann::json,
@@ -153,24 +119,6 @@ class Client {
       stageDeviceChanged;
   sigslot::signal<const StageDevice &, const DigitalStage::Api::Store *>
       stageDeviceRemoved;
-
-  sigslot::signal<const CustomStageDevicePosition,
-                  const DigitalStage::Api::Store *>
-      customStageDevicePositionAdded;
-  sigslot::signal<const ID_TYPE &, nlohmann::json,
-                  const DigitalStage::Api::Store *>
-      customStageDevicePositionChanged;
-  sigslot::signal<const CustomStageDevicePosition, const DigitalStage::Api::Store *>
-      customStageDevicePositionRemoved;
-
-  sigslot::signal<const CustomStageDeviceVolume,
-                  const DigitalStage::Api::Store *>
-      customStageDeviceVolumeAdded;
-  sigslot::signal<const ID_TYPE &, nlohmann::json,
-                  const DigitalStage::Api::Store *>
-      customStageDeviceVolumeChanged;
-  sigslot::signal<const CustomStageDeviceVolume, const DigitalStage::Api::Store *>
-      customStageDeviceVolumeRemoved;
 
   sigslot::signal<const SoundCard, const DigitalStage::Api::Store *>
       soundCardAdded;
@@ -201,24 +149,6 @@ class Client {
       audioTrackChanged;
   sigslot::signal<const AudioTrack, const DigitalStage::Api::Store *>
       audioTrackRemoved;
-
-  sigslot::signal<const CustomAudioTrackPosition,
-                  const DigitalStage::Api::Store *>
-      customAudioTrackPositionAdded;
-  sigslot::signal<const ID_TYPE &, nlohmann::json,
-                  const DigitalStage::Api::Store *>
-      customAudioTrackPositionChanged;
-  sigslot::signal<const CustomAudioTrackPosition, const DigitalStage::Api::Store *>
-      customAudioTrackPositionRemoved;
-
-  sigslot::signal<const CustomAudioTrackVolume,
-                  const DigitalStage::Api::Store *>
-      customAudioTrackVolumeAdded;
-  sigslot::signal<const ID_TYPE &, nlohmann::json,
-                  const DigitalStage::Api::Store *>
-      customAudioTrackVolumeChanged;
-  sigslot::signal<const CustomAudioTrackVolume, const DigitalStage::Api::Store *>
-      customAudioTrackVolumeRemoved;
 
   sigslot::signal<const User, const DigitalStage::Api::Store *> userAdded;
   sigslot::signal<const ID_TYPE &, nlohmann::json,

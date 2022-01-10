@@ -233,56 +233,6 @@ namespace DigitalStage {
       StoreEntry<DigitalStage::Types::CustomGroup> customGroups;
       std::optional<DigitalStage::Types::CustomGroup> getCustomGroupByGroupAndTargetGroup(const Types::ID_TYPE& groupId, const Types::ID_TYPE& targetGroupId) const;
 
-      // Custom group positions
-      StoreEntry<DigitalStage::Types::CustomGroupPosition> customGroupPositions;
-      std::optional<DigitalStage::Types::CustomGroupPosition>
-      getCustomGroupPositionByGroupAndDevice(const Types::ID_TYPE& groupId,
-                                             const Types::ID_TYPE& deviceId) const;
-
-      // Custom group volumes
-      StoreEntry<DigitalStage::Types::CustomGroupVolume> customGroupVolumes;
-      std::optional<DigitalStage::Types::CustomGroupVolume>
-      getCustomGroupVolumeByGroupAndDevice(const Types::ID_TYPE& groupId,
-                                           const Types::ID_TYPE& deviceId) const;
-
-      // Custom stage member positions
-      StoreEntry<DigitalStage::Types::CustomStageMemberPosition> customStageMemberPositions;
-      [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageMemberPosition>
-      getCustomStageMemberPositionByStageMemberAndDevice(
-          const Types::ID_TYPE& stageMemberId, const Types::ID_TYPE& deviceId) const;
-
-      // Custom stage member volumes
-      StoreEntry<DigitalStage::Types::CustomStageMemberVolume> customStageMemberVolumes;
-      [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageMemberVolume>
-      getCustomStageMemberVolumeByStageMemberAndDevice(
-          const Types::ID_TYPE& stageMemberId, const Types::ID_TYPE& deviceId) const;
-
-      // Custom stage device positions
-      StoreEntry<DigitalStage::Types::CustomStageDevicePosition> customStageDevicePositions;
-      [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageDevicePosition>
-      getCustomStageDevicePositionByStageDeviceAndDevice(
-          const Types::ID_TYPE& stageDeviceId, const Types::ID_TYPE& deviceId) const;
-
-      // Custom stage device volumes
-      StoreEntry<DigitalStage::Types::CustomStageDeviceVolume> customStageDeviceVolumes;
-      [[maybe_unused]] std::optional<DigitalStage::Types::CustomStageDeviceVolume>
-      getCustomStageDeviceVolumeByStageDeviceAndDevice(
-          const Types::ID_TYPE& stageDeviceId, const Types::ID_TYPE& deviceId) const;
-
-      // Custom audio track positions
-      StoreEntry<DigitalStage::Types::CustomAudioTrackPosition> customAudioTrackPositions;
-      [[maybe_unused]] std::optional<DigitalStage::Types::CustomAudioTrackPosition>
-      getCustomAudioTrackPositionByAudioTrackAndDevice(
-          const Types::ID_TYPE& audio_trackId,
-          const Types::ID_TYPE& deviceId) const;
-
-      // Custom audio track volumes
-      StoreEntry<DigitalStage::Types::CustomAudioTrackVolume> customAudioTrackVolumes;
-      [[maybe_unused]] std::optional<DigitalStage::Types::CustomAudioTrackVolume>
-      getCustomAudioTrackVolumeByAudioTrackAndDevice(
-          const Types::ID_TYPE& audio_trackId,
-          const Types::ID_TYPE& deviceId) const;
-
       // Sound cards
       StoreEntry<DigitalStage::Types::SoundCard> soundCards;
       std::optional<DigitalStage::Types::SoundCard>

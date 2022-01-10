@@ -36,36 +36,12 @@ namespace DigitalStage {
       CUSTOM_GROUP_ADDED,
       CUSTOM_GROUP_CHANGED,
       CUSTOM_GROUP_REMOVED,
-      CUSTOM_GROUP_VOLUME_ADDED,
-      CUSTOM_GROUP_VOLUME_CHANGED,
-      CUSTOM_GROUP_VOLUME_REMOVED,
-      CUSTOM_GROUP_POSITION_ADDED,
-      CUSTOM_GROUP_POSITION_CHANGED,
-      CUSTOM_GROUP_POSITION_REMOVED,
-      CUSTOM_STAGE_MEMBER_POSITION_ADDED,
-      CUSTOM_STAGE_MEMBER_POSITION_CHANGED,
-      CUSTOM_STAGE_MEMBER_POSITION_REMOVED,
-      CUSTOM_STAGE_MEMBER_VOLUME_ADDED,
-      CUSTOM_STAGE_MEMBER_VOLUME_CHANGED,
-      CUSTOM_STAGE_MEMBER_VOLUME_REMOVED,
-      CUSTOM_STAGE_DEVICE_POSITION_ADDED,
-      CUSTOM_STAGE_DEVICE_POSITION_CHANGED,
-      CUSTOM_STAGE_DEVICE_POSITION_REMOVED,
-      CUSTOM_STAGE_DEVICE_VOLUME_ADDED,
-      CUSTOM_STAGE_DEVICE_VOLUME_CHANGED,
-      CUSTOM_STAGE_DEVICE_VOLUME_REMOVED,
       VIDEO_TRACK_ADDED,
       VIDEO_TRACK_CHANGED,
       VIDEO_TRACK_REMOVED,
       AUDIO_TRACK_ADDED,
       AUDIO_TRACK_CHANGED,
       AUDIO_TRACK_REMOVED,
-      CUSTOM_AUDIO_TRACK_VOLUME_ADDED,
-      CUSTOM_AUDIO_TRACK_VOLUME_CHANGED,
-      CUSTOM_AUDIO_TRACK_VOLUME_REMOVED,
-      CUSTOM_AUDIO_TRACK_POSITION_ADDED,
-      CUSTOM_AUDIO_TRACK_POSITION_CHANGED,
-      CUSTOM_AUDIO_TRACK_POSITION_REMOVED,
       SOUND_CARD_ADDED,
       SOUND_CARD_CHANGED,
       SOUND_CARD_REMOVED,
@@ -126,39 +102,15 @@ namespace DigitalStage {
       extern const std::string STAGE_DEVICE_ADDED;
       extern const std::string STAGE_DEVICE_CHANGED;
       extern const std::string STAGE_DEVICE_REMOVED;
-    extern const std::string CUSTOM_GROUP_ADDED;
-    extern const std::string CUSTOM_GROUP_CHANGED;
-    extern const std::string CUSTOM_GROUP_REMOVED;
-      extern const std::string CUSTOM_GROUP_VOLUME_ADDED;
-      extern const std::string CUSTOM_GROUP_VOLUME_CHANGED;
-      extern const std::string CUSTOM_GROUP_VOLUME_REMOVED;
-      extern const std::string CUSTOM_GROUP_POSITION_ADDED;
-      extern const std::string CUSTOM_GROUP_POSITION_CHANGED;
-      extern const std::string CUSTOM_GROUP_POSITION_REMOVED;
-      extern const std::string CUSTOM_STAGE_MEMBER_POSITION_ADDED;
-      extern const std::string CUSTOM_STAGE_MEMBER_POSITION_CHANGED;
-      extern const std::string CUSTOM_STAGE_MEMBER_POSITION_REMOVED;
-      extern const std::string CUSTOM_STAGE_MEMBER_VOLUME_ADDED;
-      extern const std::string CUSTOM_STAGE_MEMBER_VOLUME_CHANGED;
-      extern const std::string CUSTOM_STAGE_MEMBER_VOLUME_REMOVED;
-      extern const std::string CUSTOM_STAGE_DEVICE_POSITION_ADDED;
-      extern const std::string CUSTOM_STAGE_DEVICE_POSITION_CHANGED;
-      extern const std::string CUSTOM_STAGE_DEVICE_POSITION_REMOVED;
-      extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_ADDED;
-      extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_CHANGED;
-      extern const std::string CUSTOM_STAGE_DEVICE_VOLUME_REMOVED;
+      extern const std::string CUSTOM_GROUP_ADDED;
+      extern const std::string CUSTOM_GROUP_CHANGED;
+      extern const std::string CUSTOM_GROUP_REMOVED;
       extern const std::string VIDEO_TRACK_ADDED;
       extern const std::string VIDEO_TRACK_CHANGED;
       extern const std::string VIDEO_TRACK_REMOVED;
       extern const std::string AUDIO_TRACK_ADDED;
       extern const std::string AUDIO_TRACK_CHANGED;
       extern const std::string AUDIO_TRACK_REMOVED;
-      extern const std::string CUSTOM_AUDIO_TRACK_VOLUME_ADDED;
-      extern const std::string CUSTOM_AUDIO_TRACK_VOLUME_CHANGED;
-      extern const std::string CUSTOM_AUDIO_TRACK_VOLUME_REMOVED;
-      extern const std::string CUSTOM_AUDIO_TRACK_POSITION_ADDED;
-      extern const std::string CUSTOM_AUDIO_TRACK_POSITION_CHANGED;
-      extern const std::string CUSTOM_AUDIO_TRACK_POSITION_REMOVED;
       extern const std::string SOUND_CARD_ADDED;
       extern const std::string SOUND_CARD_CHANGED;
       extern const std::string SOUND_CARD_REMOVED;

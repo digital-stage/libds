@@ -154,78 +154,6 @@ Store::getCustomGroupByGroupAndTargetGroup(const ID_TYPE &groupId,
   return std::nullopt;
 }
 
-std::optional<CustomGroupPosition>
-Store::getCustomGroupPositionByGroupAndDevice(const ID_TYPE &groupId,
-                                              const ID_TYPE &deviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customGroupPositions.mutex_store_);
-  for (const auto &item: this->customGroupPositions.getAll()) {
-    if (item.groupId == groupId && item.deviceId == deviceId) {
-      return item;
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<CustomGroupVolume>
-Store::getCustomGroupVolumeByGroupAndDevice(const ID_TYPE &groupId,
-                                            const ID_TYPE &deviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customGroupVolumes.mutex_store_);
-  for (const auto &item: this->customGroupVolumes.getAll()) {
-    if (item.groupId == groupId && item.deviceId == deviceId) {
-      return item;
-    }
-  }
-  return std::nullopt;
-}
-
-[[maybe_unused]] std::optional<CustomStageMemberPosition>
-Store::getCustomStageMemberPositionByStageMemberAndDevice(
-    const ID_TYPE &stageMemberId, const ID_TYPE &deviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customStageMemberPositions.mutex_store_);
-  for (const auto &item: this->customStageMemberPositions.getAll()) {
-    if (item.stageMemberId == stageMemberId && item.deviceId == deviceId) {
-      return item;
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<CustomStageMemberVolume>
-Store::getCustomStageMemberVolumeByStageMemberAndDevice(
-    const ID_TYPE &stageMemberId, const ID_TYPE &deviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customStageMemberVolumes.mutex_store_);
-  for (const auto &item: this->customStageMemberVolumes.getAll()) {
-    if (item.stageMemberId == stageMemberId && item.deviceId == deviceId) {
-      return item;
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<CustomAudioTrackPosition>
-Store::getCustomAudioTrackPositionByAudioTrackAndDevice(
-    const ID_TYPE &audioTrackId, const ID_TYPE &deviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customAudioTrackPositions.mutex_store_);
-  for (const auto &item: this->customAudioTrackPositions.getAll()) {
-    if (item.audioTrackId == audioTrackId && item.deviceId == deviceId) {
-      return item;
-    }
-  }
-  return std::nullopt;
-}
-
-[[maybe_unused]] std::optional<CustomAudioTrackVolume>
-Store::getCustomAudioTrackVolumeByAudioTrackAndDevice(
-    const ID_TYPE &audioTrackId, const ID_TYPE &deviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customAudioTrackVolumes.mutex_store_);
-  for (const auto &item: this->customAudioTrackVolumes.getAll()) {
-    if (item.audioTrackId == audioTrackId && item.deviceId == deviceId) {
-      return item;
-    }
-  }
-  return std::nullopt;
-}
-
 std::vector<VideoTrack>
 Store::getVideoTracksByStageDevice(const ID_TYPE &stageDeviceId) const {
   std::lock_guard<std::recursive_mutex> lock(this->videoTracks.mutex_store_);
@@ -309,30 +237,6 @@ Store::getStageDevicesByStageMember(const ID_TYPE &stageMemberId) const {
     }
   }
   return vector;
-}
-
-std::optional<CustomStageDeviceVolume>
-Store::getCustomStageDeviceVolumeByStageDeviceAndDevice(
-    const ID_TYPE &stageDeviceId, const ID_TYPE &deviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customStageDeviceVolumes.mutex_store_);
-  for (const auto &item: this->customStageDeviceVolumes.getAll()) {
-    if (item.stageDeviceId == stageDeviceId && item.deviceId == deviceId) {
-      return item;
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<CustomStageDevicePosition>
-Store::getCustomStageDevicePositionByStageDeviceAndDevice(
-    const ID_TYPE &stageDeviceId, const ID_TYPE &deviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customStageDevicePositions.mutex_store_);
-  for (const auto &item: this->customStageDevicePositions.getAll()) {
-    if (item.stageDeviceId == stageDeviceId && item.deviceId == deviceId) {
-      return item;
-    }
-  }
-  return std::nullopt;
 }
 
 std::optional<DigitalStage::Types::SoundCard> Store::getInputSoundCard() const {
