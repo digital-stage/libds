@@ -178,13 +178,19 @@ void Client::connect(const std::string &apiToken,
         store_->stageMembers.create(payload);
         auto stage_member = payload.get<StageMember>();
         this->stageMemberAdded(stage_member, getStore());
-        if(stage_member.userId == store_->getUserId()) {
-          store_->setStageMemberId(stage_member._id);
-        }
       } else if (event == RetrieveEvents::STAGE_MEMBER_CHANGED) {
         store_->stageMembers.update(payload);
         const ID_TYPE id = payload["_id"];
         this->stageMemberChanged(id, payload, getStore());
+        if(id == this->store_->getStageMemberId()) {
+          if(payload.count("groupId") != 0) {
+            if(payload["groupId"].is_null()) {
+              this->store_->setGroupId(std::nullopt);
+            } else {
+              this->store_->setGroupId(payload["groupId"].get<ID_TYPE>());
+            }
+          }
+        }
       } else if (event == RetrieveEvents::STAGE_MEMBER_REMOVED) {
         const ID_TYPE id = payload;
         store_->stageMembers.remove(id);
@@ -299,6 +305,7 @@ void Client::connect(const std::string &apiToken,
          */
       } else if (event == RetrieveEvents::STAGE_JOINED) {
         auto stageId = payload["stageId"].get<std::string>();
+        auto stageMemberId = payload["stageMemberId"].get<std::string>();
         auto groupId = payload["groupId"].is_null() ? std::nullopt : std::optional<std::string>(payload["groupId"].get<
             std::string>());
         auto localDeviceId = store_->getLocalDeviceId();
@@ -329,9 +336,6 @@ void Client::connect(const std::string &apiToken,
           store_->stageMembers.create(item);
           auto stage_member = item.get<StageMember>();
           this->stageMemberAdded(stage_member, getStore());
-          if(stage_member.userId == store_->getUserId()) {
-            store_->setStageMemberId(stage_member._id);
-          }
         }
         for (const auto &item: payload["stageDevices"]) {
           store_->stageDevices.create(item);
@@ -354,6 +358,7 @@ void Client::connect(const std::string &apiToken,
         }
         store_->setStageId(stageId);
         store_->setGroupId(groupId);
+        store_->setStageMemberId(stageMemberId);
         this->stageJoined(stageId, groupId, getStore());
 
         /*
@@ -362,6 +367,7 @@ void Client::connect(const std::string &apiToken,
       } else if (event == RetrieveEvents::STAGE_LEFT) {
         store_->resetStageId();
         store_->resetGroupId();
+        store_->resetStageMemberId();
         store_->resetStageDeviceId();
         store_->stageMembers.removeAll();
         //store_->customGroups.removeAll();

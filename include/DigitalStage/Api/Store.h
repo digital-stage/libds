@@ -121,6 +121,7 @@ namespace DigitalStage {
        */
       void setStageId(const Types::ID_TYPE& id);
       void resetStageId();
+      void resetStageMemberId();
       /**
        * Returns the ID of the current stage.
        * This will return null if the user is currently not inside any stage.

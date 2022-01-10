@@ -107,6 +107,11 @@ void Store::resetGroupId() {
   groupId_ = std::nullopt;
 }
 
+void Store::resetStageMemberId() {
+  std::lock_guard<std::recursive_mutex> lock(this->stageMemberId_mutex_);
+  stageMemberId_ = std::nullopt;
+}
+
 std::vector<Group> Store::getGroupsByStage(const ID_TYPE &stageId) const {
   std::lock_guard<std::recursive_mutex> lock(this->groups.mutex_store_);
   auto vector = std::vector<Group>();
