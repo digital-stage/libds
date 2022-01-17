@@ -463,29 +463,37 @@ void Client::connect(const std::string &apiToken,
                 item.get<CustomGroup>(), getStore());
           }
         }
-        for (const auto &item: payload["customGroupVolumes"]) {
-          store_->customGroupVolumes.create(item);
-          this->customGroupVolumeAdded(item.get<CustomGroupVolume>(),
-                                       getStore());
+        if (payload.contains("customGroupVolumes")) {
+            for (const auto& item : payload["customGroupVolumes"]) {
+                store_->customGroupVolumes.create(item);
+                this->customGroupVolumeAdded(item.get<CustomGroupVolume>(),
+                    getStore());
+            }
         }
-        for (const auto &item: payload["customGroupPositions"]) {
-          store_->customGroupPositions.create(item);
-          this->customGroupPositionAdded(item.get<CustomGroupPosition>(),
-                                         getStore());
+        if (payload.contains("customGroupPositions")) {
+            for (const auto& item : payload["customGroupPositions"]) {
+                store_->customGroupPositions.create(item);
+                this->customGroupPositionAdded(item.get<CustomGroupPosition>(),
+                    getStore());
+            }
         }
         for (const auto &item: payload["stageMembers"]) {
           store_->stageMembers.create(item);
           this->stageMemberAdded(item.get<StageMember>(), getStore());
         }
-        for (const auto &item: payload["customStageMemberVolumes"]) {
-          store_->customStageMemberVolumes.create(item);
-          this->customStageMemberVolumeAdded(
-              item.get<CustomStageMemberVolume>(), getStore());
+        if (payload.contains("customStageMemberVolumes")) {
+            for (const auto& item : payload["customStageMemberVolumes"]) {
+                store_->customStageMemberVolumes.create(item);
+                this->customStageMemberVolumeAdded(
+                    item.get<CustomStageMemberVolume>(), getStore());
+            }
         }
-        for (const auto &item: payload["customStageMemberPositions"]) {
-          store_->customStageMemberPositions.create(item);
-          this->customStageMemberPositionAdded(
-              item.get<CustomStageMemberPosition>(), getStore());
+        if (payload.contains("customStageMemberPositions")) {
+            for (const auto& item : payload["customStageMemberPositions"]) {
+                store_->customStageMemberPositions.create(item);
+                this->customStageMemberPositionAdded(
+                    item.get<CustomStageMemberPosition>(), getStore());
+            }
         }
         for (const auto &item: payload["stageDevices"]) {
           store_->stageDevices.create(item);
@@ -496,15 +504,19 @@ void Client::connect(const std::string &apiToken,
           }
           this->stageDeviceAdded(stageDevice, getStore());
         }
-        for (const auto &item: payload["customStageDeviceVolumes"]) {
-          store_->customStageDeviceVolumes.create(item);
-          this->customStageDeviceVolumeAdded(
-              item.get<CustomStageDeviceVolume>(), getStore());
+        if (payload.contains("customStageDeviceVolumes")) {
+            for (const auto& item : payload["customStageDeviceVolumes"]) {
+                store_->customStageDeviceVolumes.create(item);
+                this->customStageDeviceVolumeAdded(
+                    item.get<CustomStageDeviceVolume>(), getStore());
+            }
         }
-        for (const auto &item: payload["customStageDevicePositions"]) {
-          store_->customStageDevicePositions.create(item);
-          this->customStageDevicePositionAdded(
-              item.get<CustomStageDevicePosition>(), getStore());
+        if (payload.contains("customStageDevicePositions")) {
+            for (const auto& item : payload["customStageDevicePositions"]) {
+                store_->customStageDevicePositions.create(item);
+                this->customStageDevicePositionAdded(
+                    item.get<CustomStageDevicePosition>(), getStore());
+            }
         }
         for (const auto &item: payload["audioTracks"]) {
           store_->audioTracks.create(item);
@@ -516,15 +528,19 @@ void Client::connect(const std::string &apiToken,
           this->videoTrackAdded(item.get<VideoTrack>(),
                                 getStore());
         }
-        for (const auto &item: payload["customAudioTrackPositions"]) {
-          store_->customAudioTrackPositions.create(item);
-          this->customAudioTrackPositionAdded(
-              item.get<CustomAudioTrackPosition>(), getStore());
+        if (payload.contains("customAudioTrackPositions")) {
+            for (const auto& item : payload["customAudioTrackPositions"]) {
+                store_->customAudioTrackPositions.create(item);
+                this->customAudioTrackPositionAdded(
+                    item.get<CustomAudioTrackPosition>(), getStore());
+            }
         }
-        for (const auto &item: payload["customAudioTrackVolumes"]) {
-          store_->customAudioTrackVolumes.create(item);
-          this->customAudioTrackVolumeAdded(
-              item.get<CustomAudioTrackVolume>(), getStore());
+        if (payload.contains("customAudioTrackVolumes")) {
+            for (const auto& item : payload["customAudioTrackVolumes"]) {
+                store_->customAudioTrackVolumes.create(item);
+                this->customAudioTrackVolumeAdded(
+                    item.get<CustomAudioTrackVolume>(), getStore());
+            }
         }
         store_->setStageId(stageId);
         store_->setGroupId(groupId);
