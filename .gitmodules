@@ -1,4 +1,3 @@
 [submodule "libteckos"]
 	path = libteckos
 	url = https://github.com/delude88/libteckos.git
-	branch = main

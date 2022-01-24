@@ -2,14 +2,36 @@
 Native cpp based client for the API
 
 
-## Building on macOS
+## Building
 
-macOS 10.11 and newer deliver openssl already, but cmake got trouble finding its path, so use the following commands to build:
+First use conan to install all dependencies:
 
 ```
-mkdir -p build
-cd build
-OPENSSL_ROOT_DIR=/usr/local/opt/openssl/ cmake ..
+conan install -if cmake-build-debug --build=missing .
 ```
 
-This should work as expected.
+Then configure cmake:
+
+```
+cmake -B cmake-build-debug .
+```
+
+And build the test application:
+
+```
+cmake --build cmake-build-debug --parallel
+```
+
+## Build and run tests
+
+To build and run test, you've to enable the BUILD_TESTS flag inside cmake:
+
+```
+conan install -if cmake-build-debug --build=missing .
+cmake -DBUILD_TESTS=On -B cmake-build-debug .
+cmake --build cmake-build-debug --target DigitalStage-test --parallel
+```
+Then you are able to run the test executable DigitalStage-test inside the cmake-build-debug folder:
+```
+./cmake-build-debug/DigitalStage-test
+```

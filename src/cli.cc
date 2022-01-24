@@ -4,6 +4,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <thread>
+#include <optional>
 
 using namespace DigitalStage::Api;
 using namespace DigitalStage::Auth;
@@ -67,31 +68,23 @@ void handleReady(const Store*)
 {
   std::cout << "READY TO GO!" << std::endl;
 }
-void handleStageJoined(const ID_TYPE& stageId, const ID_TYPE& groupId,
+void handleStageJoined(const ID_TYPE& stageId, std::optional<ID_TYPE> groupId,
                        const Store* s)
 {
   auto stage = s->stages.get(stageId);
-  auto group = s->groups.get(groupId);
-  std::cout << "JOINED STAGE " << stage->name << " AND GROUP " << group->name
-            << std::endl;
+  if(groupId) {
+    auto group = s->groups.get(*groupId);
+    std::cout << "JOINED STAGE " << stage->name << " AND GROUP " << group->name
+              << std::endl;
+  } else {
+    std::cout << "JOINED STAGE " << stage->name << " WITHOUT GROUP" << std::endl;
+  }
 }
 
 void handleStageDeviceChanged(const std::string& id, nlohmann::json, const Store* s)
 {
   auto d = s->stageDevices.get(id);
   std::cout << "Stage device " << id << " changed" << std::endl;
-}
-
-void handleCustomStageDevicePositionChanged(const std::string& id, nlohmann::json, const Store* s)
-{
-  auto d = s->customStageDevicePositions.get(id);
-  std::cout << "Custom stage device position " << id << " changed to (" << d->x << "|" << d->y << "|" << d->z << ") with angle " << d->rZ << "deg" << std::endl;
-}
-
-void handleCustomStageMemberVolumeChanged(const std::string& id, nlohmann::json, const Store* s)
-{
-  auto d = s->customStageMemberVolumes.get(id);
-  std::cout << "Custom stage member volume " << id << " changed to " << d->volume << " and is " << (d->muted ? "muted" : "unmuted") << std::endl;
 }
 
 void handleStageLeft(const Store*)
@@ -105,27 +98,24 @@ int main(int argc, char* argv[])
     std::wcout << "Call this with email and password as parameters" << std::endl;
     return -1;
   }
+
   auto email = argv[1];
   auto password = argv[2];
-  auto authService = AuthService(U("https://digitalstage-auth.germanywestcentral.cloudapp.azure.com"));
+  auto authService = AuthService("https://auth.dstage.org");
 
   std::cout << "Signing in..." << std::endl;
   try {
-    string_t emailStr(email, email + strlen(email));
-    string_t passwordStr(password, password + strlen(password));
-    auto apiToken = authService.signIn(emailStr, passwordStr).get();
-#ifdef WIN32
-    std::wcout << "Token: " << apiToken << std::endl;
-#else
+    std::string emailStr(email, email + strlen(email));
+    std::string passwordStr(password, password + strlen(password));
+    auto apiToken = authService.signInSync(emailStr, passwordStr);
     std::cout << "Token: " << apiToken << std::endl;
-#endif
 
     nlohmann::json initialDevice;
     initialDevice["uuid"] = "123456";
     initialDevice["type"] = "ov";
     initialDevice["canAudio"] = true;
     initialDevice["canVideo"] = false;
-    auto* client = new Client("wss://digitalstage-api.germanywestcentral.cloudapp.azure.com");
+    auto* client = new Client("wss://api.dstage.org");
 
     client->ready.connect([](const Store*) {
       std::cout << "Ready - this type inside an anonymous callback function"
@@ -141,8 +131,6 @@ int main(int argc, char* argv[])
     client->stageJoined.connect(handleStageJoined);
     client->stageLeft.connect(handleStageLeft);
     client->stageDeviceChanged.connect(handleStageDeviceChanged);
-    client->customStageDevicePositionChanged.connect(handleCustomStageDevicePositionChanged);
-    client->customStageMemberVolumeChanged.connect(handleCustomStageMemberVolumeChanged);
 
     // Always print on stage changes
     client->stageJoined.connect(

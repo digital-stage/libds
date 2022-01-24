@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <optional>
 #include <set>
 #include <string>
+#include <optional>
 
 using nlohmann::json;
 
@@ -26,7 +26,8 @@ void optional_from_json(const J &j, const char *name, std::optional<T> &value) {
   }
 }
 
-namespace DigitalStage::Types {
+namespace DigitalStage {
+namespace Types {
 typedef std::string ID_TYPE;
 
 struct Device {
@@ -160,72 +161,35 @@ struct Group : VolumeProperties, ThreeDimensionalProperties {
   std::string color;
 };
 
-struct CustomGroupPosition : ThreeDimensionalProperties {
+struct CustomGroup : VolumeProperties, ThreeDimensionalProperties {
   ID_TYPE _id;
-  ID_TYPE userId;
-  ID_TYPE deviceId;
-  std::string groupId;
-};
-
-struct CustomGroupVolume : VolumeProperties {
-  ID_TYPE _id;
-  ID_TYPE userId;
-  ID_TYPE deviceId;
-  std::string groupId;
+  ID_TYPE groupId;
+  ID_TYPE targetGroupId;
+  ID_TYPE stageId;
 };
 
 struct StageMember : VolumeProperties, ThreeDimensionalProperties {
   ID_TYPE _id;
   ID_TYPE stageId;
-  std::string groupId;
   ID_TYPE userId;
+  std::optional<ID_TYPE> groupId;
   bool active;
   bool isDirector;
 };
 
-struct CustomStageMemberPosition : ThreeDimensionalProperties {
-  ID_TYPE _id;
-  ID_TYPE userId;
-  ID_TYPE deviceId;
-  ID_TYPE stageMemberId;
-};
-
-struct CustomStageMemberVolume : VolumeProperties {
+struct StageDevice {
   ID_TYPE _id;
   ID_TYPE userId;
   ID_TYPE deviceId;
   ID_TYPE stageId;
+  std::optional<ID_TYPE> groupId;
   ID_TYPE stageMemberId;
-};
-
-struct StageDevice : VolumeProperties, ThreeDimensionalProperties {
-  std::string _id;
-  std::string userId;
-  std::string deviceId;
-  std::string stageId;
-  std::string groupId;
-  std::string stageMemberId;
   bool active;
+  std::string type;
 
   uint8_t order;
 
   bool sendLocal;
-};
-
-struct CustomStageDevicePosition : ThreeDimensionalProperties {
-  std::string _id;
-  std::string userId;
-  std::string deviceId;
-  std::string stageId;
-  std::string stageDeviceId;
-};
-
-struct CustomStageDeviceVolume : VolumeProperties {
-  std::string _id;
-  std::string userId;
-  std::string deviceId;
-  std::string stageId;
-  std::string stageDeviceId;
 };
 
 struct Channel {
@@ -330,23 +294,11 @@ struct AudioTrack : VolumeProperties, ThreeDimensionalProperties {
    * The channel on the source device (see deviceId)
    */
   std::optional<unsigned int> sourceChannel;
+  /**
+   * Channel (used by our PC client for uniqueness)
+   */
+  std::optional<std::string> name;
   std::optional<std::string> ovSourcePort;
-};
-
-struct CustomAudioTrackPosition : ThreeDimensionalProperties {
-  ID_TYPE _id;
-  ID_TYPE userId;
-  ID_TYPE deviceId;
-  ID_TYPE audioTrackId;
-  ID_TYPE stageId;
-};
-
-struct CustomAudioTrackVolume : VolumeProperties {
-  ID_TYPE _id;
-  ID_TYPE userId;
-  ID_TYPE deviceId;
-  ID_TYPE audioTrackId;
-  ID_TYPE stageId;
 };
 
 struct User {
@@ -361,31 +313,16 @@ struct User {
 };
 
 struct WholeStage {
-  std::map<std::string, User> users;
-  std::map<std::string, Device> devices;
-  std::map<std::string, SoundCard> soundCards;
-  std::map<std::string, Stage> stages;
-  std::map<std::string, Group> groups;
-  std::map<std::string, std::map<std::string, CustomGroupPosition>>
-      customGroupPositions;
-  std::map<std::string, std::map<std::string, CustomGroupVolume>>
-      customGroupVolumes;
-  std::map<std::string, StageMember> stageMembers;
-  std::map<std::string, std::map<std::string, CustomStageMemberPosition>>
-      customStageMemberPositions;
-  std::map<std::string, std::map<std::string, CustomStageMemberVolume>>
-      customStageMemberVolumes;
-  std::map<std::string, StageDevice> stageDevices;
-  std::map<std::string, std::map<std::string, CustomStageDevicePosition>>
-      customStageDevicePositions;
-  std::map<std::string, std::map<std::string, CustomStageDeviceVolume>>
-      customStageDeviceVolumes;
-  std::map<std::string, AudioTrack> audioTracks;
-  std::map<std::string, std::map<std::string, CustomAudioTrackPosition>>
-      customAudioPositions;
-  std::map<std::string, std::map<std::string, CustomAudioTrackVolume>>
-      customAudioVolumes;
-  std::map<std::string, VideoTrack> videoTracks;
+  std::map<ID_TYPE, User> users;
+  std::map<ID_TYPE, Device> devices;
+  std::map<ID_TYPE, SoundCard> soundCards;
+  std::map<ID_TYPE, Stage> stages;
+  std::map<ID_TYPE, Group> groups;
+  std::map<ID_TYPE, CustomGroup> customGroups;
+  std::map<ID_TYPE, StageMember> stageMembers;
+  std::map<ID_TYPE, StageDevice> stageDevices;
+  std::map<ID_TYPE, AudioTrack> audioTracks;
+  std::map<ID_TYPE, VideoTrack> videoTracks;
 };
 
 struct SessionDescriptionInit {
@@ -417,8 +354,8 @@ struct IceCandidateInit {
 };
 
 struct IceCandidate {
-  std::string from;
-  std::string to;
+  ID_TYPE from;
+  ID_TYPE to;
   std::optional<IceCandidateInit> iceCandidate;
 };
 
@@ -451,7 +388,7 @@ inline void from_json(const json &j, ThreeDimensionalProperties &p) {
   if (j.contains("rZ") && j.at("rZ").is_number()) {
     j.at("rZ").get_to(p.rZ);
   }
-  if(j.contains("directivity") && j.at("directivity").is_string()) {
+  if (j.contains("directivity") && j.at("directivity").is_string()) {
     j.at("directivity").get_to(p.directivity);
   }
 }
@@ -480,6 +417,8 @@ inline void to_json(json &j, const Device &p) {
            {"sendAudio", p.sendAudio},
            {"receiveVideo", p.receiveVideo},
            {"receiveAudio", p.receiveAudio},
+           {"volume", p.volume},
+           {"balance", p.balance},
            {"buffer", p.buffer}};
   optional_to_json(j, "audioDriver", p.audioDriver);
   optional_to_json(j, "audioEngine", p.audioEngine);
@@ -508,6 +447,8 @@ inline void from_json(const json &j, Device &p) {
   j.at("sendAudio").get_to(p.sendAudio);
   j.at("receiveVideo").get_to(p.receiveVideo);
   j.at("receiveAudio").get_to(p.receiveAudio);
+  j.at("volume").get_to(p.volume);
+  j.at("balance").get_to(p.balance);
 
   optional_from_json(j, "audioDriver", p.audioDriver);
   optional_from_json(j, "audioEngine", p.audioEngine);
@@ -624,44 +565,34 @@ inline void from_json(const json &j, Group &p) {
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
 }
 
-inline void to_json(json &j, const CustomGroupPosition &p) {
+inline void to_json(json &j, const CustomGroup &p) {
   j = json{{"_id", p._id},
-           {"userId", p.userId},
-           {"deviceId", p.deviceId},
            {"groupId", p.groupId},
+           {"targetGroupId", p.targetGroupId},
+           {"stageId", p.stageId},
+           {"volume", p.volume},
+           {"muted", p.muted},
            {"x", p.x},
            {"y", p.y},
            {"z", p.z},
            {"rX", p.rX},
            {"rY", p.rY},
-           {"rZ", p.rZ}};
+           {"rZ", p.rZ},
+           {"directivity", p.directivity}};
 }
 
-inline void from_json(const json &j, CustomGroupPosition &p) {
+inline void from_json(const json &j, CustomGroup &p) {
   j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("deviceId").get_to(p.deviceId);
   j.at("groupId").get_to(p.groupId);
-  from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-}
-
-inline void to_json(json &j, const CustomGroupVolume &p) {
-  j = json{{"_id", p._id}, {"userId", p.userId}, {"deviceId", p.deviceId}, {"groupId", p.groupId}, {"volume", p.volume},
-           {"muted", p.muted}};
-}
-
-inline void from_json(const json &j, CustomGroupVolume &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("groupId").get_to(p.groupId);
+  j.at("targetGroupId").get_to(p.targetGroupId);
+  j.at("stageId").get_to(p.stageId);
   from_json(j, static_cast<VolumeProperties &>(p));
+  from_json(j, static_cast<ThreeDimensionalProperties &>(p));
 }
 
 inline void to_json(json &j, const StageMember &p) {
   j = json{{"_id", p._id},
            {"stageId", p.stageId},
-           {"groupId", p.groupId},
            {"userId", p.userId},
            {"active", p.active},
            {"isDirector", p.isDirector},
@@ -673,46 +604,18 @@ inline void to_json(json &j, const StageMember &p) {
            {"rX", p.rX},
            {"rY", p.rY},
            {"rZ", p.rZ}};
+  optional_to_json(j, "groupId", p.groupId);
 }
 
 inline void from_json(const json &j, StageMember &p) {
   j.at("_id").get_to(p._id);
   j.at("stageId").get_to(p.stageId);
-  j.at("groupId").get_to(p.groupId);
   j.at("userId").get_to(p.userId);
   j.at("active").get_to(p.active);
   j.at("isDirector").get_to(p.isDirector);
+  optional_from_json(j, "groupId", p.groupId);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-}
-
-inline void to_json(json &j, const CustomStageMemberPosition &p) {
-  j = json{{"_id", p._id}, {"deviceId", p.deviceId}, {"userId", p.userId}, {"stageMemberId", p.stageMemberId},
-           {"x", p.x}, {"y", p.y}, {"z", p.z}, {"rX", p.rX}, {"rY", p.rY}, {"rZ", p.rZ}};
-}
-
-inline void from_json(const json &j, CustomStageMemberPosition &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("stageId").get_to(p.deviceId);
-  j.at("stageMemberId").get_to(p.stageMemberId);
-  from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-}
-
-inline void to_json(json &j, const CustomStageMemberVolume &p) {
-  j = json{{"_id", p._id}, {"userId", p.userId}, {"stageId", p.stageId}, {"deviceId", p.deviceId},
-           {"stageMemberId", p.stageMemberId},
-           {"volume", p.volume}, {"muted", p.muted}};
-}
-
-inline void from_json(const json &j, CustomStageMemberVolume &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("stageId").get_to(p.stageId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("stageMemberId").get_to(p.stageMemberId);
-  from_json(j, static_cast<VolumeProperties &>(p));
 }
 
 inline void to_json(json &j, const StageDevice &p) {
@@ -720,19 +623,12 @@ inline void to_json(json &j, const StageDevice &p) {
            {"userId", p.userId},
            {"deviceId", p.deviceId},
            {"stageId", p.stageId},
-           {"groupId", p.groupId},
            {"stageMemberId", p.stageMemberId},
            {"active", p.active},
+           {"type", p.type},
            {"order", p.order},
-           {"sendLocal", p.sendLocal},
-           {"volume", p.volume},
-           {"muted", p.muted},
-           {"x", p.x},
-           {"y", p.y},
-           {"z", p.z},
-           {"rX", p.rX},
-           {"rY", p.rY},
-           {"rZ", p.rZ}};
+           {"sendLocal", p.sendLocal}};
+  optional_to_json(j, "groupId", p.groupId);
 }
 
 inline void from_json(const json &j, StageDevice &p) {
@@ -740,54 +636,12 @@ inline void from_json(const json &j, StageDevice &p) {
   j.at("userId").get_to(p.userId);
   j.at("deviceId").get_to(p.deviceId);
   j.at("stageId").get_to(p.stageId);
-  j.at("groupId").get_to(p.groupId);
   j.at("stageMemberId").get_to(p.stageMemberId);
   j.at("active").get_to(p.active);
+  j.at("type").get_to(p.type);
   j.at("order").get_to(p.order);
   j.at("sendLocal").get_to(p.sendLocal);
-  from_json(j, static_cast<VolumeProperties &>(p));
-  from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-}
-
-inline void to_json(json &j, const CustomStageDevicePosition &p) {
-  j = json{{"_id", p._id},
-           {"deviceId", p.deviceId},
-           {"userId", p.userId},
-           {"stageId", p.stageId},
-           {"stageDeviceId", p.stageDeviceId},
-           {"x", p.x},
-           {"y", p.y},
-           {"z", p.z},
-           {"rX", p.rX},
-           {"rY", p.rY},
-           {"rZ", p.rZ}};
-}
-
-inline void from_json(const json &j, CustomStageDevicePosition &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("stageId").get_to(p.stageId);
-  j.at("stageDeviceId").get_to(p.stageDeviceId);
-  from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-}
-
-inline void to_json(json &j, const CustomStageDeviceVolume &p) {
-  j = json{{"_id", p._id},
-           {"userId", p.userId},
-           {"deviceId", p.deviceId},
-           {"stageId", p.stageId},
-           {"stageDeviceId", p.stageDeviceId},
-           {"volume", p.volume},
-           {"muted", p.muted}};
-}
-
-inline void from_json(const json &j, CustomStageDeviceVolume &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("stageId").get_to(p.stageId);
-  j.at("stageDeviceId").get_to(p.stageDeviceId);
-  from_json(j, static_cast<VolumeProperties &>(p));
+  optional_from_json(j, "groupId", p.groupId);
 }
 
 inline void to_json(json &j, const Channel &p) {
@@ -877,6 +731,7 @@ inline void to_json(json &j, const AudioTrack &p) {
            {"rX", p.rX},
            {"rY", p.rY},
            {"rZ", p.rZ}};
+  optional_to_json(j, "name", p.name);
   optional_to_json(j, "sourceChannel", p.sourceChannel);
   optional_to_json(j, "ovSourcePort", p.ovSourcePort);
 }
@@ -889,48 +744,11 @@ inline void from_json(const json &j, AudioTrack &p) {
   j.at("deviceId").get_to(p.deviceId);
   j.at("userId").get_to(p.userId);
   j.at("type").get_to(p.type);
+  optional_from_json(j, "name", p.name);
   optional_from_json(j, "sourceChannel", p.sourceChannel);
   optional_from_json(j, "ovSourcePort", p.ovSourcePort);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-}
-
-inline void to_json(json &j, const CustomAudioTrackPosition &p) {
-  j = json{{"_id", p._id},
-           {"userId", p.userId},
-           {"deviceId", p.deviceId},
-           {"audioTrackId", p.audioTrackId},
-           {"stageId", p.stageId},
-           {"directivity", p.directivity},
-           {"x", p.x},
-           {"y", p.y},
-           {"z", p.z},
-           {"rX", p.rX},
-           {"rY", p.rY},
-           {"rZ", p.rZ}};
-}
-
-inline void from_json(const json &j, CustomAudioTrackPosition &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("audioTrackId").get_to(p.audioTrackId);
-  j.at("stageId").get_to(p.stageId);
-  from_json(j, static_cast<ThreeDimensionalProperties &>(p));
-}
-
-inline void to_json(json &j, const CustomAudioTrackVolume &p) {
-  j = json{{"_id", p._id}, {"userId", p.userId}, {"deviceId", p.deviceId}, {"audioTrackId", p.audioTrackId},
-           {"stageId", p.stageId}, {"volume", p.volume}, {"muted", p.muted}};
-}
-
-inline void from_json(const json &j, CustomAudioTrackVolume &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("audioTrackId").get_to(p.audioTrackId);
-  j.at("stageId").get_to(p.stageId);
-  from_json(j, static_cast<VolumeProperties &>(p));
 }
 
 inline void to_json(json &j, const User &p) {
@@ -961,17 +779,10 @@ inline void to_json(json &j, const WholeStage &p) {
            {"soundCards", p.soundCards},
            {"stages", p.stages},
            {"groups", p.groups},
-           {"customGroupVolumes", p.customGroupVolumes},
-           {"customGroupVolumes", p.customGroupPositions},
+           {"groups", p.customGroups},
            {"stageMembers", p.stageMembers},
-           {"customStageMemberVolumes", p.customStageMemberVolumes},
-           {"customStageMemberPositions", p.customStageMemberPositions},
            {"stageDevices", p.stageDevices},
-           {"customStageMemberVolumes", p.customStageMemberVolumes},
-           {"customStageMemberPositions", p.customStageMemberPositions},
            {"audioTracks", p.audioTracks},
-           {"customAudioPositions", p.customAudioPositions},
-           {"customAudioVolumes", p.customAudioVolumes},
            {"videoTracks", p.videoTracks}};
 }
 
@@ -981,25 +792,17 @@ inline void from_json(const json &j, WholeStage &p) {
   j.at("soundCards").get_to(p.soundCards);
   j.at("stages").get_to(p.stages);
   j.at("groups").get_to(p.groups);
-  j.at("customGroupVolumes").get_to(p.customGroupVolumes);
-  j.at("customGroupVolumes").get_to(p.customGroupPositions);
+  j.at("customGroups").get_to(p.customGroups);
   j.at("stageMembers").get_to(p.stageMembers);
-  j.at("customStageMemberVolumes").get_to(p.customStageMemberVolumes);
-  j.at("customStageMemberPositions").get_to(p.customStageMemberPositions);
   j.at("stageDevices").get_to(p.stageDevices);
-  j.at("customStageMemberVolumes").get_to(p.customStageMemberVolumes);
-  j.at("customStageMemberPositions").get_to(p.customStageMemberPositions);
   j.at("audioTracks").get_to(p.audioTracks);
-  j.at("customAudioPositions").get_to(p.customAudioPositions);
-  j.at("customAudioVolumes").get_to(p.customAudioVolumes);
   j.at("videoTracks").get_to(p.videoTracks);
 }
 
 inline void to_json(json &j, const P2PRestart &p) {
   j = json{
       {"from", p.from},
-      {"to", p.to}
-  };
+      {"to", p.to}};
 }
 inline void from_json(const json &j, P2PRestart &p) {
   j.at("from").get_to(p.from);
@@ -1008,8 +811,7 @@ inline void from_json(const json &j, P2PRestart &p) {
 inline void to_json(json &j, const SessionDescriptionInit &p) {
   j = json{
       {"sdp", p.sdp},
-      {"type", p.type}
-  };
+      {"type", p.type}};
 }
 inline void from_json(const json &j, SessionDescriptionInit &p) {
   j.at("sdp").get_to(p.sdp);
@@ -1019,8 +821,7 @@ inline void to_json(json &j, const P2POffer &p) {
   j = json{
       {"from", p.from},
       {"to", p.to},
-      {"offer", p.offer}
-  };
+      {"offer", p.offer}};
 }
 inline void from_json(const json &j, P2POffer &p) {
   j.at("from").get_to(p.from);
@@ -1031,8 +832,7 @@ inline void to_json(json &j, const P2PAnswer &p) {
   j = json{
       {"from", p.from},
       {"to", p.to},
-      {"answer", p.answer}
-  };
+      {"answer", p.answer}};
 }
 inline void from_json(const json &j, P2PAnswer &p) {
   j.at("from").get_to(p.from);
@@ -1064,6 +864,7 @@ inline void from_json(const json &j, IceCandidate &p) {
   optional_from_json(j, "iceCandidate", p.iceCandidate);
 }
 
-} // namespace DigitalStage::Types
+} // namespace Types
+} // namespace DigitalStage
 
 #endif
