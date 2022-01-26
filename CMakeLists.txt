@@ -31,7 +31,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 option(LIBDS_DEBUG_EVENTS "Print events to console" OFF)
 option(LIBDS_DEBUG_PAYLOADS "Print payloads to console" OFF)
-option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_LIBDS_TESTS "Build tests" OFF)
 
 #################################################
 #
@@ -128,7 +128,7 @@ target_link_libraries(${PROJECT_NAME}AuthStatic
 
 
 add_executable(${PROJECT_NAME}-example
-        src/cli.cc)
+        src/cli.cc test/TeckosClientTest.cpp)
 target_compile_definitions(${PROJECT_NAME}-example
         PUBLIC
         )
@@ -183,7 +183,7 @@ install(
 #   Tests
 #
 #################################################
-if (BUILD_TESTS)
+if (BUILD_LIBDS_TESTS)
     enable_testing()
     find_package(GTest REQUIRED)
 
@@ -193,6 +193,7 @@ if (BUILD_TESTS)
             ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientAsyncTest.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientTest.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/TeckosClientTest.cpp
             )
     target_link_libraries(${PROJECT_NAME}-test
             PRIVATE
@@ -201,6 +202,8 @@ if (BUILD_TESTS)
             DigitalStageApiStatic
             DigitalStageAuthStatic
             )
+    target_compile_definitions(${PROJECT_NAME}-test PRIVATE DEBUG_TECKOS_SEND)
+    target_compile_definitions(${PROJECT_NAME}-test PRIVATE DEBUG_TECKOS_RECV)
 
     target_compile_definitions(${PROJECT_NAME}-test
             PRIVATE
@@ -210,4 +213,4 @@ if (BUILD_TESTS)
 
     include(GoogleTest)
     gtest_discover_tests(${PROJECT_NAME}-test)
-endif (BUILD_TESTS)
+endif (BUILD_LIBDS_TESTS)

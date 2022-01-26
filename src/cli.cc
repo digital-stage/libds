@@ -92,6 +92,42 @@ void handleStageLeft(const Store*)
   std::cout << "STAGE LEFT" << std::endl;
 }
 
+
+void attachHandlers(Client* client) {
+  client->ready.connect([](const Store*) {
+    std::cout << "Ready - this type inside an anonymous callback function"
+              << std::endl;
+  });
+
+  client->ready.connect(handleReady);
+
+  client->deviceAdded.connect(handleDeviceAdded);
+  client->deviceChanged.connect(handleDeviceChanged);
+  client->deviceRemoved.connect(handleDeviceRemoved);
+  client->localDeviceReady.connect(handleLocalDeviceReady);
+  client->stageJoined.connect(handleStageJoined);
+  client->stageLeft.connect(handleStageLeft);
+  client->stageDeviceChanged.connect(handleStageDeviceChanged);
+
+  // Always print on stage changes
+  client->stageJoined.connect(
+      [](const auto&, const auto&, const Store* s) { printStage(s); });
+  client->stageLeft.connect([](const Store* s) { printStage(s); });
+  client->groupAdded.connect(
+      [](const auto&, const Store* s) { printStage(s); });
+  client->groupChanged.connect(
+      [](const auto&, const auto&, const Store* s) { printStage(s); });
+  client->groupRemoved.connect(
+      [](const auto&, const Store* s) { printStage(s); });
+  client->stageMemberAdded.connect(
+      [](const auto&, const Store* s) { printStage(s); });
+  client->stageMemberChanged.connect(
+      [](const auto&, const auto&, const Store* s) { printStage(s); });
+  client->stageMemberRemoved.connect(
+      [](const auto&, const Store* s) { printStage(s); });
+}
+
+
 int main(int argc, char* argv[])
 {
   auto email = "test@digital-stage.org";
@@ -114,51 +150,30 @@ int main(int argc, char* argv[])
     initialDevice["type"] = "ov";
     initialDevice["canAudio"] = true;
     initialDevice["canVideo"] = false;
-    auto* client = new Client("wss://api.dstage.org");
 
-    client->ready.connect([](const Store*) {
-      std::cout << "Ready - this type inside an anonymous callback function"
-                << std::endl;
-    });
-
-    client->ready.connect(handleReady);
-
-    client->deviceAdded.connect(handleDeviceAdded);
-    client->deviceChanged.connect(handleDeviceChanged);
-    client->deviceRemoved.connect(handleDeviceRemoved);
-    client->localDeviceReady.connect(handleLocalDeviceReady);
-    client->stageJoined.connect(handleStageJoined);
-    client->stageLeft.connect(handleStageLeft);
-    client->stageDeviceChanged.connect(handleStageDeviceChanged);
-
-    // Always print on stage changes
-    client->stageJoined.connect(
-        [](const auto&, const auto&, const Store* s) { printStage(s); });
-    client->stageLeft.connect([](const Store* s) { printStage(s); });
-    client->groupAdded.connect(
-        [](const auto&, const Store* s) { printStage(s); });
-    client->groupChanged.connect(
-        [](const auto&, const auto&, const Store* s) { printStage(s); });
-    client->groupRemoved.connect(
-        [](const auto&, const Store* s) { printStage(s); });
-    client->stageMemberAdded.connect(
-        [](const auto&, const Store* s) { printStage(s); });
-    client->stageMemberChanged.connect(
-        [](const auto&, const auto&, const Store* s) { printStage(s); });
-    client->stageMemberRemoved.connect(
-        [](const auto&, const Store* s) { printStage(s); });
-
+    std::unique_ptr<Client> client = std::make_unique<Client>("wss://api.dstage.org");
+    attachHandlers(client.get());
     client->connect(apiToken, initialDevice);
-
     std::cout << "Started client" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    // Disconnect and connect using same client
+    client->disconnect();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    client->connect(apiToken, initialDevice);
+    std::cout << "Manually reconnected client" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    // Connect using another client
+    client = std::make_unique<Client>("wss://api.dstage.org");
+    attachHandlers(client.get());
+    std::cout << "Recreated client without disconnecting before" << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::seconds(10));
   }
   catch(std::exception& err) {
     std::cerr << "Got exception: " << err.what() << std::endl;
     return -1;
-  }
-
-  while(true) {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
   return 0;

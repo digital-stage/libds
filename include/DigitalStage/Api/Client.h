@@ -212,6 +212,8 @@ class Client {
   std::future<std::string> encodeInvitationCode(const std::string &stageId, const std::string &groupId);
 
  private:
+  void handleMessage(const nlohmann::json &j);
+
   const std::string apiUrl_;
   std::unique_ptr<Store> store_;
   nlohmann::json wholeStage_;
