@@ -94,13 +94,12 @@ void handleStageLeft(const Store*)
 
 int main(int argc, char* argv[])
 {
-  if(argc != 3) {
-    std::wcout << "Call this with email and password as parameters" << std::endl;
-    return -1;
+  auto email = "test@digital-stage.org";
+  auto password = "test123test123test!";
+  if(argc == 3) {
+    email = argv[1];
+    password = argv[2];
   }
-
-  auto email = argv[1];
-  auto password = argv[2];
   auto authService = AuthService("https://auth.dstage.org");
 
   std::cout << "Signing in..." << std::endl;

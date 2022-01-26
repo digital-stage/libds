@@ -456,7 +456,7 @@ Client::decodeInvitationCode(const std::string &code) {
             promise->set_value({ result[1]["stageId"], result[1]["groupId"] });
         }
         else {
-            promise->set_value({ result[1]["stageId"], {} });
+            promise->set_value({ result[1]["stageId"], {} }); //TODO: This throws (!)
         }
     } else if (result.size() == 1) {
       promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
