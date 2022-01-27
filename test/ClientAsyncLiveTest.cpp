@@ -15,6 +15,10 @@ TEST(ClientTest, AsyncLive) {
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, true);
   std::cout << "Got token: " << token << std::endl;
 
+  client->error.connect([](const std::exception &){
+    FAIL();
+  });
+
   // Process ready
   client->ready.connect([=](const DigitalStage::Api::Store *store) {
     // Never send and aspect another callback inside the callback, so use a different thread here

@@ -172,7 +172,7 @@ class Client {
       iceCandidate;
 
   sigslot::signal<const std::exception &>
-      onError;
+      error;
 
   /**
    * Not implemented, but could be an alternative to the store

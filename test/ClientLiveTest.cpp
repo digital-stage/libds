@@ -14,6 +14,10 @@ TEST(ClientTest, Live) {
   EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.org", "test123test123test!"));
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, false);
 
+  client->error.connect([](const std::exception &){
+    FAIL();
+  });
+
   // Process ready
   std::atomic<bool> ready = false;
   client->ready.connect([&ready](const DigitalStage::Api::Store *store) {
@@ -79,7 +83,8 @@ TEST(ClientTest, Live) {
                  p.set_value(result);
                });
   // Wait for future to resolve
-  EXPECT_TRUE(f.get().at(0).is_null());
+  auto bla = f.get();
+  EXPECT_TRUE(bla.at(0).is_null());
   std::cout << "Created group" << std::endl;
   auto groups = store->getGroupsByStage(stage._id);
   EXPECT_GE(groups.size(), 1);
