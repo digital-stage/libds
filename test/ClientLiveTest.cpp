@@ -7,7 +7,7 @@
 #include <DigitalStage/Auth/AuthService.h>
 #include <DigitalStage/Types.h>
 
-TEST(ClientTest, StageWorkflow) {
+TEST(ClientTest, Live) {
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   std::string token;

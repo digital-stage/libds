@@ -13,6 +13,11 @@
 namespace DigitalStage {
 namespace Api {
 
+class InvalidPayloadException : std::runtime_error {
+ public:
+  InvalidPayloadException(const std::string& what = "") : std::runtime_error(what) {}
+};
+
 class Client {
  public:
   /**
@@ -166,6 +171,9 @@ class Client {
   sigslot::signal<const IceCandidate, const DigitalStage::Api::Store *>
       iceCandidate;
 
+  sigslot::signal<const std::exception &>
+      onError;
+
   /**
    * Not implemented, but could be an alternative to the store
    * @return
@@ -211,8 +219,8 @@ class Client {
 
   std::future<std::string> encodeInvitationCode(const std::string &stageId, const std::string &groupId);
 
+  void handleMessage(const std::string & event, const nlohmann::json &payload);
  private:
-  void handleMessage(const nlohmann::json &j);
 
   const std::string apiUrl_;
   std::unique_ptr<Store> store_;

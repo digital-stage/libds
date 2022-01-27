@@ -4,7 +4,7 @@
 #include <DigitalStage/Auth/AuthService.h>d
 #include <teckos/client.h>
 
-TEST(TeckosClientTest, ConnectionWorkflow) {
+TEST(TeckosClientTest, Connection) {
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   std::string token;

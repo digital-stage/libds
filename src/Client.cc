@@ -46,7 +46,16 @@ void Client::connect(const std::string &apiToken,
     std::cout << "Reconnected" << std::endl;
   });
   wsclient_->setMessageHandler([this](const nlohmann::json &j){
-    handleMessage(j);
+    try {
+      if (!j.is_array()) {
+        throw InvalidPayloadException("Response from server is invalid");
+      }
+      const std::string &event = j[0];
+      const nlohmann::json payload = (j.size() > 1) ? j[1] : nlohmann::json::object();
+      handleMessage(event, payload);
+    } catch(const std::exception & e) {
+      onError(e);
+    }
   });
 
   std::string apiUrl(this->apiUrl_.begin(), this->apiUrl_.end());
@@ -153,15 +162,7 @@ Client::decodeInvitationCode(const std::string &code) {
   return promise->get_future();
 }
 
-void Client::handleMessage(const json &j) {
-  try {
-    if (!j.is_array()) {
-      std::cerr << "WARNING: invalid payload received - not an array: " << j.dump() << std::endl;
-      return;
-    }
-    const std::string &event = j[0];
-    const nlohmann::json payload = (j.size() > 1) ? j[1] : nlohmann::json::object();
-
+void Client::handleMessage(const std::string & event, const nlohmann::json &payload) {
 #ifdef DEBUG_EVENTS
     #ifdef DEBUG_PAYLOADS
       std::cout << "[EVENT] " << event << " " << payload.dump() << std::endl;
@@ -186,15 +187,19 @@ void Client::handleMessage(const json &j) {
        * LOCAL DEVICE
        */
     } else if (event == RetrieveEvents::LOCAL_DEVICE_READY) {
-      const auto device = payload.get<Device>();
-      store_->devices.create(payload);
-      store_->setLocalDeviceId(device._id);
-      this->deviceAdded(device, getStore());
-      this->localDeviceReady(device, getStore());
-      this->audioDriverSelected(device.audioDriver, getStore());
-      this->inputSoundCardSelected(device.inputSoundCardId, getStore());
-      this->outputSoundCardSelected(device.outputSoundCardId, getStore());
-
+      try {
+        const auto device = payload.get<Device>();
+        std::cout << "WHY THE F*?!?" << std::endl;
+        store_->devices.create(payload);
+        store_->setLocalDeviceId(device._id);
+        this->deviceAdded(device, getStore());
+        this->localDeviceReady(device, getStore());
+        this->audioDriverSelected(device.audioDriver, getStore());
+        this->inputSoundCardSelected(device.inputSoundCardId, getStore());
+        this->outputSoundCardSelected(device.outputSoundCardId, getStore());
+      } catch(const nlohmann::detail::out_of_range &e) {
+        throw DigitalStage::Api::InvalidPayloadException("Error parsing Device on event " + RetrieveEvents::LOCAL_DEVICE_READY + ": " + e.what());
+      }
       /*
        * LOCAL USER
        */
@@ -504,11 +509,4 @@ void Client::handleMessage(const json &j) {
     } else {
       std::cerr << "Unknown event " << event;
     }
-  }
-  catch (const std::exception &e) {
-    std::cerr << "[ERROR] std::exception: " << e.what();
-  }
-  catch (...) {
-    std::cerr << "[ERROR] error parsing";
-  }
 }
