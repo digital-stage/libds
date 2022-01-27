@@ -7,7 +7,46 @@
 #include <string>
 #include <optional>
 
+namespace DigitalStage::Types {
 using nlohmann::json;
+
+class ParseException : public std::runtime_error {
+ public:
+  explicit ParseException(const std::string &what) : std::runtime_error(what) {}
+};
+
+template<typename ValueType>
+void required_from_json(const nlohmann::json &json, const std::string &key, ValueType &target) {
+  if (!json.contains(key)) {
+    throw DigitalStage::Types::ParseException("Missing key '" + key + "'");
+  }
+  try {
+    json.at(key).get_to(target);
+  } catch (const nlohmann::json::exception &e) {
+    throw DigitalStage::Types::ParseException(key + ": " + e.what());
+  }
+}
+
+template<typename ValueType>
+void maybe_from_json(const nlohmann::json &json, const std::string &key, ValueType &target) {
+  if (json.contains(key)) {
+    try {
+      json.at(key).get_to(target);
+    } catch (const nlohmann::json::exception &e) {
+      throw DigitalStage::Types::ParseException(key + ": " + e.what());
+    }
+  }
+}
+
+template<class J, class T>
+void optional_from_json(const J &j, const char *name, std::optional<T> &target) {
+  const auto it = j.find(name);
+  if (it != j.end() && !it->is_null()) {
+    target = it->template get<T>();
+  } else {
+    target = std::nullopt;
+  }
+}
 
 template<class J, class T>
 void optional_to_json(J &j, const char *name, const std::optional<T> &value) {
@@ -16,19 +55,7 @@ void optional_to_json(J &j, const char *name, const std::optional<T> &value) {
   }
 }
 
-template<class J, class T>
-void optional_from_json(const J &j, const char *name, std::optional<T> &value) {
-  const auto it = j.find(name);
-  if (it != j.end() && !it->is_null()) {
-    value = it->template get<T>();
-  } else {
-    value = std::nullopt;
-  }
-}
-
-namespace DigitalStage {
-namespace Types {
-typedef std::string ID_TYPE;
+using ID_TYPE = std::string;
 
 struct Device {
   ID_TYPE _id;
@@ -370,27 +397,13 @@ inline void to_json(json &j, const ThreeDimensionalProperties &p) {
 }
 
 inline void from_json(const json &j, ThreeDimensionalProperties &p) {
-  if (j.contains("x") && j.at("x").is_number()) {
-    j.at("x").get_to(p.x);
-  }
-  if (j.contains("y") && j.at("y").is_number()) {
-    j.at("y").get_to(p.y);
-  }
-  if (j.contains("z") && j.at("z").is_number()) {
-    j.at("z").get_to(p.z);
-  }
-  if (j.contains("rX") && j.at("rX").is_number()) {
-    j.at("rX").get_to(p.rX);
-  }
-  if (j.contains("rY") && j.at("rY").is_number()) {
-    j.at("rY").get_to(p.rY);
-  }
-  if (j.contains("rZ") && j.at("rZ").is_number()) {
-    j.at("rZ").get_to(p.rZ);
-  }
-  if (j.contains("directivity") && j.at("directivity").is_string()) {
-    j.at("directivity").get_to(p.directivity);
-  }
+  maybe_from_json(j, "x", p.x);
+  maybe_from_json(j, "y", p.y);
+  maybe_from_json(j, "z", p.z);
+  maybe_from_json(j, "rX", p.rX);
+  maybe_from_json(j, "rY", p.rY);
+  maybe_from_json(j, "rZ", p.rZ);
+  maybe_from_json(j, "directivity", p.directivity);
 }
 
 inline void to_json(json &j, const VolumeProperties &p) {
@@ -399,10 +412,8 @@ inline void to_json(json &j, const VolumeProperties &p) {
 }
 
 inline void from_json(const json &j, VolumeProperties &p) {
-  if (j.at("volume").is_number())
-    j.at("volume").get_to(p.volume);
-  if (j.at("muted").is_boolean())
-    j.at("muted").get_to(p.muted);
+  maybe_from_json(j, "volume", p.volume);
+  maybe_from_json(j, "muted", p.muted);
 }
 
 inline void to_json(json &j, const Device &p) {
@@ -436,19 +447,19 @@ inline void to_json(json &j, const Device &p) {
 }
 
 inline void from_json(const json &j, Device &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("uuid").get_to(p.uuid);
-  j.at("type").get_to(p.type);
-  j.at("online").get_to(p.online);
-  j.at("canVideo").get_to(p.canVideo);
-  j.at("canAudio").get_to(p.canAudio);
-  j.at("sendVideo").get_to(p.sendVideo);
-  j.at("sendAudio").get_to(p.sendAudio);
-  j.at("receiveVideo").get_to(p.receiveVideo);
-  j.at("receiveAudio").get_to(p.receiveAudio);
-  j.at("volume").get_to(p.volume);
-  j.at("balance").get_to(p.balance);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "userId", p.userId);
+  required_from_json(j, "uuid", p.uuid);
+  required_from_json(j, "type", p.type);
+  required_from_json(j, "online", p.online);
+  required_from_json(j, "canVideo", p.canVideo);
+  required_from_json(j, "canAudio", p.canAudio);
+  required_from_json(j, "sendVideo", p.sendVideo);
+  required_from_json(j, "sendAudio", p.sendAudio);
+  required_from_json(j, "receiveVideo", p.receiveVideo);
+  required_from_json(j, "receiveAudio", p.receiveAudio);
+  required_from_json(j, "volume", p.volume);
+  required_from_json(j, "balance", p.balance);
 
   optional_from_json(j, "audioDriver", p.audioDriver);
   optional_from_json(j, "audioEngine", p.audioEngine);
@@ -471,8 +482,8 @@ inline void to_json(json &j, const stage_mediasoup_t &p) {
   j = json{{"url", p.url}, {"port", p.port}};
 }
 inline void from_json(const json &j, stage_mediasoup_t &p) {
-  j.at("url").get_to(p.url);
-  j.at("port").get_to(p.port);
+  required_from_json(j, "url", p.url);
+  required_from_json(j, "port", p.port);
 }
 
 inline void to_json(json &j, const Stage &p) {
@@ -509,18 +520,18 @@ inline void to_json(json &j, const Stage &p) {
 }
 
 inline void from_json(const json &j, Stage &p) {
-  j.at("_id").get_to(p._id);
-  j.at("name").get_to(p.name);
-  j.at("description").get_to(p.description);
-  j.at("admins").get_to(p.admins);
-  j.at("soundEditors").get_to(p.soundEditors);
-  j.at("videoType").get_to(p.videoType);
-  j.at("audioType").get_to(p.audioType);
-  j.at("width").get_to(p.width);
-  j.at("length").get_to(p.length);
-  j.at("height").get_to(p.height);
-  j.at("absorption").get_to(p.absorption);
-  j.at("reflection").get_to(p.reflection);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "name", p.name);
+  required_from_json(j, "description", p.description);
+  required_from_json(j, "admins", p.admins);
+  required_from_json(j, "soundEditors", p.soundEditors);
+  required_from_json(j, "videoType", p.videoType);
+  required_from_json(j, "audioType", p.audioType);
+  required_from_json(j, "width", p.width);
+  required_from_json(j, "length", p.length);
+  required_from_json(j, "height", p.height);
+  required_from_json(j, "absorption", p.absorption);
+  required_from_json(j, "reflection", p.reflection);
   optional_from_json(j, "iconUrl", p.iconUrl);
   optional_from_json(j, "password", p.password);
   optional_from_json(j, "videoRouter", p.videoRouter);
@@ -555,11 +566,11 @@ inline void to_json(json &j, const Group &p) {
 }
 
 inline void from_json(const json &j, Group &p) {
-  j.at("_id").get_to(p._id);
-  j.at("stageId").get_to(p.stageId);
-  j.at("name").get_to(p.name);
-  j.at("description").get_to(p.description);
-  j.at("color").get_to(p.color);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "stageId", p.stageId);
+  required_from_json(j, "name", p.name);
+  required_from_json(j, "description", p.description);
+  required_from_json(j, "color", p.color);
   optional_from_json(j, "iconUrl", p.iconUrl);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
@@ -582,10 +593,10 @@ inline void to_json(json &j, const CustomGroup &p) {
 }
 
 inline void from_json(const json &j, CustomGroup &p) {
-  j.at("_id").get_to(p._id);
-  j.at("groupId").get_to(p.groupId);
-  j.at("targetGroupId").get_to(p.targetGroupId);
-  j.at("stageId").get_to(p.stageId);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "groupId", p.groupId);
+  required_from_json(j, "targetGroupId", p.targetGroupId);
+  required_from_json(j, "stageId", p.stageId);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
 }
@@ -608,11 +619,11 @@ inline void to_json(json &j, const StageMember &p) {
 }
 
 inline void from_json(const json &j, StageMember &p) {
-  j.at("_id").get_to(p._id);
-  j.at("stageId").get_to(p.stageId);
-  j.at("userId").get_to(p.userId);
-  j.at("active").get_to(p.active);
-  j.at("isDirector").get_to(p.isDirector);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "stageId", p.stageId);
+  required_from_json(j, "userId", p.userId);
+  required_from_json(j, "active", p.active);
+  required_from_json(j, "isDirector", p.isDirector);
   optional_from_json(j, "groupId", p.groupId);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
@@ -632,15 +643,15 @@ inline void to_json(json &j, const StageDevice &p) {
 }
 
 inline void from_json(const json &j, StageDevice &p) {
-  j.at("_id").get_to(p._id);
-  j.at("userId").get_to(p.userId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("stageId").get_to(p.stageId);
-  j.at("stageMemberId").get_to(p.stageMemberId);
-  j.at("active").get_to(p.active);
-  j.at("type").get_to(p.type);
-  j.at("order").get_to(p.order);
-  j.at("sendLocal").get_to(p.sendLocal);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "userId", p.userId);
+  required_from_json(j, "deviceId", p.deviceId);
+  required_from_json(j, "stageId", p.stageId);
+  required_from_json(j, "stageMemberId", p.stageMemberId);
+  required_from_json(j, "active", p.active);
+  required_from_json(j, "type", p.type);
+  required_from_json(j, "order", p.order);
+  required_from_json(j, "sendLocal", p.sendLocal);
   optional_from_json(j, "groupId", p.groupId);
 }
 
@@ -650,7 +661,7 @@ inline void to_json(json &j, const Channel &p) {
 }
 
 inline void from_json(const json &j, Channel &p) {
-  j.at("active").get_to(p.active);
+  required_from_json(j, "active", p.active);
   optional_from_json(j, "label", p.label);
 }
 
@@ -675,21 +686,21 @@ inline void to_json(json &j, const SoundCard &p) {
 }
 
 inline void from_json(const json &j, SoundCard &p) {
-  j.at("_id").get_to(p._id);
-  j.at("uuid").get_to(p.uuid);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("audioEngine").get_to(p.audioEngine);
-  j.at("audioDriver").get_to(p.audioDriver);
-  j.at("type").get_to(p.type);
-  j.at("label").get_to(p.label);
-  j.at("sampleRate").get_to(p.sampleRate);
-  j.at("sampleRates").get_to(p.sampleRates);
-  j.at("bufferSize").get_to(p.bufferSize);
-  j.at("periodSize").get_to(p.periodSize);
-  j.at("numPeriods").get_to(p.numPeriods);
-  j.at("channels").get_to(p.channels);
-  j.at("online").get_to(p.online);
-  j.at("userId").get_to(p.userId);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "uuid", p.uuid);
+  required_from_json(j, "deviceId", p.deviceId);
+  required_from_json(j, "audioEngine", p.audioEngine);
+  required_from_json(j, "audioDriver", p.audioDriver);
+  required_from_json(j, "type", p.type);
+  required_from_json(j, "label", p.label);
+  required_from_json(j, "sampleRate", p.sampleRate);
+  required_from_json(j, "sampleRates", p.sampleRates);
+  required_from_json(j, "bufferSize", p.bufferSize);
+  required_from_json(j, "periodSize", p.periodSize);
+  required_from_json(j, "numPeriods", p.numPeriods);
+  required_from_json(j, "channels", p.channels);
+  required_from_json(j, "online", p.online);
+  required_from_json(j, "userId", p.userId);
   optional_from_json(j, "isDefault", p.isDefault);
   optional_from_json(j, "softwareLatency", p.softwareLatency);
 }
@@ -705,13 +716,13 @@ inline void to_json(json &j, const VideoTrack &p) {
 }
 
 inline void from_json(const json &j, VideoTrack &p) {
-  j.at("_id").get_to(p._id);
-  j.at("stageDeviceId").get_to(p.stageDeviceId);
-  j.at("stageMemberId").get_to(p.stageMemberId);
-  j.at("stageId").get_to(p.stageId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("userId").get_to(p.userId);
-  j.at("type").get_to(p.type);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "stageDeviceId", p.stageDeviceId);
+  required_from_json(j, "stageMemberId", p.stageMemberId);
+  required_from_json(j, "stageId", p.stageId);
+  required_from_json(j, "deviceId", p.deviceId);
+  required_from_json(j, "userId", p.userId);
+  required_from_json(j, "type", p.type);
 }
 
 inline void to_json(json &j, const AudioTrack &p) {
@@ -737,13 +748,13 @@ inline void to_json(json &j, const AudioTrack &p) {
 }
 
 inline void from_json(const json &j, AudioTrack &p) {
-  j.at("_id").get_to(p._id);
-  j.at("stageDeviceId").get_to(p.stageDeviceId);
-  j.at("stageMemberId").get_to(p.stageMemberId);
-  j.at("stageId").get_to(p.stageId);
-  j.at("deviceId").get_to(p.deviceId);
-  j.at("userId").get_to(p.userId);
-  j.at("type").get_to(p.type);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "stageDeviceId", p.stageDeviceId);
+  required_from_json(j, "stageMemberId", p.stageMemberId);
+  required_from_json(j, "stageId", p.stageId);
+  required_from_json(j, "deviceId", p.deviceId);
+  required_from_json(j, "userId", p.userId);
+  required_from_json(j, "type", p.type);
   optional_from_json(j, "name", p.name);
   optional_from_json(j, "sourceChannel", p.sourceChannel);
   optional_from_json(j, "ovSourcePort", p.ovSourcePort);
@@ -763,10 +774,10 @@ inline void to_json(json &j, const User &p) {
 }
 
 inline void from_json(const json &j, User &p) {
-  j.at("_id").get_to(p._id);
-  j.at("uid").get_to(p.uid);
-  j.at("name").get_to(p.name);
-  j.at("canCreateStage").get_to(p.canCreateStage);
+  required_from_json(j, "_id", p._id);
+  required_from_json(j, "uid", p.uid);
+  required_from_json(j, "name", p.name);
+  required_from_json(j, "canCreateStage", p.canCreateStage);
   optional_from_json(j, "avatarUrl", p.avatarUrl);
   optional_from_json(j, "stageId", p.stageId);
   optional_from_json(j, "groupId", p.groupId);
@@ -787,16 +798,16 @@ inline void to_json(json &j, const WholeStage &p) {
 }
 
 inline void from_json(const json &j, WholeStage &p) {
-  j.at("users").get_to(p.users);
-  j.at("devices").get_to(p.devices);
-  j.at("soundCards").get_to(p.soundCards);
-  j.at("stages").get_to(p.stages);
-  j.at("groups").get_to(p.groups);
-  j.at("customGroups").get_to(p.customGroups);
-  j.at("stageMembers").get_to(p.stageMembers);
-  j.at("stageDevices").get_to(p.stageDevices);
-  j.at("audioTracks").get_to(p.audioTracks);
-  j.at("videoTracks").get_to(p.videoTracks);
+  required_from_json(j, "users", p.users);
+  required_from_json(j, "devices", p.devices);
+  required_from_json(j, "soundCards", p.soundCards);
+  required_from_json(j, "stages", p.stages);
+  required_from_json(j, "groups", p.groups);
+  required_from_json(j, "customGroups", p.customGroups);
+  required_from_json(j, "stageMembers", p.stageMembers);
+  required_from_json(j, "stageDevices", p.stageDevices);
+  required_from_json(j, "audioTracks", p.audioTracks);
+  required_from_json(j, "videoTracks", p.videoTracks);
 }
 
 inline void to_json(json &j, const P2PRestart &p) {
@@ -805,8 +816,8 @@ inline void to_json(json &j, const P2PRestart &p) {
       {"to", p.to}};
 }
 inline void from_json(const json &j, P2PRestart &p) {
-  j.at("from").get_to(p.from);
-  j.at("to").get_to(p.to);
+  required_from_json(j, "from", p.from);
+  required_from_json(j, "to", p.to);
 }
 inline void to_json(json &j, const SessionDescriptionInit &p) {
   j = json{
@@ -814,8 +825,8 @@ inline void to_json(json &j, const SessionDescriptionInit &p) {
       {"type", p.type}};
 }
 inline void from_json(const json &j, SessionDescriptionInit &p) {
-  j.at("sdp").get_to(p.sdp);
-  j.at("type").get_to(p.type);
+  required_from_json(j, "sdp", p.sdp);
+  required_from_json(j, "type", p.type);
 }
 inline void to_json(json &j, const P2POffer &p) {
   j = json{
@@ -824,9 +835,9 @@ inline void to_json(json &j, const P2POffer &p) {
       {"offer", p.offer}};
 }
 inline void from_json(const json &j, P2POffer &p) {
-  j.at("from").get_to(p.from);
-  j.at("to").get_to(p.to);
-  j.at("offer").get_to(p.offer);
+  required_from_json(j, "from", p.from);
+  required_from_json(j, "to", p.to);
+  required_from_json(j, "offer", p.offer);
 }
 inline void to_json(json &j, const P2PAnswer &p) {
   j = json{
@@ -835,9 +846,9 @@ inline void to_json(json &j, const P2PAnswer &p) {
       {"answer", p.answer}};
 }
 inline void from_json(const json &j, P2PAnswer &p) {
-  j.at("from").get_to(p.from);
-  j.at("to").get_to(p.to);
-  j.at("answer").get_to(p.answer);
+  required_from_json(j, "from", p.from);
+  required_from_json(j, "to", p.to);
+  required_from_json(j, "answer", p.answer);
 }
 inline void to_json(json &j, const IceCandidateInit &p) {
   j = json{
@@ -847,9 +858,9 @@ inline void to_json(json &j, const IceCandidateInit &p) {
   };
 }
 inline void from_json(const json &j, IceCandidateInit &p) {
-  j.at("candidate").get_to(p.candidate);
-  j.at("sdpMLineIndex").get_to(p.sdpMLineIndex);
-  j.at("sdpMid").get_to(p.sdpMid);
+  required_from_json(j, "candidate", p.candidate);
+  required_from_json(j, "sdpMLineIndex", p.sdpMLineIndex);
+  required_from_json(j, "sdpMid", p.sdpMid);
 }
 inline void to_json(json &j, const IceCandidate &p) {
   j = json{
@@ -859,12 +870,11 @@ inline void to_json(json &j, const IceCandidate &p) {
   optional_to_json(j, "iceCandidate", p.iceCandidate);
 }
 inline void from_json(const json &j, IceCandidate &p) {
-  j.at("from").get_to(p.from);
-  j.at("to").get_to(p.to);
+  required_from_json(j, "from", p.from);
+  required_from_json(j, "to", p.to);
   optional_from_json(j, "iceCandidate", p.iceCandidate);
 }
 
-} // namespace Types
-} // namespace DigitalStage
+} // namespace DigitalStage::Types
 
 #endif

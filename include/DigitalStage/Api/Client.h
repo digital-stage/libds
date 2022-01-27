@@ -13,7 +13,7 @@
 namespace DigitalStage {
 namespace Api {
 
-class InvalidPayloadException : std::runtime_error {
+class InvalidPayloadException : public std::runtime_error {
  public:
   InvalidPayloadException(const std::string& what = "") : std::runtime_error(what) {}
 };
