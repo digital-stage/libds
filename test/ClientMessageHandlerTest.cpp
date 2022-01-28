@@ -36,10 +36,6 @@ TEST(ClientTest, MessageHandler) {
                DigitalStage::Api::InvalidPayloadException);
 
   EXPECT_THROW(client->handleMessage(DigitalStage::Api::RetrieveEvents::LOCAL_DEVICE_READY,
-                                     {{"_id", nullptr}, {"name", "Teststage"}}),
-               nlohmann::json::out_of_range);
-
-  EXPECT_THROW(client->handleMessage(DigitalStage::Api::RetrieveEvents::LOCAL_DEVICE_READY,
                                      {{"_id", 1234}, {"name", "Teststage"}}),
                DigitalStage::Api::InvalidPayloadException);
 

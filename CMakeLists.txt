@@ -127,8 +127,7 @@ target_link_libraries(${PROJECT_NAME}AuthStatic
         )
 
 
-add_executable(${PROJECT_NAME}-example
-        src/cli.cc test/ClientMessageHandlerTest.cpp)
+add_executable(${PROJECT_NAME}-example src/cli.cc)
 target_compile_definitions(${PROJECT_NAME}-example
         PUBLIC
         )

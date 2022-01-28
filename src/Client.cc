@@ -39,7 +39,6 @@ void Client::connect(const std::string &apiToken,
                      const nlohmann::json &initialDevice) {
   // Set handler
   wsclient_->on_disconnected([this](bool expected) {
-    std::cout << "Disconnected" << std::endl;
     disconnected(expected);
   });
   wsclient_->on_reconnected([]() {
@@ -104,17 +103,18 @@ void Client::send(
   this->wholeStage_ = std::move(wholeStage);
 }
 
-[[maybe_unused]] std::future<std::pair<std::string,
-                                       std::string>>
+std::future<std::pair<std::string,
+                      std::optional<std::string>>>
 Client::decodeInvitationCode(const std::string &code) {
-  using InvitePromise = std::promise<std::pair<std::string, std::string>>;
+  using InvitePromise = std::promise<std::pair<std::string, std::optional<std::string>>>;
   auto const promise = std::make_shared<InvitePromise>();
   wsclient_->send("decode-invite", code, [promise](const std::vector<nlohmann::json> &result) {
     if (result.size() > 1 && !result[1].is_null()) {
       if (result[1].count("groupId") != 0 && !result[1]["groupId"].is_null()) {
-        promise->set_value({result[1]["stageId"], result[1]["groupId"]});
+        std::string groupId = result[1]["groupId"];
+        promise->set_value({result[1]["stageId"], groupId});
       } else {
-        promise->set_value({result[1]["stageId"], {}}); //TODO: This throws (!)
+        promise->set_value({result[1]["stageId"], std::nullopt}); //TODO: This throws (!)
       }
     } else if (result.size() == 1) {
       promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
@@ -125,11 +125,13 @@ Client::decodeInvitationCode(const std::string &code) {
   return promise->get_future();
 }
 
-[[maybe_unused]] std::future<std::string> Client::revokeInvitationCode(const std::string &stageId,
-                                                                       const std::string &groupId) {
-  nlohmann::json payload;
+std::future<std::string> Client::revokeInvitationCode(const std::string &stageId,
+                                                      const std::optional<std::string> &groupId) {
+  nlohmann::json payload{};
   payload["stageId"] = stageId;
-  payload["groupId"] = groupId;
+  if(groupId) {
+    payload["groupId"] = *groupId;
+  }
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
   wsclient_->send("revoke-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
@@ -144,11 +146,13 @@ Client::decodeInvitationCode(const std::string &code) {
   return promise->get_future();
 }
 
-[[maybe_unused]] std::future<std::string> Client::encodeInvitationCode(const std::string &stageId,
-                                                                       const std::string &groupId) {
-  nlohmann::json payload;
+std::future<std::string> Client::encodeInvitationCode(const std::string &stageId,
+                                                      const std::optional<std::string> &groupId) {
+  nlohmann::json payload{};
   payload["stageId"] = stageId;
-  payload["groupId"] = groupId;
+  if(groupId) {
+    payload["groupId"] = *groupId;
+  }
   using InvitePromise = std::promise<std::string>;
   auto const promise = std::make_shared<InvitePromise>();
   wsclient_->send("encode-invite", payload, [promise](const std::vector<nlohmann::json> &result) {
@@ -164,13 +168,31 @@ Client::decodeInvitationCode(const std::string &code) {
 }
 
 template<typename ValueTypeCV, typename ValueType = nlohmann::detail::uncvref_t<ValueTypeCV>>
-ValueTypeCV parse(const nlohmann::json &json, const std::string &event, const std::string &name) {
+ValueTypeCV parse(const nlohmann::json &json, const std::string &event, const std::string &className) {
   try {
     return json.get<ValueTypeCV>();
   } catch (const DigitalStage::Types::ParseException &e) {
-    throw DigitalStage::Api::InvalidPayloadException("Error parsing " + name + " when handling event '" + event + "': " + e.what());
-  } catch (const nlohmann::json::exception &e) {
-    throw DigitalStage::Api::InvalidPayloadException("Unhandled json error when parsing " + name + " of event '" + event + "': " + e.what());
+    throw DigitalStage::Api::InvalidPayloadException(
+        "Error parsing " + className + " when handling event '" + event + "': " + e.what());
+  } catch (const std::exception &e) {
+    throw DigitalStage::Api::InvalidPayloadException(
+        "Unknown error while parsing " + className + " of event '" + event + "': " + e.what());
+  }
+}
+
+template<typename ValueTypeCV, typename ValueType = nlohmann::detail::uncvref_t<ValueTypeCV>>
+ValueTypeCV parseKey(const nlohmann::json &payload, const std::string &key, const std::string &event) {
+  if (!payload.contains(key)) {
+    throw InvalidPayloadException("Payload for 's-j' event is missing the key 'stageID'");
+  }
+  try {
+    return payload[key].get<ValueTypeCV>();
+  } catch (const DigitalStage::Types::ParseException &e) {
+    throw DigitalStage::Api::InvalidPayloadException(
+        "Error parsing key " + key + " of payload from event '" + event + "': " + e.what());
+  } catch (const std::exception &e) {
+    throw DigitalStage::Api::InvalidPayloadException(
+        "Unknown error while parsing key" + key + " of event '" + event + "': " + e.what());
   }
 }
 
@@ -226,7 +248,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     this->deviceAdded(device, getStore());
   } else if (event == RetrieveEvents::DEVICE_CHANGED) {
     store_->devices.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->deviceChanged(id, payload, getStore());
     auto localDeviceIdPtr = store_->getLocalDeviceId();
     if (localDeviceIdPtr && *localDeviceIdPtr == id) {
@@ -243,7 +265,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
       }
     }
   } else if (event == RetrieveEvents::DEVICE_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     store_->devices.remove(id);
     this->deviceRemoved(id, getStore());
 
@@ -256,10 +278,10 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     this->stageAdded(stage, getStore());
   } else if (event == RetrieveEvents::STAGE_CHANGED) {
     store_->stages.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->stageChanged(id, payload, getStore());
   } else if (event == RetrieveEvents::STAGE_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     store_->stages.remove(id);
     this->stageRemoved(id, getStore());
 
@@ -272,10 +294,10 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     this->groupAdded(group, getStore());
   } else if (event == RetrieveEvents::GROUP_CHANGED) {
     store_->groups.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->groupChanged(id, payload, getStore());
   } else if (event == RetrieveEvents::GROUP_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     store_->groups.remove(id);
     this->groupRemoved(id, getStore());
 
@@ -288,10 +310,10 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     this->customGroupAdded(customGroup, getStore());
   } else if (event == RetrieveEvents::CUSTOM_GROUP_CHANGED) {
     store_->customGroups.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->customGroupChanged(id, payload, getStore());
   } else if (event == RetrieveEvents::CUSTOM_GROUP_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     auto custom_group = store_->customGroups.get(id);
     if (custom_group) {
       store_->customGroups.remove(id);
@@ -307,7 +329,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     this->stageMemberAdded(stage_member, getStore());
   } else if (event == RetrieveEvents::STAGE_MEMBER_CHANGED) {
     store_->stageMembers.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->stageMemberChanged(id, payload, getStore());
     if (id == this->store_->getStageMemberId()) {
       if (payload.count("groupId") != 0) {
@@ -319,7 +341,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
       }
     }
   } else if (event == RetrieveEvents::STAGE_MEMBER_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     store_->stageMembers.remove(id);
     this->stageMemberRemoved(id, getStore());
 
@@ -338,10 +360,10 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     this->stageDeviceAdded(stageDevice, getStore());
   } else if (event == RetrieveEvents::STAGE_DEVICE_CHANGED) {
     store_->stageDevices.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->stageDeviceChanged(id, payload, getStore());
   } else if (event == RetrieveEvents::STAGE_DEVICE_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     auto stageDevice = store_->stageDevices.get(id);
     if (stageDevice) {
       store_->stageDevices.remove(id);
@@ -364,10 +386,10 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
                           getStore());
   } else if (event == RetrieveEvents::VIDEO_TRACK_CHANGED) {
     store_->videoTracks.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->videoTrackChanged(id, payload, getStore());
   } else if (event == RetrieveEvents::VIDEO_TRACK_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     auto track = store_->videoTracks.get(id);
     store_->videoTracks.remove(id);
     this->videoTrackRemoved(*track, getStore());
@@ -382,10 +404,10 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
                           getStore());
   } else if (event == RetrieveEvents::AUDIO_TRACK_CHANGED) {
     store_->audioTracks.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->audioTrackChanged(id, payload, getStore());
   } else if (event == RetrieveEvents::AUDIO_TRACK_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     auto track = store_->audioTracks.get(id);
     store_->audioTracks.remove(id);
     this->audioTrackRemoved(*track, getStore());
@@ -399,10 +421,10 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     this->userAdded(user, getStore());
   } else if (event == RetrieveEvents::USER_CHANGED) {
     store_->users.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->userChanged(id, payload, getStore());
   } else if (event == RetrieveEvents::USER_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     store_->users.remove(id);
     this->userRemoved(id, getStore());
 
@@ -415,7 +437,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     this->soundCardAdded(soundCard, getStore());
   } else if (event == RetrieveEvents::SOUND_CARD_CHANGED) {
     store_->soundCards.update(payload);
-    const ID_TYPE id = payload["_id"];
+    const auto id = parseKey<ID_TYPE>(payload, "_id", event);
     this->soundCardChanged(id, payload, getStore());
     auto localDevice = store_->getLocalDevice();
     if (localDevice) {
@@ -427,7 +449,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
       }
     }
   } else if (event == RetrieveEvents::SOUND_CARD_REMOVED) {
-    const ID_TYPE id = payload;
+    const auto id = parse<ID_TYPE>(payload, event, "id");
     store_->soundCards.remove(id);
     this->soundCardRemoved(id, getStore());
 
@@ -436,10 +458,15 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
      */
   } else if (event == RetrieveEvents::STAGE_JOINED) {
     //TODO: Wrap
-    auto stageId = payload["stageId"].get<std::string>();
-    auto stageMemberId = payload["stageMemberId"].get<std::string>();
-    auto groupId = payload["groupId"].is_null() ? std::nullopt : std::optional<std::string>(payload["groupId"].get<
-        std::string>());
+    // Validate payload
+    auto stageId = parseKey<std::string>(payload, "stageId", event);
+    auto stageMemberId = parseKey<std::string>(payload, "stageMemberId", event);
+    if (!payload.contains("groupId"))
+      throw new InvalidPayloadException("No groupId in payload of event " + event);
+    auto groupId = payload["groupId"].is_null() ? std::nullopt : std::optional<std::string>(parseKey<std::string>(
+        payload,
+        "groupId",
+        event));
     auto localDeviceId = store_->getLocalDeviceId();
     if (payload.count("remoteUsers") > 0) {
       for (const auto &item: payload["remoteUsers"]) {
@@ -449,8 +476,9 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
       }
     }
     if (payload.count("stage") > 0) {
+      const auto stage = parse<Stage>(payload["stage"], event, "Stage");
       store_->stages.create(payload["stage"]);
-      this->stageAdded(payload["stage"].get<Stage>(), getStore());
+      this->stageAdded(stage, getStore());
     }
     if (payload.count("groups") > 0) {
       for (const auto &item: payload["groups"]) {
@@ -461,19 +489,19 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     }
     if (payload.contains("customGroups")) {
       for (const auto &item: payload["customGroups"]) {
+        const auto customGroup = parse<CustomGroup>(item, event, "CustomGroup");
         store_->customGroups.create(item);
-        this->customGroupAdded(
-            item.get<CustomGroup>(), getStore());
+        this->customGroupAdded(customGroup, getStore());
       }
     }
     for (const auto &item: payload["stageMembers"]) {
+      const auto stage_member = parse<StageMember>(item, event, "StageMember");
       store_->stageMembers.create(item);
-      auto stage_member = item.get<StageMember>();
       this->stageMemberAdded(stage_member, getStore());
     }
     for (const auto &item: payload["stageDevices"]) {
+      const auto stageDevice = parse<StageDevice>(item, event, "StageDevice");
       store_->stageDevices.create(item);
-      auto stageDevice = item.get<StageDevice>();
       if (localDeviceId && stageId == stageDevice.stageId &&
           *localDeviceId == stageDevice.deviceId) {
         store_->setStageDeviceId(stageDevice._id);
@@ -481,14 +509,14 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
       this->stageDeviceAdded(stageDevice, getStore());
     }
     for (const auto &item: payload["audioTracks"]) {
+      const auto audioTrack = parse<AudioTrack>(item, event, "AudioTrack");
       store_->audioTracks.create(item);
-      this->audioTrackAdded(item.get<AudioTrack>(),
-                            getStore());
+      this->audioTrackAdded(audioTrack, getStore());
     }
     for (const auto &item: payload["videoTracks"]) {
+      const auto videoTrack = parse<VideoTrack>(item, event, "VideoTrack");
       store_->videoTracks.create(item);
-      this->videoTrackAdded(item.get<VideoTrack>(),
-                            getStore());
+      this->videoTrackAdded(videoTrack, getStore());
     }
     store_->setStageId(stageId);
     store_->setGroupId(groupId);

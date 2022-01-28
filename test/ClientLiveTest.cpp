@@ -75,16 +75,24 @@ TEST(ClientTest, Live) {
 
   std::cout << "Create group for stage " << stage._id << std::endl;
   teckos::Callback callback;
-  std::promise<teckos::Result> p;
-  auto f = p.get_future();
-  client->send(DigitalStage::Api::SendEvents::CREATE_GROUP,
-               {{"stageId", stage._id}, {"name", "Testgruppe"}},
-               [&p](teckos::Result result) {
-                 p.set_value(result);
-               });
-  // Wait for future to resolve
-  auto bla = f.get();
-  EXPECT_TRUE(bla.at(0).is_null());
+  try {
+    std::promise<teckos::Result> p;
+    auto f = p.get_future();
+    client->send(DigitalStage::Api::SendEvents::CREATE_GROUP,
+                 {{"stageId", stage._id}, {"name", "Testgruppe"}},
+                 [&p](teckos::Result result) {
+                   std::cout << "GOT VALUE" << std::endl;
+                   p.set_value(result);
+                 });
+    // Wait for future to resolve
+    auto bla = f.get();
+    std::cout << bla.size() << std::endl;
+    auto blubb = bla.at(0);
+    EXPECT_TRUE(blubb.is_null());
+  } catch(const std::exception &e) {
+    std::cerr << e.what() << std::endl;
+    FAIL();
+  }
   std::cout << "Created group" << std::endl;
   auto groups = store->getGroupsByStage(stage._id);
   EXPECT_GE(groups.size(), 1);

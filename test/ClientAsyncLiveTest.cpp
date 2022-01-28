@@ -15,7 +15,8 @@ TEST(ClientTest, AsyncLive) {
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, true);
   std::cout << "Got token: " << token << std::endl;
 
-  client->error.connect([](const std::exception &){
+  client->error.connect([](const std::exception &e){
+    std::cerr << e.what() << std::endl;
     FAIL();
   });
 
@@ -71,13 +72,31 @@ TEST(ClientTest, AsyncLive) {
       auto group = *groupsIter;
       EXPECT_EQ(group.name, "Testgruppe");
 
-      // Generate invite code
-      auto invite_code = client->encodeInvitationCode(stage._id, group._id).get();
+      // Try to generate invite code using a non exising stage
+      EXPECT_ANY_THROW(client->encodeInvitationCode("invalid").get());
+      EXPECT_ANY_THROW(client->encodeInvitationCode("invalid", "invalid").get());
 
-      // Use invite code
-      auto invite_pair = client->decodeInvitationCode(invite_code).get();
+      // Try to decode invalid code
+      EXPECT_ANY_THROW(client->decodeInvitationCode("invalid").get());
+      EXPECT_ANY_THROW(client->decodeInvitationCode("").get());
+      EXPECT_ANY_THROW(client->decodeInvitationCode("123").get());
+      EXPECT_ANY_THROW(client->decodeInvitationCode("ABC").get());
+
+      // Generate invite code with group
+      auto invite_code_with_group = client->encodeInvitationCode(stage._id, group._id).get();
+
+      // Use invite code with group
+      auto invite_pair = client->decodeInvitationCode(invite_code_with_group).get();
       EXPECT_EQ(invite_pair.first, stage._id);
       EXPECT_EQ(invite_pair.second, group._id);
+
+      // Generate invite code without group
+      auto invite_code_without_group = client->encodeInvitationCode(stage._id).get();
+
+      // Use invite code without group
+      auto invite_pair_without_group = client->decodeInvitationCode(invite_code_with_group).get();
+      EXPECT_EQ(invite_pair.first, stage._id);
+      EXPECT_EQ(invite_pair.second, std::nullopt);
 
       // Now join stage
       std::cout << "Join stage" << std::endl;
@@ -110,7 +129,7 @@ TEST(ClientTest, AsyncLive) {
     for (const auto &item: stages) {
       client->send(DigitalStage::Api::SendEvents::REMOVE_STAGE, item._id);
     }
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(4));
     EXPECT_EQ(store->stages.getAll().size(), 0);
 
     // Expect to be outside any stage
@@ -125,7 +144,7 @@ TEST(ClientTest, AsyncLive) {
   std::cout << "Connecting with token " << token << " ...   ";
   EXPECT_NO_THROW(client->connect(token, initialDevice));
 
-  std::this_thread::sleep_for(std::chrono::seconds(10));
+  std::this_thread::sleep_for(std::chrono::seconds(16));
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;

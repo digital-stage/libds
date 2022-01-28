@@ -188,16 +188,16 @@ class Client {
   /**
    * Decodes an invitation key.
    * Returns nothing, if invitation key is invalid or expired.
-   * @return pair of stage ID and group ID
+   * @return pair of stage ID and optional group ID
    */
-  std::pair<std::string, std::string> decodeInvitationCodeSync(const std::string &code);
+  std::pair<std::string, std::optional<std::string>> decodeInvitationCodeSync(const std::string &code);
 
   /**
    * Decodes an invitation key.
    * Returns nothing, if invitation key is invalid or expired.
-   * @return pair of stage ID and group ID
+   * @return pair of stage ID and optional group ID
    */
-  std::future<std::pair<std::string, std::string>> decodeInvitationCode(const std::string &code);
+  std::future<std::pair<std::string, std::optional<std::string>>> decodeInvitationCode(const std::string &code);
 
   /**
    * Revoke an invitation code and return a new one.
@@ -205,7 +205,7 @@ class Client {
    * @param stage ID
    * @param group ID
    */
-  std::string revokeInvitationCodeSync(const std::string &stageId, const std::string &groupId);
+  std::string revokeInvitationCodeSync(const std::string &stageId, const std::optional<std::string> &groupId = std::nullopt);
 
   /**
    * Revoke an invitation code and return a new one.
@@ -213,11 +213,11 @@ class Client {
    * @param stage ID
    * @param group ID
    */
-  std::future<std::string> revokeInvitationCode(const std::string &stageId, const std::string &groupId);
+  std::future<std::string> revokeInvitationCode(const std::string &stageId, const std::optional<std::string> &groupId = std::nullopt);
 
-  std::string encodeInvitationCodeSync(const std::string &stageId, const std::string &groupId);
+  std::string encodeInvitationCodeSync(const std::string &stageId, const std::optional<std::string> &groupId = std::nullopt);
 
-  std::future<std::string> encodeInvitationCode(const std::string &stageId, const std::string &groupId);
+  std::future<std::string> encodeInvitationCode(const std::string &stageId, const std::optional<std::string> &groupId = std::nullopt);
 
   void handleMessage(const std::string & event, const nlohmann::json &payload);
  private:
