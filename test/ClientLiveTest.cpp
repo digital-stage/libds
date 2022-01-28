@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <thread>
+#include <memory>
 
 #include <DigitalStage/Api/Client.h>
 #include <DigitalStage/Auth/AuthService.h>
@@ -74,20 +75,22 @@ TEST(ClientTest, Live) {
   EXPECT_EQ(stage.name, "Testbühne");
 
   std::cout << "Create group for stage " << stage._id << std::endl;
-  teckos::Callback callback;
   try {
-    std::promise<teckos::Result> p;
-    auto f = p.get_future();
+    auto p = std::promise<teckos::Result>();
+    auto f = p->get_future();
     client->send(DigitalStage::Api::SendEvents::CREATE_GROUP,
                  {{"stageId", stage._id}, {"name", "Testgruppe"}},
                  [&p](teckos::Result result) {
-                   std::cout << "GOT VALUE" << std::endl;
-                   p.set_value(result);
+                   std::cout << "Setting value of size " << result.size() << std::endl;
+                   p->set_value(std::move(result));
                  });
     // Wait for future to resolve
+    std::cout << "Wait" << std::endl;
+    f.wait();
+    std::cout << "Waiting done" << std::endl;
     auto bla = f.get();
-    std::cout << bla.size() << std::endl;
-    auto blubb = bla.at(0);
+    std::cout << "Got value of size " << bla.size() << std::endl;
+    auto blubb = bla[0];
     EXPECT_TRUE(blubb.is_null());
   } catch(const std::exception &e) {
     std::cerr << e.what() << std::endl;

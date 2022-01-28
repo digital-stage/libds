@@ -114,7 +114,7 @@ Client::decodeInvitationCode(const std::string &code) {
         std::string groupId = result[1]["groupId"];
         promise->set_value({result[1]["stageId"], groupId});
       } else {
-        promise->set_value({result[1]["stageId"], std::nullopt}); //TODO: This throws (!)
+        promise->set_value({result[1]["stageId"], std::nullopt});
       }
     } else if (result.size() == 1) {
       promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
@@ -125,11 +125,17 @@ Client::decodeInvitationCode(const std::string &code) {
   return promise->get_future();
 }
 
+std::pair<std::string, std::optional<std::string>> Client::decodeInvitationCodeSync(const std::string &code) {
+  auto future = decodeInvitationCode(code);
+  future.wait();
+  return future.get();
+}
+
 std::future<std::string> Client::revokeInvitationCode(const std::string &stageId,
                                                       const std::optional<std::string> &groupId) {
   nlohmann::json payload{};
   payload["stageId"] = stageId;
-  if(groupId) {
+  if (groupId) {
     payload["groupId"] = *groupId;
   }
   using InvitePromise = std::promise<std::string>;
@@ -146,11 +152,17 @@ std::future<std::string> Client::revokeInvitationCode(const std::string &stageId
   return promise->get_future();
 }
 
+std::string Client::revokeInvitationCodeSync(const std::string &stageId, const std::optional<std::string> &groupId) {
+  auto future = revokeInvitationCode(stageId, groupId);
+  future.wait();
+  return future.get();
+}
+
 std::future<std::string> Client::encodeInvitationCode(const std::string &stageId,
                                                       const std::optional<std::string> &groupId) {
   nlohmann::json payload{};
   payload["stageId"] = stageId;
-  if(groupId) {
+  if (groupId) {
     payload["groupId"] = *groupId;
   }
   using InvitePromise = std::promise<std::string>;
@@ -165,6 +177,12 @@ std::future<std::string> Client::encodeInvitationCode(const std::string &stageId
     }
   });
   return promise->get_future();
+}
+
+std::string Client::encodeInvitationCodeSync(const std::string &stageId, const std::optional<std::string> &groupId) {
+  auto future = encodeInvitationCode(stageId, groupId);
+  future.wait();
+  return future.get();
 }
 
 template<typename ValueTypeCV, typename ValueType = nlohmann::detail::uncvref_t<ValueTypeCV>>
@@ -489,6 +507,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     }
     if (payload.contains("customGroups")) {
       for (const auto &item: payload["customGroups"]) {
+        std::cout << item.dump() << std::endl;
         const auto customGroup = parse<CustomGroup>(item, event, "CustomGroup");
         store_->customGroups.create(item);
         this->customGroupAdded(customGroup, getStore());
@@ -532,7 +551,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     store_->resetStageMemberId();
     store_->resetStageDeviceId();
     store_->stageMembers.removeAll();
-    //store_->customGroups.removeAll();
+    store_->customGroups.removeAll();
     store_->videoTracks.removeAll();
     store_->audioTracks.removeAll();
     // TODO: Discuss, the store may dispatch all the events instead...

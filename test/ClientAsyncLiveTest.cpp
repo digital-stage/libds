@@ -94,9 +94,12 @@ TEST(ClientTest, AsyncLive) {
       auto invite_code_without_group = client->encodeInvitationCode(stage._id).get();
 
       // Use invite code without group
-      auto invite_pair_without_group = client->decodeInvitationCode(invite_code_with_group).get();
-      EXPECT_EQ(invite_pair.first, stage._id);
-      EXPECT_EQ(invite_pair.second, std::nullopt);
+      auto invite_pair_without_group = client->decodeInvitationCode(invite_code_without_group).get();
+      EXPECT_EQ(invite_pair_without_group.first, stage._id);
+      std::cout << *invite_pair_without_group.second << std::endl;
+      if(invite_pair_without_group.second) {
+        FAIL() << "GroupId of decoded code (created without group) is not std::nullopt, but: " << *invite_pair_without_group.second;
+      }
 
       // Now join stage
       std::cout << "Join stage" << std::endl;
@@ -144,7 +147,7 @@ TEST(ClientTest, AsyncLive) {
   std::cout << "Connecting with token " << token << " ...   ";
   EXPECT_NO_THROW(client->connect(token, initialDevice));
 
-  std::this_thread::sleep_for(std::chrono::seconds(16));
+  std::this_thread::sleep_for(std::chrono::seconds(8));
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;

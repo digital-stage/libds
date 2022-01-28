@@ -27,17 +27,6 @@ void required_from_json(const nlohmann::json &json, const std::string &key, Valu
   }
 }
 
-template<typename ValueType>
-void maybe_from_json(const nlohmann::json &json, const std::string &key, ValueType &target) {
-  if (json.contains(key)) {
-    try {
-      json.at(key).get_to(target);
-    } catch (const nlohmann::json::exception &e) {
-      throw DigitalStage::Types::ParseException(key + ": " + e.what());
-    }
-  }
-}
-
 template<class J, class T>
 void optional_from_json(const J &j, const char *name, std::optional<T> &target) {
   const auto it = j.find(name);
@@ -397,13 +386,27 @@ inline void to_json(json &j, const ThreeDimensionalProperties &p) {
 }
 
 inline void from_json(const json &j, ThreeDimensionalProperties &p) {
-  maybe_from_json(j, "x", p.x);
-  maybe_from_json(j, "y", p.y);
-  maybe_from_json(j, "z", p.z);
-  maybe_from_json(j, "rX", p.rX);
-  maybe_from_json(j, "rY", p.rY);
-  maybe_from_json(j, "rZ", p.rZ);
-  maybe_from_json(j, "directivity", p.directivity);
+  if (j.contains("x") && j.at("x").is_number()) {
+    required_from_json(j, "x", p.x);
+  }
+  if (j.contains("y") && j.at("y").is_number()) {
+    required_from_json(j, "y", p.y);
+  }
+  if (j.contains("z") && j.at("z").is_number()) {
+    required_from_json(j, "z", p.z);
+  }
+  if (j.contains("rX") && j.at("rX").is_number()) {
+    required_from_json(j, "rX", p.rX);
+  }
+  if (j.contains("rY") && j.at("rY").is_number()) {
+    required_from_json(j, "rY", p.rY);
+  }
+  if (j.contains("rZ") && j.at("rZ").is_number()) {
+    required_from_json(j, "rZ", p.rZ);
+  }
+  if (j.contains("directivity") && j.at("directivity").is_string()) {
+    required_from_json(j, "directivity", p.directivity);
+  }
 }
 
 inline void to_json(json &j, const VolumeProperties &p) {
@@ -412,8 +415,12 @@ inline void to_json(json &j, const VolumeProperties &p) {
 }
 
 inline void from_json(const json &j, VolumeProperties &p) {
-  maybe_from_json(j, "volume", p.volume);
-  maybe_from_json(j, "muted", p.muted);
+  if (j.contains("volume") && j.at("volume").is_number()) {
+    required_from_json(j, "volume", p.volume);
+  }
+  if (j.contains("muted") && j.at("muted").is_number()) {
+    required_from_json(j, "muted", p.muted);
+  }
 }
 
 inline void to_json(json &j, const Device &p) {
