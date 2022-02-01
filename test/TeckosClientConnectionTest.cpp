@@ -12,7 +12,7 @@ TEST(TeckosClientTest, Connection) {
 
   nlohmann::json initialDevice;
   initialDevice["uuid"] = "123456";
-  initialDevice["type"] = "ov";
+  initialDevice["type"] = "native";
   initialDevice["canAudio"] = false;
   initialDevice["canVideo"] = false;
 
@@ -20,7 +20,7 @@ TEST(TeckosClientTest, Connection) {
 
   /* WITH TIMEOUTS */
   std::cout << "Connecting" << std::endl;
-  EXPECT_NO_THROW(client->connect(API_URL, token, initialDevice));
+  EXPECT_NO_THROW(client->connect(API_URL, token, {{"device", initialDevice}}));
 
   std::cout << "Waiting for 1 second" << std::endl;
   std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -29,7 +29,7 @@ TEST(TeckosClientTest, Connection) {
   EXPECT_NO_THROW(client->disconnect());
 
   std::cout << "Connecting" << std::endl;
-  EXPECT_NO_THROW(client->connect(API_URL, token, initialDevice));
+  EXPECT_NO_THROW(client->connect(API_URL, token, {{"device", initialDevice}}));
 
   std::cout << "Waiting for 1 second" << std::endl;
   std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -39,7 +39,7 @@ TEST(TeckosClientTest, Connection) {
 
   // And connecting again
   std::cout << "Connecting" << std::endl;
-  EXPECT_NO_THROW(client->connect(API_URL, token, initialDevice));
+  EXPECT_NO_THROW(client->connect(API_URL, token, {{"device", initialDevice}}));
 
   std::cout << "Waiting for 1 second" << std::endl;
   std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -51,19 +51,19 @@ TEST(TeckosClientTest, Connection) {
   /* WITHOUT TIMEOUTS */
   std::cout << std::endl << "Now without timeouts" << std::endl;
   std::cout << "Connecting" << std::endl;
-  EXPECT_NO_THROW(client->connect(API_URL, token, initialDevice));
+  EXPECT_NO_THROW(client->connect(API_URL, token, {{"device", initialDevice}}));
 
   std::cout << "Disconnecting" << std::endl;
   EXPECT_NO_THROW(client->disconnect());
 
   std::cout << "Connecting" << std::endl;
-  EXPECT_NO_THROW(client->connect(API_URL, token, initialDevice));
+  EXPECT_NO_THROW(client->connect(API_URL, token, {{"device", initialDevice}}));
 
   std::cout << "Replace client object" << std::endl;
   client = std::make_shared<teckos::client>();
 
   std::cout << "Connecting" << std::endl;
-  EXPECT_NO_THROW(client->connect(API_URL, token, initialDevice));
+  EXPECT_NO_THROW(client->connect(API_URL, token, {{"device", initialDevice}}));
 
   // Disconnecting
   std::cout << "Disconnecting" << std::endl;

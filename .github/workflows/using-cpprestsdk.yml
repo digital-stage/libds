@@ -1,4 +1,4 @@
-name: "Multi-OS using cpprestsdk"
+name: "MacOS & Linux using cpprestsdk"
 
 on: [push, pull_request]
 

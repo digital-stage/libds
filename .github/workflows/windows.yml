@@ -1,4 +1,4 @@
-name: "Testing using Windows and both ws frameworks"
+name: "Windows with Tests"
 
 on: [push, pull_request]
 

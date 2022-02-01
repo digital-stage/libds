@@ -1,33 +1,36 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
-#include <thread>
 #include <memory>
+#include <thread>
 
 #include <DigitalStage/Api/Client.h>
 #include <DigitalStage/Auth/AuthService.h>
 #include <DigitalStage/Types.h>
 
-TEST(ClientTest, Live) {
+const bool USE_CALLBACK = false;
+
+TEST(ClientTest, Live)
+{
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   std::string token;
   EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.org", "test123test123test!"));
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, false);
 
-  client->error.connect([](const std::exception &){
+  client->error.connect([](const std::exception&) {
     FAIL();
   });
 
   // Process ready
   std::atomic<bool> ready = false;
-  client->ready.connect([&ready](const DigitalStage::Api::Store *store) {
+  client->ready.connect([&ready](const DigitalStage::Api::Store* store) {
     ready = true;
   });
 
   nlohmann::json initialDevice;
   initialDevice["uuid"] = "123456";
-  initialDevice["type"] = "ov";
+  initialDevice["type"] = "native";
   initialDevice["canAudio"] = false;
   initialDevice["canVideo"] = false;
   std::cout << "Connecting...   ";
@@ -35,10 +38,10 @@ TEST(ClientTest, Live) {
   std::cout << "[CONNECTED]" << std::endl;
 
   int attempts = 0;
-  while (!ready) {
+  while(!ready) {
     std::cout << "Still waiting to connect ..." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    if (attempts++ > 10) {
+    if(attempts++ > 10) {
       std::cerr << "Too many attempts to connect" << std::endl;
       FAIL();
     }
@@ -65,41 +68,48 @@ TEST(ClientTest, Live) {
   std::this_thread::sleep_for(std::chrono::seconds(1));
   auto stages = store->stages.getAll();
   EXPECT_GE(stages.size(), 1);
-  auto stageIter = std::find_if(stages.begin(), stages.end(), [&](const auto &stage) {
+  auto stageIter = std::find_if(stages.begin(), stages.end(), [&](const auto& stage) {
     return stage.name == "Testbühne";
   });
-  if (stageIter == std::end(stages)) {
+  if(stageIter == std::end(stages)) {
     FAIL();
   }
   auto stage = *stageIter;
   EXPECT_EQ(stage.name, "Testbühne");
 
   std::cout << "Create group for stage " << stage._id << std::endl;
-  try {
-    auto p = std::promise<teckos::Result>();
-    auto f = p.get_future();
-    client->send(DigitalStage::Api::SendEvents::CREATE_GROUP,
-                 {{"stageId", stage._id}, {"name", "Testgruppe"}},
-                 [&p](teckos::Result result) {
-                   std::cout << "Setting value of size " << result.size() << std::endl;
-                   p.set_value(std::move(result));
-                 });
-    // Wait for future to resolve
-    std::cout << "Wait" << std::endl;
-    f.wait();
-    std::cout << "Waiting done" << std::endl;
-    auto bla = f.get();
-    std::cout << "Got value of size " << bla.size() << std::endl;
-    auto blubb = bla[0];
-    EXPECT_TRUE(blubb.is_null());
-  } catch(const std::exception &e) {
-    std::cerr << e.what() << std::endl;
-    FAIL();
+  if(USE_CALLBACK) {
+    try {
+      auto p = std::make_shared<std::promise<teckos::Result>>();
+      auto f = p->get_future();
+      client->send(DigitalStage::Api::SendEvents::CREATE_GROUP,
+                   {{"stageId", stage._id}, {"name", "Testgruppe"}},
+                   [&p](teckos::Result result) {
+                     std::cout << "Setting value of size " << result.size() << std::endl;
+                     p->set_value(result);
+                   });
+      // Wait for future to resolve
+      std::cout << "Wait" << std::endl;
+      f.wait();
+      std::cout << "Waiting done" << std::endl;
+      auto bla = f.get();
+      std::cout << "Got value of size " << bla.size() << std::endl;
+      auto blubb = bla[0];
+      EXPECT_TRUE(blubb.is_null());
+    }
+    catch(const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      FAIL();
+    }
+  } else {
+    EXPECT_NO_THROW(client->send(DigitalStage::Api::SendEvents::CREATE_GROUP,
+                                 {{"stageId", stage._id}, {"name", "Testgruppe"}}));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   std::cout << "Created group" << std::endl;
   auto groups = store->getGroupsByStage(stage._id);
   EXPECT_GE(groups.size(), 1);
-  auto groupsIter = std::find_if(groups.begin(), groups.end(), [&](const auto &group) {
+  auto groupsIter = std::find_if(groups.begin(), groups.end(), [&](const auto& group) {
     return group.name == "Testgruppe";
   });
   EXPECT_NE(groupsIter, std::end(groups));
@@ -141,7 +151,7 @@ TEST(ClientTest, Live) {
   // Remove all stages
   std::cout << "Cleaning up: removing all stages" << std::endl;
   stages = store->stages.getAll();
-  for (const auto &item: stages) {
+  for(const auto& item : stages) {
     client->send(DigitalStage::Api::SendEvents::REMOVE_STAGE, item._id);
   }
   std::this_thread::sleep_for(std::chrono::seconds(3));

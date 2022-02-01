@@ -475,8 +475,6 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
      * STAGE JOINED
      */
   } else if (event == RetrieveEvents::STAGE_JOINED) {
-    //TODO: Wrap
-    // Validate payload
     auto stageId = parseKey<std::string>(payload, "stageId", event);
     auto stageMemberId = parseKey<std::string>(payload, "stageMemberId", event);
     if (!payload.contains("groupId"))
@@ -507,7 +505,6 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     }
     if (payload.contains("customGroups")) {
       for (const auto &item: payload["customGroups"]) {
-        std::cout << item.dump() << std::endl;
         const auto customGroup = parse<CustomGroup>(item, event, "CustomGroup");
         store_->customGroups.create(item);
         this->customGroupAdded(customGroup, getStore());

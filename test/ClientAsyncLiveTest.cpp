@@ -72,28 +72,28 @@ TEST(ClientTest, AsyncLive) {
       auto group = *groupsIter;
       EXPECT_EQ(group.name, "Testgruppe");
 
-      // Try to generate invite code using a non exising stage
+      std::cout << "Generate invalid invitation codes using a non exising stage" << std::endl;
       EXPECT_ANY_THROW(client->encodeInvitationCode("invalid").get());
       EXPECT_ANY_THROW(client->encodeInvitationCode("invalid", "invalid").get());
 
-      // Try to decode invalid code
+      std::cout << "Decode invalid invitation codes" << std::endl;
       EXPECT_ANY_THROW(client->decodeInvitationCode("invalid").get());
       EXPECT_ANY_THROW(client->decodeInvitationCode("").get());
       EXPECT_ANY_THROW(client->decodeInvitationCode("123").get());
       EXPECT_ANY_THROW(client->decodeInvitationCode("ABC").get());
 
-      // Generate invite code with group
+      std::cout << "Generate invite code with group" << std::endl;
       auto invite_code_with_group = client->encodeInvitationCode(stage._id, group._id).get();
 
-      // Use invite code with group
+      std::cout << "Decode invite code with group" << std::endl;
       auto invite_pair = client->decodeInvitationCode(invite_code_with_group).get();
       EXPECT_EQ(invite_pair.first, stage._id);
       EXPECT_EQ(invite_pair.second, group._id);
 
-      // Generate invite code without group
+      std::cout << "Generate invite code without group" << std::endl;
       auto invite_code_without_group = client->encodeInvitationCode(stage._id).get();
 
-      // Use invite code without group
+      std::cout << "Decode invite code without group" << std::endl;
       auto invite_pair_without_group = client->decodeInvitationCode(invite_code_without_group).get();
       EXPECT_EQ(invite_pair_without_group.first, stage._id);
       std::cout << *invite_pair_without_group.second << std::endl;
@@ -101,15 +101,13 @@ TEST(ClientTest, AsyncLive) {
         FAIL() << "GroupId of decoded code (created without group) is not std::nullopt, but: " << *invite_pair_without_group.second;
       }
 
-      // Now join stage
-      std::cout << "Join stage" << std::endl;
+      std::cout << "Join stage and group" << std::endl;
       client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
                    {{"stageId", stage._id}, {"groupId", group._id}});
       std::this_thread::sleep_for(std::chrono::seconds(1));
       EXPECT_EQ(store->getStageId(), stage._id);
       EXPECT_EQ(store->getGroupId(), group._id);
 
-      // Leave stage
       std::cout << "Leave stage" << std::endl;
       client->send(DigitalStage::Api::SendEvents::LEAVE_STAGE,
                    {});
@@ -117,13 +115,28 @@ TEST(ClientTest, AsyncLive) {
       EXPECT_NE(store->getStageId(), stage._id);
       EXPECT_NE(store->getGroupId(), group._id);
 
-      // Join again
-      std::cout << "Join stage (again)" << std::endl;
+      std::cout << "Join stage and group (again)" << std::endl;
       client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
                    {{"stageId", stage._id}, {"groupId", group._id}});
       std::this_thread::sleep_for(std::chrono::seconds(1));
       EXPECT_EQ(store->getStageId(), stage._id);
       EXPECT_EQ(store->getGroupId(), group._id);
+
+      std::cout << "Join stage without specifying group" << std::endl;
+      client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
+                   {{"stageId", stage._id}});
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      EXPECT_EQ(store->getStageId(), stage._id);
+      EXPECT_EQ(store->getGroupId(), group._id);
+
+      std::cout << "Join stage without group (using null)" << std::endl;
+      client->send(DigitalStage::Api::SendEvents::JOIN_STAGE,
+                   {{"stageId", stage._id}, {"groupId", nullptr}});
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      EXPECT_EQ(store->getStageId(), stage._id);
+      if(store->getGroupId()) {
+        FAIL() << "GroupId is not std::nullopt, but: " << *store->getGroupId();
+      }
     }
 
     // Remove all stages
