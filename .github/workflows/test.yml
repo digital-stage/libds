@@ -1,4 +1,4 @@
-name: "Testing using Windows and cpprestsdk"
+name: "Testing using Windows and both ws frameworks"
 
 on: [push, pull_request]
 
@@ -25,4 +25,17 @@ jobs:
         cmake --build build --target DigitalStage-test --config Release
     - name: Run tests
       run: |
-        ./build/DigitalStage-test.exe
+        ./build/Release/DigitalStage-test.exe
+    - name: Install Dependencies with Conan (including IXWebsockets)
+      run: |
+        conan install -if build --build=missing conanfile-ix.py
+    - name: Configure CMake (using IXWebsockets)
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_LIBDS_TESTS=On -DUSE_IX_WEBSOCKET=ON
+    - name: Build with CMake (using IXWebsockets)
+      run: |
+        cmake --build build --target DigitalStage-test --config Release
+    - name: Run tests (using IXWebsockets)
+      run: |
+        ./build/Release/DigitalStage-test.exe
+      
