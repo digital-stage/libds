@@ -160,7 +160,7 @@ TEST(ClientTest, AsyncLive) {
   std::cout << "Connecting with token " << token << " ...   ";
   EXPECT_NO_THROW(client->connect(token, initialDevice));
 
-  std::this_thread::sleep_for(std::chrono::seconds(8));
+  std::this_thread::sleep_for(std::chrono::seconds(12));
   std::cout << "Closing connection...   ";
   EXPECT_NO_THROW(client->disconnect());
   std::cout << "[CLOSED]" << std::endl;
