@@ -19,22 +19,22 @@ jobs:
         conan install -if build --build=missing .
     - name: Configure CMake
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_LIBDS_TESTS=On
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_LIBDS_TESTS=On
     - name: Build with CMake
       run: |
-        cmake --build build --target DigitalStage-test --config Debug
+        cmake --build build --target DigitalStage-test --config Release
     - name: Run tests
       run: |
-        ./build/Debug/DigitalStage-test.exe
+        ./build/Release/DigitalStage-test.exe
     - name: Install Dependencies with Conan (including IXWebsockets)
       run: |
         conan install -if build --build=missing conanfile-ix.py
     - name: Configure CMake (using IXWebsockets)
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_LIBDS_TESTS=On -DUSE_IX_WEBSOCKET=ON
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_LIBDS_TESTS=On -DUSE_IX_WEBSOCKET=ON
     - name: Build with CMake (using IXWebsockets)
       run: |
-        cmake --build build --target DigitalStage-test --config Debug
+        cmake --build build --target DigitalStage-test --config Release
     - name: Run tests (using IXWebsockets)
       run: |
         ./build/Release/DigitalStage-test.exe
