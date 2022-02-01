@@ -56,6 +56,8 @@ void Client::connect(const std::string &apiToken,
       //TODO: Maybe we can remove the output to std::err here?
       std::cerr << e.what() << std::endl;
       error(e);
+    } catch (...) {
+      std::cerr << "Unhandled exception occurred !" << std::endl;
     }
   });
 
@@ -478,7 +480,7 @@ void Client::handleMessage(const std::string &event, const nlohmann::json &paylo
     auto stageId = parseKey<std::string>(payload, "stageId", event);
     auto stageMemberId = parseKey<std::string>(payload, "stageMemberId", event);
     if (!payload.contains("groupId"))
-      throw new InvalidPayloadException("No groupId in payload of event " + event);
+      throw InvalidPayloadException("No groupId in payload of event " + event);
     auto groupId = payload["groupId"].is_null() ? std::nullopt : std::optional<std::string>(parseKey<std::string>(
         payload,
         "groupId",
