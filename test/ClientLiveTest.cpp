@@ -77,12 +77,12 @@ TEST(ClientTest, Live) {
   std::cout << "Create group for stage " << stage._id << std::endl;
   try {
     auto p = std::promise<teckos::Result>();
-    auto f = p->get_future();
+    auto f = p.get_future();
     client->send(DigitalStage::Api::SendEvents::CREATE_GROUP,
                  {{"stageId", stage._id}, {"name", "Testgruppe"}},
                  [&p](teckos::Result result) {
                    std::cout << "Setting value of size " << result.size() << std::endl;
-                   p->set_value(std::move(result));
+                   p.set_value(std::move(result));
                  });
     // Wait for future to resolve
     std::cout << "Wait" << std::endl;

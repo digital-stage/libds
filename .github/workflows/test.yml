@@ -1,0 +1,28 @@
+name: "Testing using Windows and cpprestsdk"
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: "recursive"
+    - name: Download Conan package manager
+      run: |
+         pip3 install wheel setuptools
+         pip3 install conan
+         conan --version
+    - name: Install Dependencies with Conan
+      run: |
+        conan install -if build --build=missing .
+    - name: Configure CMake
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_LIBDS_TESTS=On
+    - name: Build with CMake
+      run: |
+        cmake --build build --target DigitalStage-test --config Release
+    - name: Run tests
+      run: |
+        ./build/DigitalStage-test.exe
