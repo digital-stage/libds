@@ -189,6 +189,7 @@ struct StageMember : VolumeProperties, ThreeDimensionalProperties {
   ID_TYPE stageId;
   ID_TYPE userId;
   std::optional<ID_TYPE> groupId;
+  std::string name;
   bool active;
   bool isDirector;
 };
@@ -616,6 +617,7 @@ inline void to_json(json &j, const StageMember &p) {
            {"isDirector", p.isDirector},
            {"volume", p.volume},
            {"muted", p.muted},
+           {"name", p.name},
            {"x", p.x},
            {"y", p.y},
            {"z", p.z},
@@ -632,6 +634,12 @@ inline void from_json(const json &j, StageMember &p) {
   required_from_json(j, "active", p.active);
   required_from_json(j, "isDirector", p.isDirector);
   optional_from_json(j, "groupId", p.groupId);
+  // Support old stage members without name
+  if(j.contains("name")) {
+    required_from_json(j, "name", p.name);
+  } else {
+    p.name = "";
+  }
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
 }
