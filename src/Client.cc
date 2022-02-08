@@ -8,12 +8,13 @@
 
 using namespace DigitalStage::Api;
 
-Client::Client(std::string apiUrl, bool async_events)
+Client::Client(std::string apiUrl)
     : apiUrl_(std::move(apiUrl)) {
   store_ = std::make_unique<Store>();
-  wsclient_ = std::make_unique<teckos::client>(async_events);
-  wsclient_->setReconnect(true);
-  wsclient_->sendPayloadOnReconnect(true);
+  wsclient_ = std::make_unique<teckos::client>();
+  wsclient_->setShouldReconnect(true);
+  wsclient_->setSendPayloadOnReconnect(true);
+  wsclient_->setReconnectTrySleep(std::chrono::milliseconds(500)); // 500ms between tries for retry
 }
 
 Client::~Client() {

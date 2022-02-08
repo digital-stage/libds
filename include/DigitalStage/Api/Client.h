@@ -26,7 +26,7 @@ class Client {
    */
   struct Token {};
 
-  explicit Client(std::string apiUrl, bool async_events = false);
+  explicit Client(std::string apiUrl);
   ~Client();
 
   void
