@@ -16,7 +16,7 @@ TEST(ClientTest, Live)
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   std::string token;
   EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.org", "test123test123test!"));
-  auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, false);
+  auto client = std::make_shared<DigitalStage::Api::Client>(API_URL);
 
   client->error.connect([](const std::exception&) {
     FAIL();
