@@ -40,4 +40,7 @@ class AudioMixer {
 
 }
 }
-#include "AudioMixer.tpp"
+
+// This is very very unusual. What is the point in splitting this out into two files? Template classes should be in one file, IMHO, unless you want to provide
+// only specific specializations and not generic template implementations.
+#include "AudioMixer.hpp"

@@ -59,7 +59,7 @@ set(API_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Store.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Audio/AudioMixer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Audio/AudioMixer.tpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Audio/AudioMixer.hpp
         )
 set(API_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cc
