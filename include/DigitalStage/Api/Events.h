@@ -6,50 +6,7 @@
 #include <string>
 
 namespace DigitalStage {
-  namespace Api {
-    enum class EventType {
-      READY,
-      LOCAL_DEVICE_READY,
-      DEVICE_ADDED,
-      DEVICE_CHANGED,
-      DEVICE_REMOVED,
-      STAGE_JOINED,
-      STAGE_LEFT,
-      USER_READY,
-      STAGE_ADDED,
-      STAGE_CHANGED,
-      STAGE_REMOVED,
-      REMOTE_USER_ADDED,
-      REMOTE_USER_CHANGED,
-      REMOTE_USER_REMOVED,
-      GROUP_ADDED,
-      GROUP_CHANGED,
-      GROUP_REMOVED,
-      STAGE_MEMBER_ADDED,
-      STAGE_MEMBER_CHANGED,
-      STAGE_MEMBER_REMOVED,
-      STAGE_DEVICE_ADDED,
-      STAGE_DEVICE_CHANGED,
-      STAGE_DEVICE_REMOVED,
-      CUSTOM_GROUP_ADDED,
-      CUSTOM_GROUP_CHANGED,
-      CUSTOM_GROUP_REMOVED,
-      VIDEO_TRACK_ADDED,
-      VIDEO_TRACK_CHANGED,
-      VIDEO_TRACK_REMOVED,
-      AUDIO_TRACK_ADDED,
-      AUDIO_TRACK_CHANGED,
-      AUDIO_TRACK_REMOVED,
-      SOUND_CARD_ADDED,
-      SOUND_CARD_CHANGED,
-      SOUND_CARD_REMOVED,
-      P2P_RESTART,
-      P2P_OFFER_SENT,
-      P2P_ANSWER_SENT,
-      ICE_CANDIDATE_SENT,
-      TURN_SERVERS_CHANGED
-    };
-
+  namespace Api {   
     namespace SendEvents {
       [[maybe_unused]] extern const std::string CHANGE_DEVICE;
       extern const std::string SET_SOUND_CARD;
