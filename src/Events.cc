@@ -7,6 +7,8 @@ const std::string SendEvents::SET_SOUND_CARD = "set-sound-card";
 const std::string SendEvents::CHANGE_SOUND_CARD = "change-sound-card";
 const std::string SendEvents::CREATE_AUDIO_TRACK =
     "create-audio-track";
+const std::string SendEvents::SET_AUDIO_TRACK =
+    "set-audio-track";
 const std::string SendEvents::CHANGE_AUDIO_TRACK =
     "change-audio-track";
 const std::string SendEvents::REMOVE_AUDIO_TRACK =
