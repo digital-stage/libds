@@ -223,12 +223,13 @@ namespace DigitalStage {
       getVideoTracksByStageDevice(const Types::ID_TYPE& stageDeviceId) const;
 
       // Audio tracks
+      using AudioTracks = std::vector<DigitalStage::Types::AudioTrack>;
       StoreEntry<DigitalStage::Types::AudioTrack> audioTracks;
-      std::vector<DigitalStage::Types::AudioTrack>
-      getAudioTracksByStageDevice(const Types::ID_TYPE& stageDeviceId) const;
-      std::vector<DigitalStage::Types::AudioTrack> getAudioTracksByStageMember(const Types::ID_TYPE& stageMemberId) const;
-      std::vector<DigitalStage::Types::AudioTrack> getAudioTracksByGroup(const Types::ID_TYPE& groupId) const;
-      std::vector<DigitalStage::Types::AudioTrack> getLocalAudioTracks() const;
+      std::optional<DigitalStage::Types::AudioTrack> getAudioTrackByUuid(const Types::ID_TYPE & uuid) const;
+      AudioTracks getAudioTracksByStageDevice(const Types::ID_TYPE& stageDeviceId) const;
+      AudioTracks getAudioTracksByStageMember(const Types::ID_TYPE& stageMemberId) const;
+      AudioTracks getAudioTracksByGroup(const Types::ID_TYPE& groupId) const;
+      AudioTracks getLocalAudioTracks() const;
 
       // Custom Groups
       StoreEntry<DigitalStage::Types::CustomGroup> customGroups;
