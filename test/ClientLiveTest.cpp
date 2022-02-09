@@ -24,7 +24,7 @@ TEST(ClientTest, Live)
 
   // Process ready
   std::atomic<bool> ready = false;
-  client->ready.connect([&ready](const DigitalStage::Api::Store* store) {
+  client->ready.connect([&ready](std::weak_ptr<DigitalStage::Api::Store> store) {
     ready = true;
   });
 
@@ -47,7 +47,7 @@ TEST(ClientTest, Live)
     }
   }
 
-  auto store = client->getStore();
+  auto store = client->getStore().lock();
 
   EXPECT_TRUE(store->isReady());
   EXPECT_EQ(store->getLocalDevice()->uuid, "123456");

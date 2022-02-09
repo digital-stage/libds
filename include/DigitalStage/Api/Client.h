@@ -133,9 +133,10 @@ namespace DigitalStage {
 
             std::future<std::string> encodeInvitationCode(const std::string& stageId, const std::optional<std::string>& groupId = std::nullopt);
 
-        private:
+            // Suboptimal to put this here, but it is tested directly
             void handleMessage(const std::string& event, const nlohmann::json& payload);
 
+        private:
             const std::string apiUrl_;
             std::shared_ptr<Store> store_;
             std::unique_ptr<teckos::client> wsclient_;
