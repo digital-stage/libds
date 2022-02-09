@@ -307,6 +307,11 @@ struct AudioTrack : VolumeProperties, ThreeDimensionalProperties {
   ID_TYPE stageMemberId;
   ID_TYPE stageDeviceId;
   std::string type;
+
+  /**
+   * Optional UUID of this audioTrack, used by DigitalStagePC to match published audio tracks with internal channel IDs
+   */
+  std::optional<std::string> uuid;
   /**
    * The channel on the source device (see deviceId)
    */
@@ -757,6 +762,7 @@ inline void to_json(json &j, const AudioTrack &p) {
            {"rX", p.rX},
            {"rY", p.rY},
            {"rZ", p.rZ}};
+  optional_to_json(j, "uuid", p.uuid);
   optional_to_json(j, "name", p.name);
   optional_to_json(j, "sourceChannel", p.sourceChannel);
   optional_to_json(j, "ovSourcePort", p.ovSourcePort);
@@ -773,6 +779,7 @@ inline void from_json(const json &j, AudioTrack &p) {
   optional_from_json(j, "name", p.name);
   optional_from_json(j, "sourceChannel", p.sourceChannel);
   optional_from_json(j, "ovSourcePort", p.ovSourcePort);
+  optional_from_json(j, "uuid", p.uuid);
   from_json(j, static_cast<VolumeProperties &>(p));
   from_json(j, static_cast<ThreeDimensionalProperties &>(p));
 }
