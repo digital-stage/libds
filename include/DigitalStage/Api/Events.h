@@ -5,8 +5,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-using namespace DigitalStage::Types;
-
 namespace DigitalStage {
   namespace Api {
     enum class EventType {
