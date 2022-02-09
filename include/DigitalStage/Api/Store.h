@@ -9,27 +9,27 @@
 #include <set>
 #include <optional>
 
-using namespace nlohmann;
-
 namespace DigitalStage {
   namespace Api {
 
-    // Devices
+    using namespace nlohmann;
+
+    // This is a thread-safe container for our types, stored in json format in a map
     template <typename TYPE>
     class StoreEntry {
     public:
       std::optional<TYPE> get(const Types::ID_TYPE& id) const
       {
-        std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+        std::lock_guard<std::mutex> lock(mutex_store_);
         if(storeEntry_.count(id) > 0) {
           return std::optional<TYPE>(storeEntry_.at(id).template get<const TYPE>());
         }
         return std::nullopt;
       }
 
-      const std::vector<TYPE> getAll() const
+      std::vector<TYPE> getAll() const
       {
-        std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+        std::lock_guard<std::mutex> lock(mutex_store_);
         std::vector<TYPE> items = std::vector<TYPE>();
         for(const auto& item : storeEntry_) {
           items.push_back(item.second.template get<TYPE>());
@@ -39,36 +39,65 @@ namespace DigitalStage {
 
       void create(const json& payload)
       {
-        std::lock_guard<std::recursive_mutex> lock(mutex_store_);
-        const Types::ID_TYPE _id = payload.at("_id").get<std::string>();
+        std::lock_guard<std::mutex> lock(mutex_store_);
+        const Types::ID_TYPE _id = payload.at("_id").get<Types::ID_TYPE>();
         storeEntry_[_id] = payload;
       }
 
       void update(const json& payload)
       {
-        const Types::ID_TYPE& id = payload.at("_id").get<std::string>();
-        std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+        const Types::ID_TYPE& id = payload.at("_id").get<Types::ID_TYPE>();
+        std::lock_guard<std::mutex> lock(mutex_store_);
         storeEntry_[id].merge_patch(payload);
       }
 
       void remove(const Types::ID_TYPE& id)
       {
-        std::lock_guard<std::recursive_mutex> lock(mutex_store_);
-        storeEntry_.erase(id);
+        std::lock_guard<std::mutex> lock(mutex_store_);
+        if (storeEntry_.find(id) != storeEntry_.end()) {
+            storeEntry_.erase(id);
+        }
+        else {
+            //TODO this might indicate a program error?
+            assert(false);
+        }
       }
 
       void removeAll()
       {
-        std::lock_guard<std::recursive_mutex> lock(mutex_store_);
+        std::lock_guard<std::mutex> lock(mutex_store_);
         storeEntry_.clear();
       }
 
+    private:
+      mutable std::mutex mutex_store_;
+      std::map<std::string, json> storeEntry_;
+    };
+
+    template <class T>
+    class LockedOptionalValue {
     public:
-      // TODO: @christofmuc to discuss if we should hide this mutex and use special mutex inside the helper functions (e.g. getGroupsByStage)
-      mutable std::recursive_mutex mutex_store_;
+        std::optional<T> get() const {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (id_.has_value()) {
+                return id_;
+            }
+            return std::nullopt;
+        }
+
+        bool has_value() const {
+            std::lock_guard<std::mutex> lock(mutex_);
+            return id_.has_value();
+        }
+
+        void set(std::optional<T> new_value) {
+            std::lock_guard<std::mutex> lock(mutex_);
+            id_ = new_value;
+        }
 
     private:
-      std::map<std::string, json> storeEntry_;
+        mutable std::mutex mutex_;
+        std::optional<T> id_;
     };
 
     class Store {
@@ -253,30 +282,18 @@ namespace DigitalStage {
       std::optional<DigitalStage::Types::SoundCard> getOutputSoundCard() const;
 
     protected:
-      mutable std::recursive_mutex ready_mutex_;
-      bool isReady_;
+      std::atomic<bool> isReady_;
 
-      mutable std::recursive_mutex userId_mutex_;
-      std::optional<Types::ID_TYPE> userId_;
+      LockedOptionalValue<Types::ID_TYPE> userId_;
+      LockedOptionalValue<Types::ID_TYPE> stageId_;
+      LockedOptionalValue<Types::ID_TYPE> stageMemberId_;
+      LockedOptionalValue<Types::ID_TYPE> groupId_;
+      LockedOptionalValue<Types::ID_TYPE> localDeviceId_;
+      LockedOptionalValue<Types::ID_TYPE> stageDeviceId_;
 
-      mutable std::recursive_mutex stageId_mutex_;
-      std::optional<Types::ID_TYPE> stageId_;
-
-      mutable std::recursive_mutex stageMemberId_mutex_;
-      std::optional<Types::ID_TYPE> stageMemberId_;
-
-      mutable std::recursive_mutex groupId_mutex_;
-      std::optional<Types::ID_TYPE> groupId_;
-
-      mutable std::recursive_mutex local_device_id_mutex_;
-      std::optional<Types::ID_TYPE> localDeviceId_;
-
-      mutable std::recursive_mutex stage_device_id_mutex_;
-      std::optional<Types::ID_TYPE> stageDeviceId_;
-
-      mutable std::recursive_mutex turn_mutex_;
-      std::optional<std::string> turn_username_;
-      std::optional<std::string> turn_password_;
+      LockedOptionalValue<std::string> turn_username_;
+      LockedOptionalValue<std::string> turn_password_;
+      mutable std::mutex turn_url_mutex_;
       std::vector<std::string> turn_urls_;
     };
   } // namespace Api
