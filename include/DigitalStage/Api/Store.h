@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <set>
 #include <optional>
+#include <atomic>
 
 namespace DigitalStage {
   namespace Api {
