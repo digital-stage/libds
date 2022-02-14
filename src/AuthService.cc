@@ -33,7 +33,7 @@ std::future<bool> AuthService::verifyToken(const std::string& token)
 
 std::future<std::string> AuthService::signIn(const std::string &email,
                                                             const std::string &password) {
-  return std::async(std::launch::async, [this, &email, &password] {
+  return std::async(std::launch::async, [this, email, password] {
     return signInSync(email, password);
   });
 }
