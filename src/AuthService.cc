@@ -3,9 +3,7 @@
 //
 #include "DigitalStage/Auth/AuthService.h"
 #include <teckos/rest.h>
-#include <stdexcept>
 #include <nlohmann/json.hpp>
-#include <iostream>
 
 #include "spdlog/spdlog.h"
 
