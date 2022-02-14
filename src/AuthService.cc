@@ -16,7 +16,7 @@ AuthService::AuthService(const std::string &authUrl) : url_(authUrl) {
 
 std::future<bool> AuthService::verifyToken(const std::string& token)
 {
-  return std::async(std::launch::async, [this, &token] {
+  return std::async(std::launch::async, [this, token] {
     return verifyTokenSync(token);
   });
 }
@@ -25,7 +25,7 @@ std::future<bool> AuthService::verifyToken(const std::string& token)
 {
   auto header = teckos::Header();
   header.insert({"Authorization", "Bearer " + token});
-  auto result = teckos::rest::Get(this->url_ + "/profile");
+  auto result = teckos::rest::Get(this->url_ + "/profile", header);
   if(result.statusCode == 200) {
     return true;
   }
