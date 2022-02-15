@@ -1,21 +1,25 @@
+# Format Style Options - Created with Clang Power Tools
+---
+AccessModifierOffset: -4
+AlignAfterOpenBracket: DontAlign
+AlignOperands: DontAlign
+AllowAllArgumentsOnNextLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: WithoutElse
 BasedOnStyle: LLVM
-IndentWidth: 2
-Language: Cpp
-PointerAlignment: Left
-ColumnLimit: 0
-BraceWrapping:
-  AfterFunction: true
-  BeforeCatch: true
-  BeforeElse: false
-  AfterExternBlock: false
-  AfterNamespace: false
-  AfterControlStatement: false
-BreakBeforeBraces: Custom
-SpaceBeforeParens: Never
-SpaceInEmptyParentheses: false
-SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
+BitFieldColonSpacing: After
+BreakBeforeBraces: Stroustrup
+BreakBeforeInheritanceComma: true
+BreakInheritanceList: AfterColon
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 200
+Cpp11BracedListStyle: false
+DerivePointerAlignment: true
+IndentWidth: 4
+MaxEmptyLinesToKeep: 2
+SpaceAfterCStyleCast: true
+SpaceBeforeCpp11BracedList: true
 NamespaceIndentation: All
-UseTab: Never
-SpaceAfterCStyleCast: false
-AllowShortFunctionsOnASingleLine: Inline
+...

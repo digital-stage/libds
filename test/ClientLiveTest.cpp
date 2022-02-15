@@ -16,7 +16,7 @@ TEST(ClientTest, Live)
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   std::string token;
   EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.org", "test123test123test!"));
-  auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, false);
+  auto client = std::make_shared<DigitalStage::Api::Client>(API_URL);
 
   client->error.connect([](const std::exception&) {
     FAIL();
@@ -24,7 +24,7 @@ TEST(ClientTest, Live)
 
   // Process ready
   std::atomic<bool> ready = false;
-  client->ready.connect([&ready](const DigitalStage::Api::Store* store) {
+  client->ready.connect([&ready](std::weak_ptr<DigitalStage::Api::Store> store) {
     ready = true;
   });
 
@@ -47,7 +47,7 @@ TEST(ClientTest, Live)
     }
   }
 
-  auto store = client->getStore();
+  auto store = client->getStore().lock();
 
   EXPECT_TRUE(store->isReady());
   EXPECT_EQ(store->getLocalDevice()->uuid, "123456");

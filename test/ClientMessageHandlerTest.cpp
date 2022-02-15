@@ -9,7 +9,7 @@
 #include <DigitalStage/Api/Client.h>
 
 TEST(ClientTest, MessageHandler) {
-  auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, false);
+  auto client = std::make_shared<DigitalStage::Api::Client>(API_URL);
 
   // We don't connect, instead validating the handleMessage method of the client
   EXPECT_NO_THROW(client->handleMessage(DigitalStage::Api::RetrieveEvents::LOCAL_DEVICE_READY,

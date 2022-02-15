@@ -59,7 +59,7 @@ set(API_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Api/Store.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Audio/AudioMixer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Audio/AudioMixer.tpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/DigitalStage/Audio/AudioMixer.hpp
         )
 set(API_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cc
@@ -190,7 +190,6 @@ if (BUILD_LIBDS_TESTS)
     add_executable(${PROJECT_NAME}-test
             EXCLUDE_FROM_ALL
             ${CMAKE_CURRENT_SOURCE_DIR}/test/main_test.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientAsyncLiveTest.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientLiveTest.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/test/ClientMessageHandlerTest.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/test/TeckosClientConnectionTest.cpp

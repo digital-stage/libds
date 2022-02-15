@@ -8,114 +8,94 @@ Store::Store()
     : isReady_(false) {}
 
 std::optional<Device> Store::getLocalDevice() const {
-  std::lock_guard<std::recursive_mutex> lock(this->local_device_id_mutex_);
-  if (localDeviceId_) {
-    return this->devices.get(*localDeviceId_);
+  if (localDeviceId_.has_value()) {
+    return this->devices.get(*localDeviceId_.get());
   }
   return std::nullopt;
 }
 
 std::optional<ID_TYPE> Store::getLocalDeviceId() const {
-  std::lock_guard<std::recursive_mutex> lock(this->local_device_id_mutex_);
-  return localDeviceId_;
+  return localDeviceId_.get();
 }
 
 void Store::setLocalDeviceId(const ID_TYPE &id) {
-  std::lock_guard<std::recursive_mutex> lock(this->local_device_id_mutex_);
-  localDeviceId_ = id;
+  localDeviceId_ .set(id);
 }
 
 std::optional<ID_TYPE> Store::getStageDeviceId() const {
-  std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
-  return stageDeviceId_;
+  return stageDeviceId_.get();
 }
 
 void Store::setStageDeviceId(const ID_TYPE &id) {
-  std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
-  stageDeviceId_ = id;
+  stageDeviceId_.set(id);
 }
 
 void Store::resetStageDeviceId() {
-  std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
-  stageDeviceId_ = std::nullopt;
+  stageDeviceId_.set(std::nullopt);
 }
 
 std::optional<StageDevice> Store::getStageDevice() const {
-  std::lock_guard<std::recursive_mutex> lock(this->stage_device_id_mutex_);
   auto stageDeviceId = getStageDeviceId();
-  if (stageDeviceId) {
+  if (stageDeviceId.has_value()) {
     return stageDevices.get(*stageDeviceId);
   }
   return std::nullopt;
 }
 
 [[maybe_unused]] std::optional<ID_TYPE> Store::getStageMemberId() const {
-  std::lock_guard<std::recursive_mutex> lock(this->stageMemberId_mutex_);
-  return this->stageMemberId_;
+  return stageMemberId_.get();
 }
 
 void Store::setStageMemberId(const ID_TYPE &id) {
-  std::lock_guard<std::recursive_mutex> lock(this->stageMemberId_mutex_);
-  stageMemberId_ = id;
+  stageMemberId_.set(id);
 }
 
 std::optional<ID_TYPE> Store::getUserId() const {
-  std::lock_guard<std::recursive_mutex> lock(this->userId_mutex_);
-  return userId_;
+  return userId_.get();
 }
 
 void Store::setUserId(const ID_TYPE &id) {
-  std::lock_guard<std::recursive_mutex> lock(this->userId_mutex_);
-  userId_ = id;
+  userId_.set(id);
 }
 
 std::optional<ID_TYPE> Store::getStageId() const {
-  std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
-  return stageId_;
+  return stageId_.get();
 }
 
 std::optional<DigitalStage::Types::Stage> Store::getStage() const {
-  std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
-  if (stageId_) {
-    return stages.get(*stageId_);
+  if (stageId_.has_value()) {
+    return stages.get(*stageId_.get());
   }
   return std::nullopt;
 }
 
 void Store::setStageId(const ID_TYPE &id) {
-  std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
-  stageId_ = id;
+  stageId_.set(id);
 }
 
 void Store::resetStageId() {
-  std::lock_guard<std::recursive_mutex> lock(this->stageId_mutex_);
-  stageId_ = std::nullopt;
+  stageId_.set(std::nullopt);
 }
 
 std::optional<ID_TYPE> Store::getGroupId() const {
-  std::lock_guard<std::recursive_mutex> lock(this->groupId_mutex_);
-  return groupId_;
+  return groupId_.get();
 }
 
 void Store::setGroupId(std::optional<ID_TYPE> id) {
-  std::lock_guard<std::recursive_mutex> lock(this->groupId_mutex_);
-  groupId_ = id;
+  groupId_.set(id);
 }
 
 void Store::resetGroupId() {
-  std::lock_guard<std::recursive_mutex> lock(this->groupId_mutex_);
-  groupId_ = std::nullopt;
+  groupId_.set(std::nullopt);
 }
 
 void Store::resetStageMemberId() {
-  std::lock_guard<std::recursive_mutex> lock(this->stageMemberId_mutex_);
-  stageMemberId_ = std::nullopt;
+  stageMemberId_.set(std::nullopt);
 }
 
 std::vector<Group> Store::getGroupsByStage(const ID_TYPE &stageId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->groups.mutex_store_);
   auto vector = std::vector<Group>();
-  for (const auto &item: this->groups.getAll()) {
+  for (const auto &item: groups.getAll()) {
     if (item.stageId == stageId) {
       vector.push_back(item);
     }
@@ -125,9 +105,8 @@ std::vector<Group> Store::getGroupsByStage(const ID_TYPE &stageId) const {
 
 [[maybe_unused]] std::vector<StageMember>
 Store::getStageMembersByStage(const ID_TYPE &stageId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->stageMembers.mutex_store_);
   auto vector = std::vector<StageMember>();
-  for (const auto &item: this->stageMembers.getAll()) {
+  for (const auto &item: stageMembers.getAll()) {
     if (item.stageId == stageId) {
       vector.push_back(item);
     }
@@ -137,9 +116,8 @@ Store::getStageMembersByStage(const ID_TYPE &stageId) const {
 
 std::vector<StageMember>
 Store::getStageMembersByGroup(const ID_TYPE &groupId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->stageMembers.mutex_store_);
   auto vector = std::vector<StageMember>();
-  for (const auto &item: this->stageMembers.getAll()) {
+  for (const auto &item: stageMembers.getAll()) {
     if (item.groupId == groupId) {
       vector.push_back(item);
     }
@@ -150,8 +128,7 @@ Store::getStageMembersByGroup(const ID_TYPE &groupId) const {
 std::optional<CustomGroup>
 Store::getCustomGroupByGroupAndTargetGroup(const ID_TYPE &groupId,
                                               const ID_TYPE &targetGroupId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->customGroups.mutex_store_);
-  for (const auto &item: this->customGroups.getAll()) {
+  for (const auto &item: customGroups.getAll()) {
     if (item.groupId == groupId && item.targetGroupId == targetGroupId) {
       return item;
     }
@@ -161,9 +138,8 @@ Store::getCustomGroupByGroupAndTargetGroup(const ID_TYPE &groupId,
 
 std::vector<VideoTrack>
 Store::getVideoTracksByStageDevice(const ID_TYPE &stageDeviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->videoTracks.mutex_store_);
   auto vector = std::vector<VideoTrack>();
-  for (const auto &item: this->videoTracks.getAll()) {
+  for (const auto &item: videoTracks.getAll()) {
     if (item.stageDeviceId == stageDeviceId) {
       vector.push_back(item);
     }
@@ -173,9 +149,8 @@ Store::getVideoTracksByStageDevice(const ID_TYPE &stageDeviceId) const {
 
 std::vector<AudioTrack>
 Store::getAudioTracksByStageDevice(const ID_TYPE &stageDeviceId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->audioTracks.mutex_store_);
   auto vector = std::vector<AudioTrack>();
-  for (const auto &item: this->audioTracks.getAll()) {
+  for (const auto &item: audioTracks.getAll()) {
     if (item.stageDeviceId == stageDeviceId) {
       vector.push_back(item);
     }
@@ -185,9 +160,8 @@ Store::getAudioTracksByStageDevice(const ID_TYPE &stageDeviceId) const {
 
 std::vector<AudioTrack>
 Store::getAudioTracksByStageMember(const ID_TYPE &stageMemberId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->audioTracks.mutex_store_);
   auto vector = std::vector<AudioTrack>();
-  for (const auto &audioTrack: this->audioTracks.getAll()) {
+  for (const auto &audioTrack: audioTracks.getAll()) {
     if (audioTrack.stageMemberId == stageMemberId) {
       vector.push_back(audioTrack);
     }
@@ -198,7 +172,6 @@ Store::getAudioTracksByStageMember(const ID_TYPE &stageMemberId) const {
 std::optional<DigitalStage::Types::AudioTrack>
 Store::getAudioTrackByUuid(const ID_TYPE & uuid) const
 {
-    std::lock_guard<std::recursive_mutex> lock(this->audioTracks.mutex_store_);    
     for (const auto & audioTrack : this->audioTracks.getAll()) {
         if (audioTrack.uuid == uuid) {
             return audioTrack;
@@ -211,7 +184,7 @@ Store::getAudioTrackByUuid(const ID_TYPE & uuid) const
 std::vector<AudioTrack>
 Store::getAudioTracksByGroup(const ID_TYPE &groupId) const {
   auto vector = std::vector<AudioTrack>();
-  for (const auto &stageMember: this->getStageMembersByGroup(groupId)) {
+  for (const auto &stageMember: getStageMembersByGroup(groupId)) {
     auto audio_tracks = getAudioTracksByStageMember(stageMember._id);
     vector.insert(vector.end(), audio_tracks.begin(), audio_tracks.end());
   }
@@ -219,12 +192,10 @@ Store::getAudioTracksByGroup(const ID_TYPE &groupId) const {
 }
 
 void Store::setReady(bool ready) {
-  std::lock_guard<std::recursive_mutex> lock(this->ready_mutex_);
   this->isReady_ = ready;
 }
 
 bool Store::isReady() const {
-  std::lock_guard<std::recursive_mutex> lock(this->ready_mutex_);
   return this->isReady_;
 }
 
@@ -233,8 +204,7 @@ Store::getSoundCardByDeviceAndDriverAndTypeAndLabel(const ID_TYPE &deviceId,
                                                     const std::string &audioDriver,
                                                     const std::string &type,
                                                     const std::string &label) const {
-  std::lock_guard<std::recursive_mutex> lock(this->soundCards.mutex_store_);
-  for (const auto &item: this->soundCards.getAll()) {
+  for (const auto &item: soundCards.getAll()) {
     if (item.deviceId == deviceId &&
         item.audioDriver == audioDriver &&
         item.type == type &&
@@ -247,9 +217,8 @@ Store::getSoundCardByDeviceAndDriverAndTypeAndLabel(const ID_TYPE &deviceId,
 
 std::vector<DigitalStage::Types::StageDevice>
 Store::getStageDevicesByStageMember(const ID_TYPE &stageMemberId) const {
-  std::lock_guard<std::recursive_mutex> lock(this->stageDevices.mutex_store_);
   auto vector = std::vector<StageDevice>();
-  for (const auto &item: this->stageDevices.getAll()) {
+  for (const auto &item: stageDevices.getAll()) {
     if (item.stageMemberId == stageMemberId) {
       vector.push_back(item);
     }
@@ -258,16 +227,14 @@ Store::getStageDevicesByStageMember(const ID_TYPE &stageMemberId) const {
 }
 
 std::optional<DigitalStage::Types::SoundCard> Store::getInputSoundCard() const {
-  std::lock_guard<std::recursive_mutex> lock(this->soundCards.mutex_store_);
-  auto localDevice = this->getLocalDevice();
+  auto localDevice = getLocalDevice();
   if (localDevice && localDevice->inputSoundCardId) {
-    return this->soundCards.get(*localDevice->inputSoundCardId);
+    return soundCards.get(*localDevice->inputSoundCardId);
   }
   return std::nullopt;
 }
 
 std::optional<DigitalStage::Types::SoundCard> Store::getOutputSoundCard() const {
-  std::lock_guard<std::recursive_mutex> lock(this->soundCards.mutex_store_);
   auto localDevice = this->getLocalDevice();
   if (localDevice && localDevice->outputSoundCardId) {
     return this->soundCards.get(*localDevice->outputSoundCardId);
@@ -275,9 +242,8 @@ std::optional<DigitalStage::Types::SoundCard> Store::getOutputSoundCard() const 
   return std::nullopt;
 }
 std::vector<DigitalStage::Types::AudioTrack> Store::getLocalAudioTracks() const {
-  std::lock_guard<std::recursive_mutex> lock(this->audioTracks.mutex_store_);
   auto vector = std::vector<AudioTrack>();
-  auto localDeviceId = this->getLocalDeviceId();
+  auto localDeviceId = getLocalDeviceId();
   if (localDeviceId) {
     for (const auto &item: this->audioTracks.getAll()) {
       if (item.deviceId == *localDeviceId) {
@@ -289,30 +255,26 @@ std::vector<DigitalStage::Types::AudioTrack> Store::getLocalAudioTracks() const 
 }
 
 std::vector<std::string> Store::getTurnServers() const {
-  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
+  std::lock_guard<std::mutex> lock(turn_url_mutex_);
   return turn_urls_;
 }
 
 void Store::setTurnServers(std::vector<std::string> turn_servers) {
-  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
+  std::lock_guard<std::mutex> lock(turn_url_mutex_);
   turn_urls_ = turn_servers;
 }
 
 std::optional<std::string> Store::getTurnUsername() const {
-  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
-  return turn_username_;
+  return turn_username_.get();
 }
 std::optional<std::string> Store::getTurnPassword() const {
-  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
-  return turn_password_;
+  return turn_password_.get();
 }
 
 void Store::setTurnUsername(const std::string &username) {
-  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
-  turn_username_ = username;
+  turn_username_.set(username);
 }
 
 void Store::setTurnPassword(const std::string &password) {
-  std::lock_guard<std::recursive_mutex> lock(this->turn_mutex_);
-  turn_password_ = password;
+  turn_password_.set(password);
 }
