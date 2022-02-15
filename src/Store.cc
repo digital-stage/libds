@@ -169,6 +169,19 @@ Store::getAudioTracksByStageMember(const ID_TYPE &stageMemberId) const {
   return vector;
 }
 
+std::optional<DigitalStage::Types::AudioTrack>
+Store::getAudioTrackByUuid(const ID_TYPE & uuid) const
+{
+    std::lock_guard<std::recursive_mutex> lock(this->audioTracks.mutex_store_);    
+    for (const auto & audioTrack : this->audioTracks.getAll()) {
+        if (audioTrack.uuid == uuid) {
+            return audioTrack;
+        }
+    }
+    return {};
+}
+
+
 std::vector<AudioTrack>
 Store::getAudioTracksByGroup(const ID_TYPE &groupId) const {
   auto vector = std::vector<AudioTrack>();

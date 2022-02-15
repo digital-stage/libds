@@ -8,11 +8,12 @@
 namespace DigitalStage {
   namespace Api {   
     namespace SendEvents {
-      [[maybe_unused]] extern const std::string CHANGE_DEVICE;
+      extern const std::string CHANGE_DEVICE;
       extern const std::string SET_SOUND_CARD;
       extern const std::string CHANGE_SOUND_CARD;
       extern const std::string CREATE_AUDIO_TRACK;
-      [[maybe_unused]] extern const std::string CHANGE_AUDIO_TRACK;
+      extern const std::string SET_AUDIO_TRACK;
+      extern const std::string CHANGE_AUDIO_TRACK;
       extern const std::string REMOVE_AUDIO_TRACK;
       extern const std::string SEND_P2P_RESTART;
       extern const std::string SEND_P2P_OFFER;
