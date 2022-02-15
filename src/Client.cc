@@ -86,7 +86,9 @@ namespace DigitalStage::Api {
         if (!wsclient_) {
             throw std::runtime_error("Libds not ready");
         }
-        wsclient_->send(event, message);
+        wsclient_->send(event, message, [event, message](teckos::Result result) {
+            spdlog::debug("Got result from client, ignoring it: {}", result.size() > 0 ? result[0].dump() : "empty array");
+        });
     }
 
     void Client::send(const std::string& event, const nlohmann::json& message, teckos::Callback callback)
