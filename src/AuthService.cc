@@ -27,7 +27,7 @@ std::future<bool> AuthService::verifyToken(const std::string& token)
   if(result.statusCode == 200) {
     return true;
   }
-  spdlog::error("Could not verify token (code {}), reason is {}", result.statusCode, result.statusMessage);
+  spdlog::warn("Could not verify token (code {}), reason is {}", result.statusCode, result.statusMessage);
   return false;
 }
 
