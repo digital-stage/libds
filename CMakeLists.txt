@@ -163,18 +163,9 @@ install(
         DIRECTORY ${INCLUDE_DIR}
         DESTINATION ${INCLUDE_INSTALL_DIR}
 )
-export(
-        TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic
-        NAMESPACE ${PROJECT_NAME}::
-        FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 install(
         TARGETS ${PROJECT_NAME}Api ${PROJECT_NAME}Auth ${PROJECT_NAME}ApiStatic ${PROJECT_NAME}AuthStatic
-        EXPORT ${TARGETS_EXPORT_NAME}
         INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR})
-install(
-        EXPORT ${TARGETS_EXPORT_NAME}
-        NAMESPACE ${PROJECT_NAME}::
-        DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME})
 
 
 #################################################
