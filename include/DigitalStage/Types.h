@@ -329,8 +329,6 @@ struct User {
   std::string name;
   std::optional<std::string> avatarUrl;
   bool canCreateStage;
-  std::optional<ID_TYPE> stageId;
-  std::optional<ID_TYPE> groupId;
   std::optional<ID_TYPE> stageMemberId;
 };
 
@@ -790,8 +788,6 @@ inline void to_json(json &j, const User &p) {
            {"name", p.name},
            {"canCreateStage", p.canCreateStage}};
   optional_to_json(j, "avatarUrl", p.avatarUrl);
-  optional_to_json(j, "stageId", p.stageId);
-  optional_to_json(j, "groupId", p.groupId);
   optional_to_json(j, "stageMemberId", p.stageMemberId);
 }
 
@@ -801,8 +797,6 @@ inline void from_json(const json &j, User &p) {
   required_from_json(j, "name", p.name);
   required_from_json(j, "canCreateStage", p.canCreateStage);
   optional_from_json(j, "avatarUrl", p.avatarUrl);
-  optional_from_json(j, "stageId", p.stageId);
-  optional_from_json(j, "groupId", p.groupId);
   optional_from_json(j, "stageMemberId", p.stageMemberId);
 }
 
