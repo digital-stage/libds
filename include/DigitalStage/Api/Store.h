@@ -10,6 +10,8 @@
 #include <optional>
 #include <atomic>
 
+#include <spdlog/spdlog.h>
+
 namespace DigitalStage {
   namespace Api {
 
@@ -19,11 +21,16 @@ namespace DigitalStage {
     template <typename TYPE>
     class StoreEntry {
     public:
-      std::optional<TYPE> get(const Types::ID_TYPE& id) const
+      std::optional<TYPE> get(const Types::ID_TYPE& id) const noexcept
       {
         std::lock_guard<std::mutex> lock(mutex_store_);
         if(storeEntry_.count(id) > 0) {
-          return std::optional<TYPE>(storeEntry_.at(id).template get<const TYPE>());
+            try {
+                return std::optional<TYPE>(storeEntry_.at(id).template get<const TYPE>());
+            }
+            catch (Types::ParseException const &e) {
+                spdlog::error("Error in type conversion from json, returning nullopt: {}", e.what());
+            }
         }
         return std::nullopt;
       }
@@ -32,8 +39,14 @@ namespace DigitalStage {
       {
         std::lock_guard<std::mutex> lock(mutex_store_);
         std::vector<TYPE> items = std::vector<TYPE>();
-        for(const auto& item : storeEntry_) {
-          items.push_back(item.second.template get<TYPE>());
+        for (const auto& item : storeEntry_) {
+            try {
+                items.push_back(item.second.template get<TYPE>());
+            }
+            catch (Types::ParseException const& e)
+            {
+                spdlog::error("Error in type conversion from json, not part of returned list: {}", e.what());
+            }
         }
         return items;
       }
@@ -41,15 +54,22 @@ namespace DigitalStage {
       void create(const json& payload)
       {
         std::lock_guard<std::mutex> lock(mutex_store_);
-        const Types::ID_TYPE _id = payload.at("_id").get<Types::ID_TYPE>();
-        storeEntry_[_id] = payload;
+          if (validate(payload)) {
+              const Types::ID_TYPE _id = payload.at("_id").get<Types::ID_TYPE>();
+              storeEntry_[_id] = payload;
+          }
       }
 
       void update(const json& payload)
       {
         const Types::ID_TYPE& id = payload.at("_id").get<Types::ID_TYPE>();
         std::lock_guard<std::mutex> lock(mutex_store_);
+        auto saved = storeEntry_[id];
         storeEntry_[id].merge_patch(payload);
+        if (!validate(storeEntry_[id])) {
+            spdlog::error("Differential update destroyed JSON validity, patch not applied!");
+            storeEntry_[id] = saved;
+        }
       }
 
       void remove(const Types::ID_TYPE& id)
@@ -59,8 +79,7 @@ namespace DigitalStage {
             storeEntry_.erase(id);
         }
         else {
-            //TODO this might indicate a program error?
-            assert(false);
+            spdlog::error("Cannot remove object, id not found in storeEntry: {}", id);
         }
       }
 
@@ -68,6 +87,18 @@ namespace DigitalStage {
       {
         std::lock_guard<std::mutex> lock(mutex_store_);
         storeEntry_.clear();
+      }
+
+        bool validate(const json& payload) const
+      {
+            try {
+                payload.get<TYPE>();
+                return true;
+            }
+            catch (Types::ParseException const& e) {
+                spdlog::warn("Error in type validation from json: {}", e.what());
+            }
+            return false;
       }
 
     private:
