@@ -8,9 +8,10 @@
 
 #include "spdlog/spdlog.h"
 
-namespace DigitalStage::Api {
+namespace DigitalStage::Api
+{
 
-    Client::Client(std::string const& apiUrl) : apiUrl_(apiUrl)
+    Client::Client(std::string const & apiUrl) : apiUrl_(apiUrl)
     {
         store_ = std::make_unique<Store>();
         wsclient_ = std::make_unique<teckos::client>();
@@ -45,36 +46,34 @@ namespace DigitalStage::Api {
         return false;
     }
 
-    void Client::connect(const std::string& apiToken, const nlohmann::json& initialDevice)
+    void Client::connect(const std::string & apiToken, const nlohmann::json & initialDevice)
     {
         // Set handler
         wsclient_->on_disconnected([this](bool expected) { disconnected(expected); });
         wsclient_->on_reconnected([]() { spdlog::info("Libds reconnected"); });
-        wsclient_->setMessageHandler([this](const nlohmann::json& json) {
+        wsclient_->setMessageHandler([this](const nlohmann::json & json) {
             try {
                 if (!json.is_array()) {
                     // This is actually guaranteed by libteckos, so this will never happen
                     assert(false);
                     throw InvalidPayloadException("Response from server is invalid");
                 }
-                const std::string& event = json[0];
+                const std::string & event = json[0];
                 const nlohmann::json payload = (json.size() > 1) ? json[1] : nlohmann::json::object();
                 handleMessage(event, payload);
-            }
-            catch (const std::exception& e) {
+            } catch (const std::exception & e) {
                 spdlog::error("Libds caught exception in message handler handling {}, sending error signal: {}", json.dump(), e.what());
                 error(e);
-            }
-            catch (...) {
+            } catch (...) {
                 spdlog::error("Libds caught unexpected exception in message handler handling {}, no further error handling possible.", json.dump());
             }
         });
 
         // Handlers set, now connect the websocket
-        wsclient_->connect(apiUrl_, apiToken, { { "device", initialDevice } });
+        wsclient_->connect(apiUrl_, apiToken, {{"device", initialDevice}});
     }
 
-    void Client::send(const std::string& event, const nlohmann::json& message)
+    void Client::send(const std::string & event, const nlohmann::json & message)
     {
 #ifdef DEBUG_EVENTS
 #ifdef DEBUG_PAYLOADS
@@ -91,7 +90,7 @@ namespace DigitalStage::Api {
         });
     }
 
-    void Client::send(const std::string& event, const nlohmann::json& message, teckos::Callback callback)
+    void Client::send(const std::string & event, const nlohmann::json & message, teckos::Callback callback)
     {
 #ifdef DEBUG_EVENTS
 #ifdef DEBUG_PAYLOADS
@@ -106,45 +105,40 @@ namespace DigitalStage::Api {
         wsclient_->send(event, message, callback);
     }
 
-    std::future<std::pair<std::string, std::optional<std::string>>> Client::decodeInvitationCode(const std::string& code)
+    std::future<std::pair<std::string, std::optional<std::string>>> Client::decodeInvitationCode(const std::string & code)
     {
         using InvitePromise = std::promise<std::pair<std::string, std::optional<std::string>>>;
         auto const promise = std::make_shared<InvitePromise>();
         try {
-            wsclient_->send("decode-invite", code, [promise](const std::vector<nlohmann::json>& result) {
+            wsclient_->send("decode-invite", code, [promise](const std::vector<nlohmann::json> & result) {
                 try {
                     if (result.size() > 1 && !result[1].is_null()) {
                         if (result[1].count("groupId") != 0 && !result[1]["groupId"].is_null()) {
                             std::string groupId = result[1]["groupId"];
-                            promise->set_value({ result[1]["stageId"], groupId });
+                            promise->set_value({result[1]["stageId"], groupId});
+                        } else {
+                            promise->set_value({result[1]["stageId"], std::nullopt});
                         }
-                        else {
-                            promise->set_value({ result[1]["stageId"], std::nullopt });
-                        }
-                    }
-                    else if (result.size() == 1) {
+                    } else if (result.size() == 1) {
                         promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0].dump())));
-                    }
-                    else {
+                    } else {
                         promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
                     }
-                }
-                catch (std::exception& e) {
+                } catch (std::exception & e) {
                     // JSON access errors for example might end up here
                     promise->set_exception(std::make_exception_ptr(e));
                 }
             });
-        }
-        catch (std::exception& e) {
+        } catch (std::exception & e) {
             spdlog::error("Libds caught unexpected exception during decode invitation code: {}", e.what());
             promise->set_exception(std::make_exception_ptr(e));
         }
         return promise->get_future();
     }
 
-    std::future<std::string> Client::revokeInvitationCode(const std::string& stageId, const std::optional<std::string>& groupId)
+    std::future<std::string> Client::revokeInvitationCode(const std::string & stageId, const std::optional<std::string> & groupId)
     {
-        nlohmann::json payload {};
+        nlohmann::json payload{};
         payload["stageId"] = stageId;
         if (groupId) {
             payload["groupId"] = *groupId;
@@ -152,28 +146,25 @@ namespace DigitalStage::Api {
         using InvitePromise = std::promise<std::string>;
         auto const promise = std::make_shared<InvitePromise>();
         try {
-            wsclient_->send("revoke-invite", payload, [promise](const std::vector<nlohmann::json>& result) {
+            wsclient_->send("revoke-invite", payload, [promise](const std::vector<nlohmann::json> & result) {
                 if (result.size() > 1) {
                     promise->set_value(result[1]);
-                }
-                else if (result.size() == 1) {
+                } else if (result.size() == 1) {
                     promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
-                }
-                else {
+                } else {
                     promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
                 }
             });
-        }
-        catch (std::exception& e) {
+        } catch (std::exception & e) {
             spdlog::error("Libds caught unexpected exception during revoke invitation code: {}", e.what());
             promise->set_exception(std::make_exception_ptr(e));
         }
         return promise->get_future();
     }
 
-    std::future<std::string> Client::encodeInvitationCode(const std::string& stageId, const std::optional<std::string>& groupId)
+    std::future<std::string> Client::encodeInvitationCode(const std::string & stageId, const std::optional<std::string> & groupId)
     {
-        nlohmann::json payload {};
+        nlohmann::json payload{};
         payload["stageId"] = stageId;
         if (groupId) {
             payload["groupId"] = *groupId;
@@ -181,19 +172,44 @@ namespace DigitalStage::Api {
         using InvitePromise = std::promise<std::string>;
         auto const promise = std::make_shared<InvitePromise>();
         try {
-            wsclient_->send("encode-invite", payload, [promise](const std::vector<nlohmann::json>& result) {
+            wsclient_->send("encode-invite", payload, [promise](const std::vector<nlohmann::json> & result) {
                 if (result.size() > 1) {
                     promise->set_value(result[1]);
-                }
-                else if (result.size() == 1) {
+                } else if (result.size() == 1) {
                     promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
-                }
-                else {
+                } else {
                     promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
                 }
             });
+        } catch (std::exception & e) {
+            spdlog::error("Libds caught unexpected exception during encode invitation code: {}", e.what());
+            promise->set_exception(std::make_exception_ptr(e));
         }
-        catch (std::exception& e) {
+        return promise->get_future();
+    }
+
+    std::future<void> Client::joinStage(std::string stageId, std::optional<std::string> const & groupId, std::optional<std::string> const & password)
+    {
+        nlohmann::json payload{};
+        payload["stageId"] = std::move(stageId);
+        if (groupId) {
+            payload["groupId"] = *groupId;
+        }
+        if (password) {
+            payload["password"] = *password;
+        }
+
+        using JoinPromise = std::promise<void>;
+        auto const promise = std::make_shared<JoinPromise>();
+        try {
+            wsclient_->send("join-stage", payload, [promise](const std::vector<nlohmann::json> & result) {
+                if (result.size() == 1) {
+                    promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+                } else {
+                    promise->set_value();
+                }
+            });
+        } catch (std::exception & e) {
             spdlog::error("Libds caught unexpected exception during encode invitation code: {}", e.what());
             promise->set_exception(std::make_exception_ptr(e));
         }
