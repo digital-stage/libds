@@ -11,6 +11,21 @@
 namespace DigitalStage::Api
 {
 
+    std::string describe_broken_json(nlohmann::json const& broken)
+    {
+        if (broken.is_null()) {
+            return "<nulljson>!";
+        } else if (broken.is_array()) {
+            if (broken.size() > 0) {
+                return fmt::format("Array [{}...]", describe_broken_json(broken[0]));
+            } else {
+                return "empty array";
+            }
+        } else {
+            return broken.dump();
+        }
+    }
+
     Client::Client(std::string const & apiUrl) : apiUrl_(apiUrl)
     {
         store_ = std::make_unique<Store>();
@@ -150,7 +165,7 @@ namespace DigitalStage::Api
                 if (result.size() > 1) {
                     promise->set_value(result[1]);
                 } else if (result.size() == 1) {
-                    promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+                    promise->set_exception(std::make_exception_ptr(std::runtime_error(describe_broken_json(result[0]))));
                 } else {
                     promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
                 }
@@ -176,7 +191,7 @@ namespace DigitalStage::Api
                 if (result.size() > 1) {
                     promise->set_value(result[1]);
                 } else if (result.size() == 1) {
-                    promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+                    promise->set_exception(std::make_exception_ptr(std::runtime_error(describe_broken_json(result[0]))));
                 } else {
                     promise->set_exception(std::make_exception_ptr(std::runtime_error("Unexpected communication error")));
                 }
@@ -204,13 +219,13 @@ namespace DigitalStage::Api
         try {
             wsclient_->send("join-stage", payload, [promise](const std::vector<nlohmann::json> & result) {
                 if (result.size() == 1) {
-                    promise->set_exception(std::make_exception_ptr(std::runtime_error(result[0])));
+                    promise->set_exception(std::make_exception_ptr(std::runtime_error(describe_broken_json(result[0]))));
                 } else {
                     promise->set_value();
                 }
             });
         } catch (std::exception & e) {
-            spdlog::error("Libds caught unexpected exception during encode invitation code: {}", e.what());
+            spdlog::error("Libds caught unexpected exception during joinstage: {}", e.what());
             promise->set_exception(std::make_exception_ptr(e));
         }
         return promise->get_future();
