@@ -203,7 +203,7 @@ namespace DigitalStage::Api
         return promise->get_future();
     }
 
-    std::future<void> Client::joinStage(std::string stageId, std::optional<std::string> const & groupId, std::optional<std::string> const & password)
+    std::future<bool> Client::joinStage(std::string stageId, std::optional<std::string> const & groupId, std::optional<std::string> const & password)
     {
         nlohmann::json payload{};
         payload["stageId"] = std::move(stageId);
@@ -214,14 +214,18 @@ namespace DigitalStage::Api
             payload["password"] = *password;
         }
 
-        using JoinPromise = std::promise<void>;
+        using JoinPromise = std::promise<bool>;
         auto const promise = std::make_shared<JoinPromise>();
         try {
             wsclient_->send("join-stage", payload, [promise](const std::vector<nlohmann::json> & result) {
-                if (result.size() == 1) {
-                    promise->set_exception(std::make_exception_ptr(std::runtime_error(describe_broken_json(result[0]))));
+                if (result.size() == 1 && !result[0].is_null()) {
+                    if (result[0].is_string() && result[0] == "Invalid password") {
+                        promise->set_value(false);
+                    } else {
+                        promise->set_exception(std::make_exception_ptr(std::runtime_error("Unknown API response.")));
+                    }
                 } else {
-                    promise->set_value();
+                    promise->set_value(true);
                 }
             });
         } catch (std::exception & e) {

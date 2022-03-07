@@ -133,7 +133,7 @@ namespace DigitalStage {
 
             std::future<std::string> encodeInvitationCode(const std::string& stageId, const std::optional<std::string>& groupId = std::nullopt);
 
-            std::future<void> joinStage(std::string stageId, std::optional<std::string> const & groupId = {}, std::optional<std::string> const & password = {});
+            std::future<bool> joinStage(std::string stageId, std::optional<std::string> const & groupId = {}, std::optional<std::string> const & password = {});
 
             // Suboptimal to put this here, but it is tested directly
             void handleMessage(const std::string& event, const nlohmann::json& payload);
