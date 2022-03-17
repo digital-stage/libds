@@ -121,7 +121,7 @@ void attachHandlers(Client* client)
 
 int main(int argc, char* argv[])
 {
-    auto email = "test@digital-stage.org";
+    auto email = "test@digital-stage.net";
     auto password = "test123test123test!";
     if (argc == 3) {
         email = argv[1];
