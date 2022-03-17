@@ -40,69 +40,89 @@ namespace DigitalStage::Audio {
     template<class T>
     void AudioMixer<T>::attachHandlers() {
         // React to all changes of volume related entities and precalculate the resulting volume
-        client_->ready.connect([this](const DigitalStage::Api::Store* store) {
+        client_->ready.connect([this](std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+            if(store_ptr.expired()) {
+              return;
+            }
+            auto store = store_ptr.lock();
             auto audioTracks = store->audioTracks.getAll();
             for (const auto& audio_track : audioTracks) {
-                volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+                volume_map_[audio_track._id] = calculateVolume(audio_track, store);
             }
         }, token_);
-        client_->audioTrackAdded.connect([this](const AudioTrack& audio_track, const DigitalStage::Api::Store* store) {
-            volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+        client_->audioTrackAdded.connect([this](const DigitalStage::Types::AudioTrack& audio_track, std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+          if(!store_ptr.expired()) {
+            volume_map_[audio_track._id] = calculateVolume(audio_track, store_ptr.lock());
+          }
         }, token_);
         client_->audioTrackChanged.connect([this](const std::string& audio_track_id, const nlohmann::json& update,
-            const DigitalStage::Api::Store* store) {
+            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
             if (update.contains("volume") || update.contains("muted")) {
+                if(store_ptr.expired()) {
+                  return;
+                }
+                auto store = store_ptr.lock();
                 auto audio_track = store->audioTracks.get(audio_track_id);
                 assert(audio_track);
-                volume_map_[audio_track->_id] = calculateVolume(*audio_track, *store);
+                volume_map_[audio_track->_id] = calculateVolume(*audio_track, store);
             }
         }, token_);
-        client_->audioTrackRemoved.connect([this](const AudioTrack& audio_track, const DigitalStage::Api::Store*) {
+        client_->audioTrackRemoved.connect([this](const DigitalStage::Types::AudioTrack& audio_track, std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
             volume_map_.erase(audio_track._id);
         }, token_);
         client_->stageDeviceChanged.connect([this](const std::string& stage_device_id, const nlohmann::json& update,
-            const DigitalStage::Api::Store* store) {
+            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
             if (update.contains("volume") || update.contains("muted")) {
+                if(store_ptr.expired()) {
+                  return;
+                }
+                auto store = store_ptr.lock();
                 // Find and update all related audio tracks
                 for (const auto& audio_track : store->audioTracks.getAll()) {
                     if (audio_track.stageDeviceId == stage_device_id) {
-                        volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+                        volume_map_[audio_track._id] = calculateVolume(audio_track, store);
                     }
                 }
             }
         }, token_);
         client_->stageMemberChanged.connect([this](const std::string& stage_member_id, const nlohmann::json& update,
-            const DigitalStage::Api::Store* store) {
-            if (update.contains("volume") || update.contains("muted") || update.contains("groupId")) {
+                                                   std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+            if (!store_ptr.expired() && (update.contains("volume") || update.contains("muted") || update.contains("groupId"))) {
                 // Find and update all related audio tracks
+                auto store = store_ptr.lock();
                 for (const auto& audio_track : store->audioTracks.getAll()) {
                     if (audio_track.stageMemberId == stage_member_id) {
-                        volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+                        volume_map_[audio_track._id] = calculateVolume(audio_track, store);
                     }
                 }
             }
         }, token_);
         client_->groupChanged.connect([this](const std::string& group_id, const nlohmann::json& update,
-            const DigitalStage::Api::Store* store) {
-            if (update.contains("volume") || update.contains("muted")) {
+            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+            if (!store_ptr.expired() && (update.contains("volume") || update.contains("muted"))) {
                 // Find and update all related audio tracks
+                auto store = store_ptr.lock();
                 for (const auto& stage_member : store->getStageMembersByGroup(group_id)) {
                     for (const auto& audio_track : store->audioTracks.getAll()) {
                         if (audio_track.stageMemberId == stage_member._id) {
-                            volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+                            volume_map_[audio_track._id] = calculateVolume(audio_track, store);
                         }
                     }
                 }
             }
         }, token_);
-        client_->customGroupAdded.connect([this](const CustomGroup& custom_group,
-            const DigitalStage::Api::Store* store) {
+        client_->customGroupAdded.connect([this](const DigitalStage::Types::CustomGroup& custom_group,
+            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+            if(store_ptr.expired()) {
+              return;
+            }
+            auto store = store_ptr.lock();
             auto group_id = store->getGroupId();
             if (group_id && custom_group.targetGroupId == group_id) {
                 for (const auto& stage_member : store->getStageMembersByGroup(custom_group.groupId)) {
                     for (const auto& audio_track : store->audioTracks.getAll()) {
                         if (audio_track.stageMemberId == stage_member._id) {
-                            volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+                            volume_map_[audio_track._id] = calculateVolume(audio_track, store);
                         }
                     }
                 }
@@ -110,8 +130,12 @@ namespace DigitalStage::Audio {
         }, token_);
         client_->customGroupChanged.connect([this](const std::string& custom_group_id,
             const nlohmann::json& update,
-            const DigitalStage::Api::Store* store) {
+            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
             if (update.contains("volume") || update.contains("muted")) {
+                if(store_ptr.expired()) {
+                  return;
+                }
+                auto store = store_ptr.lock();
                 auto custom_group = store->customGroups.get(custom_group_id);
                 assert(custom_group);
                 auto group_id = store->getGroupId();
@@ -120,21 +144,25 @@ namespace DigitalStage::Audio {
                     for (const auto& stage_member : store->getStageMembersByGroup(custom_group->groupId)) {
                         for (const auto& audio_track : store->audioTracks.getAll()) {
                             if (audio_track.stageMemberId == stage_member._id) {
-                                volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+                                volume_map_[audio_track._id] = calculateVolume(audio_track, store);
                             }
                         }
                     }
                 }
             }
         }, token_);
-        client_->customGroupRemoved.connect([this](const CustomGroup& custom_group,
-            const DigitalStage::Api::Store* store) {
+        client_->customGroupRemoved.connect([this](const DigitalStage::Types::CustomGroup& custom_group,
+            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+            if(store_ptr.expired()) {
+              return;
+            }
+            auto store = store_ptr.lock();
             auto group_id = store->getGroupId();
             if (group_id && custom_group.targetGroupId == group_id) {
                 for (const auto& stage_member : store->getStageMembersByGroup(custom_group.groupId)) {
                     for (const auto& audio_track : store->audioTracks.getAll()) {
                         if (audio_track.stageMemberId == stage_member._id) {
-                            volume_map_[audio_track._id] = calculateVolume(audio_track, *store);
+                            volume_map_[audio_track._id] = calculateVolume(audio_track, store);
                         }
                     }
                 }
@@ -154,17 +182,17 @@ namespace DigitalStage::Audio {
 
     template<class T>
     std::pair<T, bool> AudioMixer<T>::calculateVolume(const DigitalStage::Types::AudioTrack& audio_track,
-        const DigitalStage::Api::Store& store) {
-        auto group_id = store.getGroupId();
+                                                      std::shared_ptr<DigitalStage::Api::Store> store) {
+        auto group_id = store->getGroupId();
 
         // Get related stage member
-        auto stage_member = store.stageMembers.get(audio_track.stageMemberId);
+        auto stage_member = store->stageMembers.get(audio_track.stageMemberId);
         assert(stage_member);
 
         // Get related group
-        auto group = stage_member->groupId ? store.groups.get(*stage_member->groupId) : std::nullopt;
+        auto group = stage_member->groupId ? store->groups.get(*stage_member->groupId) : std::nullopt;
         auto custom_group =
-            (group_id && stage_member->groupId) ? store.getCustomGroupByGroupAndTargetGroup(*stage_member->groupId, *group_id)
+            (group_id && stage_member->groupId) ? store->getCustomGroupByGroupAndTargetGroup(*stage_member->groupId, *group_id)
             : std::nullopt;
 
         // Calculate volumes
@@ -187,9 +215,9 @@ namespace DigitalStage::Audio {
         }
         // Get balance (0 = only me, 1 = only others)
         if (use_balance_) {
-            auto local_device_id = store.getLocalDeviceId();
+            auto local_device_id = store->getLocalDeviceId();
             if (local_device_id) {
-                auto balance = calculateBalance(store.getLocalDevice()->balance, audio_track.deviceId == *local_device_id);
+                auto balance = calculateBalance(store->getLocalDevice()->balance, audio_track.deviceId == *local_device_id);
                 std::cout << "(balance) " << balance;
                 volume *= balance;
             }

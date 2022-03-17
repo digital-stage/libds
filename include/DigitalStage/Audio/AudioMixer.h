@@ -29,7 +29,7 @@ class AudioMixer {
  private:
   void attachHandlers();
   std::pair<T, bool> calculateVolume(const DigitalStage::Types::AudioTrack &audio_track,
-                                     const DigitalStage::Api::Store &store);
+                                     shared_ptr<DigitalStage::Api::Store> store);
   static double calculateBalance(double balance, bool is_local);
 
   std::unordered_map<std::string, std::pair<T, bool>> volume_map_;
