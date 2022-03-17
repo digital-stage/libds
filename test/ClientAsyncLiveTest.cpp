@@ -11,7 +11,7 @@ TEST(ClientTest, AsyncLive) {
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   std::string token;
-  EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.org", "test123test123test!"));
+  EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.net", "test123test123test!"));
   auto client = std::make_shared<DigitalStage::Api::Client>(API_URL, true);
   std::cout << "Got token: " << token << std::endl;
 

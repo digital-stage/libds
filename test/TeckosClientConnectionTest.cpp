@@ -8,7 +8,7 @@ TEST(TeckosClientTest, Connection) {
   // Get token
   auto auth = std::make_shared<DigitalStage::Auth::AuthService>(AUTH_URL);
   std::string token;
-  EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.org", "test123test123test!"));
+  EXPECT_NO_THROW(token = auth->signInSync("test@digital-stage.net", "test123test123test!"));
 
   nlohmann::json initialDevice;
   initialDevice["uuid"] = "123456";
