@@ -235,6 +235,28 @@ namespace DigitalStage::Api
         return promise->get_future();
     }
 
+
+    std::future<bool> Client::leaveStage()
+    {
+        nlohmann::json payload{};
+
+        using JoinPromise = std::promise<bool>;
+        auto const promise = std::make_shared<JoinPromise>();
+        try {
+            wsclient_->send("leave-stage", payload, [promise](const std::vector<nlohmann::json> & result) {
+                if (result.size() == 1 && !result[0].is_null()) {
+                    promise->set_exception(std::make_exception_ptr(std::runtime_error("Unknown API response.")));
+                } else {
+                    promise->set_value(true);
+                }
+            });
+        } catch (std::exception & e) {
+            spdlog::error("Libds caught unexpected exception during leavestage: {}", e.what());
+            promise->set_exception(std::make_exception_ptr(e));
+        }
+        return promise->get_future();
+    }
+
     template <typename ValueTypeCV, typename ValueType = nlohmann::detail::uncvref_t<ValueTypeCV>> ValueTypeCV parse(const nlohmann::json& json, const std::string& event, const std::string& className)
     {
         try {
