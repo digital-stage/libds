@@ -203,7 +203,9 @@ namespace DigitalStage::Audio {
             std::cout << "(custom-group) " << std::to_string(custom_group->volume) << std::endl;
         }
         else {
-            std::cout << "(group) " << std::to_string(group->volume) << std::endl;
+            if (group.has_value()) {
+                std::cout << "(group) " << std::to_string(group->volume) << std::endl;
+            }
         }
 
         double volume = audio_track.volume * stage_member->volume;
