@@ -8,11 +8,10 @@
 namespace DigitalStage::Audio {
 
     template<class T>
-    AudioMixer<T>::AudioMixer(std::shared_ptr<DigitalStage::Api::Client> client, bool use_balance)
-        : client_(std::move(client)),
-        token_(std::make_shared<DigitalStage::Api::Client::Token>()),
+    AudioMixer<T>::AudioMixer(const std::weak_ptr<DigitalStage::Api::Client>& client_ptr, bool use_balance)
+        : token_(std::make_shared<DigitalStage::Api::Client::Token>()),
         use_balance_(use_balance) {
-        attachHandlers();
+        attachHandlers(client_ptr);
     }
 
     template<class T>
@@ -38,9 +37,13 @@ namespace DigitalStage::Audio {
     }
 
     template<class T>
-    void AudioMixer<T>::attachHandlers() {
+    void AudioMixer<T>::attachHandlers(const std::weak_ptr<DigitalStage::Api::Client>& client_ptr) {
+        if(client_ptr.expired()) {
+          return;
+        }
+        auto client = client_ptr.lock();
         // React to all changes of volume related entities and precalculate the resulting volume
-        client_->ready.connect([this](std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->ready.connect([this](const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             if(store_ptr.expired()) {
               return;
             }
@@ -50,13 +53,13 @@ namespace DigitalStage::Audio {
                 volume_map_[audio_track._id] = calculateVolume(audio_track, store);
             }
         }, token_);
-        client_->audioTrackAdded.connect([this](const DigitalStage::Types::AudioTrack& audio_track, std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->audioTrackAdded.connect([this](const DigitalStage::Types::AudioTrack& audio_track, const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
           if(!store_ptr.expired()) {
             volume_map_[audio_track._id] = calculateVolume(audio_track, store_ptr.lock());
           }
         }, token_);
-        client_->audioTrackChanged.connect([this](const std::string& audio_track_id, const nlohmann::json& update,
-            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->audioTrackChanged.connect([this](const std::string& audio_track_id, const nlohmann::json& update,
+            const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             if (update.contains("volume") || update.contains("muted")) {
                 if(store_ptr.expired()) {
                   return;
@@ -67,11 +70,11 @@ namespace DigitalStage::Audio {
                 volume_map_[audio_track->_id] = calculateVolume(*audio_track, store);
             }
         }, token_);
-        client_->audioTrackRemoved.connect([this](const DigitalStage::Types::AudioTrack& audio_track, std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->audioTrackRemoved.connect([this](const DigitalStage::Types::AudioTrack& audio_track, const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             volume_map_.erase(audio_track._id);
         }, token_);
-        client_->stageDeviceChanged.connect([this](const std::string& stage_device_id, const nlohmann::json& update,
-            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->stageDeviceChanged.connect([this](const std::string& stage_device_id, const nlohmann::json& update,
+            const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             if (update.contains("volume") || update.contains("muted")) {
                 if(store_ptr.expired()) {
                   return;
@@ -85,8 +88,8 @@ namespace DigitalStage::Audio {
                 }
             }
         }, token_);
-        client_->stageMemberChanged.connect([this](const std::string& stage_member_id, const nlohmann::json& update,
-                                                   std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->stageMemberChanged.connect([this](const std::string& stage_member_id, const nlohmann::json& update,
+                                                   const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             if (!store_ptr.expired() && (update.contains("volume") || update.contains("muted") || update.contains("groupId"))) {
                 // Find and update all related audio tracks
                 auto store = store_ptr.lock();
@@ -97,8 +100,8 @@ namespace DigitalStage::Audio {
                 }
             }
         }, token_);
-        client_->groupChanged.connect([this](const std::string& group_id, const nlohmann::json& update,
-            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->groupChanged.connect([this](const std::string& group_id, const nlohmann::json& update,
+            const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             if (!store_ptr.expired() && (update.contains("volume") || update.contains("muted"))) {
                 // Find and update all related audio tracks
                 auto store = store_ptr.lock();
@@ -111,8 +114,8 @@ namespace DigitalStage::Audio {
                 }
             }
         }, token_);
-        client_->customGroupAdded.connect([this](const DigitalStage::Types::CustomGroup& custom_group,
-            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->customGroupAdded.connect([this](const DigitalStage::Types::CustomGroup& custom_group,
+            const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             if(store_ptr.expired()) {
               return;
             }
@@ -128,9 +131,9 @@ namespace DigitalStage::Audio {
                 }
             }
         }, token_);
-        client_->customGroupChanged.connect([this](const std::string& custom_group_id,
+        client->customGroupChanged.connect([this](const std::string& custom_group_id,
             const nlohmann::json& update,
-            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+            const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             if (update.contains("volume") || update.contains("muted")) {
                 if(store_ptr.expired()) {
                   return;
@@ -151,8 +154,8 @@ namespace DigitalStage::Audio {
                 }
             }
         }, token_);
-        client_->customGroupRemoved.connect([this](const DigitalStage::Types::CustomGroup& custom_group,
-            std::weak_ptr<DigitalStage::Api::Store> store_ptr) {
+        client->customGroupRemoved.connect([this](const DigitalStage::Types::CustomGroup& custom_group,
+            const std::weak_ptr<DigitalStage::Api::Store>& store_ptr) {
             if(store_ptr.expired()) {
               return;
             }

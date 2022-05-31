@@ -2,8 +2,8 @@
 #include "DigitalStage/Api/Events.h"
 
 #include <exception>
-#include <iostream>
 #include <memory>
+#include <iostream>
 #include <utility>
 
 #include "spdlog/spdlog.h"
@@ -37,6 +37,7 @@ namespace DigitalStage::Api
 
     Client::~Client()
     {
+        std::cout << "CLOSING CLIENT" << std::endl;
         disconnect();
     }
 
