@@ -537,9 +537,13 @@ namespace DigitalStage::Api
         else if (event == RetrieveEvents::AUDIO_TRACK_REMOVED) {
             const auto id = parse<ID_TYPE>(payload, event, "id");
             auto track = store_->audioTracks.get(id);
-            store_->audioTracks.remove(id);
-
-            audioTrackRemoved(*track, getStore());
+            if (track.has_value()) {
+                store_->audioTracks.remove(id);
+                audioTrackRemoved(*track, getStore());
+            }
+            else {
+                spdlog::warn("Ignoring AUDIO_TRACK_REMOVED message as track with ID is no longer known: {}", id);
+            }
         }
         /*
          * USERS
